@@ -1,0 +1,23 @@
+name: ${project.name}
+author: TrueMB
+version: ${project.version}
+api-version: 1.16
+main: me.truemb.rentit.main.Main
+depend: [WorldEdit, Vault]
+softdepend: [WorldGuard, Citizens, PlaceholderAPI]
+
+commands:
+     shop:
+         description: Shop Command
+         aliases: [s]
+     hotel:
+         description: Hotel Command
+         aliases: [h]
+     shops:
+         description: Lists all Shops
+     hotels:
+         description: Lists all Hotels
+     freeshops:
+         description: Lists all free Shops
+     freehotels:
+         description: Lists all free Hotels

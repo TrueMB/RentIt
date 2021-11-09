@@ -1,0 +1,644 @@
+#ALL CHANGES NEEDS A RESTART TO TAKE AFFECT
+#
+#Your MySQL Connection Settings
+#If you got problems to establish a Connection, try disabling the "useSSL".
+Database:
+     host: 'ipaddress'
+     port: 3306
+     useSSL: true
+     user: 'admin'
+     password: 'S€CR3T'
+     database: 'Database'
+Options:
+     #Sends anonymous data to bstats. (OnlinePlayers, Server Version, etc) But no personal Informations!
+     useMetrics: true
+     #Using Citizens NPCs as Shops. Otherwise Villagers
+     useNPCs: true
+     #Shows above the Shop NPC the Prefix and DisplayName of a Player, if false: Only the Name
+     useDisplayName: false
+     #If enabled, every command gets a Permission -> Default: rentit.shop.<subcommand> and rentit.shops / rentit.freeshops -> the same for hotelrooms
+     advancedPermissions: false
+     #Should normal players be allowed to destroy, build, and so on... (Admins are not affected)
+     defaultPermissions: 
+         shop:
+             build: true
+             teleport:
+                 ownings: true
+                 inspection: true
+         hotel:
+             build: true
+             teleport:
+                 ownings: true
+                 inspection: true
+     #Category Settings. Possible to add more or edit the values. It has to be the category ID
+     #usePermission -> Are Permissions needed, to buy such a Shop/Hotel
+     #autoPaymentDefault -> The Default Status of the auto Payment
+     #autoPaymentDisabled -> If auto Payment should be changeable
+     #maxRentExtendAmount -> The Max Amount a Player can extend the rent
+     #disableDoorCommand -> Disables the door command
+     #ownerBypassLock -> Should Owner or Players with Permission be allowed to open locked doors
+     #doorsClosedUntilBuy -> <true/false> Should the doors be closed until a player bought the Shop/hotelroom? True Allows player to look, until someone rents it and does /shop door close
+     #doorsClosedAfterBuy -> the default status, after a player bought a Shop
+     categorySettings:
+         ShopCategory:
+             99:
+                 usePermission: false
+                 autoPaymentDefault: true
+                 autoPaymentDisabled: true
+                 maxRentExtendAmount: 5
+                 disableDoorCommand: false
+                 ownerBypassLock: true
+                 doorsClosedUntilBuy: false
+                 doorsClosedAfterBuy: false
+             88:
+                 usePermission: true
+                 autoPaymentDefault: true
+                 autoPaymentDisabled: false
+                 maxRentExtendAmount: 3
+                 disableDoorCommand: false
+                 ownerBypassLock: true
+                 doorsClosedUntilBuy: false
+                 doorsClosedAfterBuy: false
+         HotelCategory:
+             99:
+                 usePermission: false
+                 autoPaymentDefault: true
+                 autoPaymentDisabled: false
+                 maxRentExtendAmount: 5
+                 disableDoorCommand: false
+                 ownerBypassLock: true
+                 doorsClosedUntilBuy: false
+                 doorsClosedAfterBuy: false
+             88:
+                 usePermission: true
+                 autoPaymentDefault: true
+                 autoPaymentDisabled: false
+                 maxRentExtendAmount: 3
+                 disableDoorCommand: false
+                 ownerBypassLock: true
+                 doorsClosedUntilBuy: false
+                 doorsClosedAfterBuy: false
+     #How many Shops or Hotelrooms a Permissions group is allowed to own max. -1 for unlimited, if no Permission Plugin installed, then "default"
+     maxPossible: 
+         shop:
+             owner: -1
+             default: 3
+         hotel:
+             owner: -1
+             default: 1
+     shop:
+         sign:
+             sellShopSign:
+                 line1: '&6Rent &f&lShop'
+                 line2: '&6Price&7: &f%price%'
+                 line3: '&6Duration&7: &f%time%'
+                 line4: '&6Size&7: &f%size%'
+             boughtShopSign:
+                 line1: ''
+                 line2: '&f%owner%s'
+                 line3: '&6&lShop'
+                 line4: ''
+             sellHotelSign:
+                 line1: '&6Rent &f&lHotelroom'
+                 line2: '&6Price&7: &f%price%'
+                 line3: '&6Duration&7: &f%time%'
+                 line4: ''
+             boughtHotelSign:
+                 line1: ''
+                 line2: '&f%owner%s'
+                 line3: '&6&lHotelroom'
+                 line4: ''
+# Placeholder default Values, if nothing was found
+PlaceholderAPI: 
+     default:
+         currentId: '-1'
+         currentType: 'unknown'
+         currentOwner: 'unknown'
+#Permissions for the Shop/Hotelroom Owner to give a player
+# Fill -> Allows Players to interact with your Shop Chest
+# Buy -> add buy Items - That you want from other players
+# Sell -> add sell Items - That you own and want to sell
+# Door -> Gives Player the Permission for your Shop/hotelroom Doors
+# Build -> Gives Player the Permission to build in your Shop/hotelroom
+# Admin -> All the permissions and the ability to give player permissions
+UserPermissions: 
+     shop:
+         Fill: 'fill'
+         Door: 'door'
+         Sell: 'sell'
+         Buy: 'buy'
+         Build: 'build'
+         Admin: 'admin'
+     hotel:
+         Build: 'build'
+         Door: 'door'
+         Admin: 'admin'
+#Permissions for a real Permissions System/OP
+Permissions: 
+     #Creating a Shop/Hotel Sign
+     sign: 'rentit.sign'
+     #Admin Shop Commands
+     shop: 'rentit.shop'
+     #Build everythere
+     build: 'rentit.build'
+     #Teleport, even if feature is disabled
+     teleport: 'rentit.teleport'
+     #Admin Hotelroom Commands
+     hotel: 'rentit.hotel'
+     #Category Buyable, allows player to buy Shops or Hotels of this category
+     #Adds type and category ID. So the final permission would be: rentit.category.shop.1 or rentit.category.hotel.12
+     category: 'rentit.category'
+#If you got no SubID or using a newer Minecraft Version, then just leave the subID 0 or remove it.
+#Since the newer Versions doors need to be the door_item.
+GUI:
+     anvil:
+         acceptItem:
+             type: NAME_TAG
+             subId: 0
+             lore:
+                - '&fAccept your'
+                - '&fInput'
+     shopUserEdit:
+         displayName: '&a&lShop Editing'
+     #Name makes no sense, both use the same
+     shopUser:
+         displayNameShopRentSettings: '&f&lShop Rent'
+         displayNameHotelRentSettings: '&f&lHotel Rent'
+         #Space and the Player Name will be added as well. So: Buy/Sell-Shop IngameName
+         displayNameSell: '&a&lSell-Shop&f'
+         displayNameBuy: '&a&lBuy-Shop&f' 
+         loreSellItemPrice: '&6Price&7: &f%price%'
+         items:
+             #If the Automatic Payment is active, players will pay until they got no more money or stop the automaticly payment
+             schedulerActiveItem: 
+                 displayName: '&aACTIVE'
+                 type: GREEN_WOOL
+                 lore:
+                    - '&fYour Rent will be'
+                    - '&fautomactily payed.'
+                 slot: 3
+             #If the Automatic Payment is not active, the players need to click the payment button
+             schedulerDeactiveItem: 
+                 displayName: '&cDEACTIVE'
+                 type: RED_WOOL
+                 lore:
+                    - '&fYou have to pay your'
+                    - '&fRent manually.'
+                 slot: 3
+             #Shows all Rent Informations about the Hotel Region
+             hotelInfoItem: 
+                 displayName: '&6INFO'
+                 type: PAPER
+                 lore:
+                    - '&fRent End Date: %rentEnd%'
+                    - '&fPay auto.: %auto%'
+                    - '&fRent Duration: %time%'
+                    - '&fRent Price: %price%'
+                 slot: 5
+             #Shows all Rent Informations about the Shop Region
+             shopInfoItem: 
+                 displayName: '&6INFO'
+                 type: PAPER
+                 lore:
+                    - '&fRent End Date: %rentEnd%'
+                    - '&fPay auto.: %auto%'
+                    - '&fRent Duration: %time%'
+                    - '&fRent Price: %price%'
+                 slot: 5
+             buyRentTimeItem:
+                 displayName: '&6Extend Rent'
+                 type: MINECART
+                 lore:
+                    - '&fExtend the Rent'
+                    - '&ftime.'
+                 slot: 7
+             backItem:
+                 displayName: '&cBack'
+                 type: BARRIER
+                 lore:
+                    - '&fback to the'
+                    - '&flist.'
+                 slot: 9
+     #GUI that players see, if they try to Rent a Shop
+     shopConfirmation: 
+         displayName: '&a&lShop Confirmation'
+         items:
+             confirmItem:
+                 displayName: '&aACCEPT'
+                 type: GREEN_WOOL
+                 lore:
+                    - '&fAccept the'
+                    - '&fRent Contract'
+                 slot: 3
+             infoItem:
+                 displayName: '&6INFO'
+                 type: PAPER
+                 lore:
+                    - '&fShopID: %shopId%'
+                    - '&fRent Duration: %time%'
+                    - '&fRent Price: %price%'
+                    - '&fShopsize: %size%'
+                 slot: 5
+             cancelItem:
+                 displayName: '&cCANCEL'
+                 type: RED_WOOL
+                 lore:
+                    - '&fCancel the'
+                    - '&fRent Contract'
+                 slot: 7
+     #GUI that players see, after clicking on the Shop NPC
+     shopBuyOrSell: 
+         displayName: '&a&lShop Selection' 
+         items:
+             sellItem:
+                 displayName: '&6Buy'
+                 type: GOLD_INGOT
+                 lore:
+                    - '&fBuy Items from'
+                    - '&fthe Shop.'
+                 slot: 3
+             cancelItem:
+                 displayName: '&cCANCEL'
+                 type: BARRIER
+                 lore: {}
+                 slot: 5
+             buyItem:
+                 displayName: '&cSell'
+                 type: CHEST
+                 lore:
+                    - '&fSell Items to'
+                    - '&fthe Shop.'
+                 slot: 7
+     #GUI that admins can see, if they shift Rightclick on a Rented Shop
+     shopAdmin:
+         displayName: '&4&lShop Settings'
+         items:
+             changeTimeItem:
+                 displayName: '&6Change Renttime'
+                 type: CLOCK
+                 lore:
+                    - '&fChange the Renttime'
+                 slot: 3
+             changePriceItem:
+                 displayName: '&6Change Rentprice'
+                 type: GOLD_NUGGET
+                 lore:
+                    - '&fChange the Rentprice'
+                 slot: 5
+             changeSizeItem:
+                 displayName: '&6Change Size'
+                 type: CHEST
+                 lore:
+                    - '&fChange Shop Slot Size'
+                 slot: 7
+     #GUI that admins can see, if they shift Rightclick on a Rented Hotelroom
+     hotelAdmin: 
+         displayName: '&4&lHotelroom Settings'
+         items:
+             changeTimeItem:
+                 displayName: '&6Change Renttime'
+                 type: CLOCK
+                 lore:
+                    - '&fChange the Renttime'
+                 slot: 4
+             changePriceItem:
+                 displayName: '&6Change Rentprice'
+                 type: GOLD_NUGGET
+                 lore:
+                    - '&fChange the Rentprice'
+                 slot: 6
+     #GUI that players see, if they try to Rent a Hotelroom
+     hotelConfirmation:
+         displayName: '&a&lHotelrooms Confirmation'
+         items:
+             confirmItem:
+                 displayName: '&aACCEPT'
+                 type: GREEN_WOOL
+                 lore:
+                    - '&fAccept the Rent Contract'
+                 slot: 3
+             infoItem:
+                 displayName: '&6INFO'
+                 type: PAPER
+                 lore:
+                    - '&fHotelID: %hotelId%'
+                    - '&fRent Duration: %time%'
+                    - '&fRent Price: %price%'
+                 slot: 5
+             cancelItem:
+                 displayName: '&cCANCEL'
+                 type: RED_WOOL
+                 lore:
+                    - '&fCancel the Rent Contract'
+                 slot: 7
+     #GUI of all the Shops/Hotels that a Player is owning
+     owningList:
+         displayNameShopList: '&6&lShops'
+         displayNameHotelList: '&6&lHotelrooms'
+         items:
+             shopListItem:
+                 displayName: '&6&lShop &f%shopId%'
+                 type: CHEST
+                 lore:
+                    - '&fLeftclick for Teleport'
+                    - '&fRightclick for Rent Settings'
+             hotelListItem:
+                 displayName: '&6&lHotelroom &f%hotelId%'
+                 type: DARK_OAK_DOOR
+                 lore:
+                    - '&fLeftclick for Teleport'
+                    - '&fRightclick for Rent Settings'
+             backItem:
+                 displayName: '&cBack'
+                 type: BARRIER
+                 subId: 0
+                 lore: {}
+             nextSiteItem:
+                 displayName: '&5Next Page'
+                 type: PAPER
+                 lore: {}
+             beforeSiteItem:
+                 displayName: '&5Previous Page'
+                 type: PAPER
+                 lore: {}
+     #List of the Shop Categories, needs to be added here manually to get shown
+     categoryShop:
+         displayName: '&f&lShop Categories'
+         invSize: 9
+         items:
+             category1:
+                 slot: 3
+                 categoryID: 1
+                 displayName: '&f&lSmall Shop'
+                 type: CHEST
+                 lore: {}
+             category2:
+                 slot: 7
+                 categoryID: 2
+                 displayName: '&f&lBig Shop'
+                 type: CHEST
+                 lore: {}
+     #List of the Hotel Categories, needs to be added here manually to get shown
+     categoryHotel:
+         displayName: '&f&lHotelroom Categories'
+         invSize: 9
+         items:
+             category1:
+                 slot: 3
+                 categoryID: 1
+                 displayName: '&f&lSmall Hotelrooms'
+                 type: CHEST
+                 lore: {}
+             category2:
+                 slot: 7
+                 categoryID: 2
+                 displayName: '&f&lBig Hotelrooms'
+                 type: CHEST
+                 lore: {}
+     #All the Shops/Hotelrooms
+     categorySub:
+         displayNameShop: '&f&lFree Shops'
+         displayNameHotel: '&f&lFree Hotelrooms'
+         items:
+             hotelListItem:
+                 displayName: '&f&lHotelrooms'
+                 type: DARK_OAK_DOOR
+                 lore: 
+                    - '&fLeftclick for Teleport'
+                    - '&fRightclick for Rent Settings'
+             shopListItem:
+                 displayName: '&f&lShop'
+                 type: CHEST
+                 lore: 
+                    - '&fLeftclick for Teleport'
+                    - '&fRightclick for Rent Settings'
+             nextSiteItem:
+                 displayName: '&5Next Page'
+                 type: PAPER
+                 lore: {}
+             beforeSiteItem:
+                 displayName: '&5Previous Page'
+                 type: PAPER
+                 lore: {}
+             backItem:
+                 displayName: '&cBack'
+                 type: BARRIER
+                 lore: {}
+Messages:
+     prefix: '&7[&6&lRent&fIt&7]'
+     perm: '&cYou dont have enough Permissions!'
+     console: 'Sorry, only works Ingame.'
+     playerDoesntExists: '&4ERROR. &cThis Player doesnt exists.'
+     notANumber: '&4ERROR. &cThe Input is not a number.'
+     notABoolean: '&4ERROR. &cPlease use as a value &fTrue/False&c.'
+     notAMaterial: '&4ERROR. &cThis Material doesnt exists.'
+     notADoor: '&4ERROR. &cThe looked at Block is not a Door.'
+     notATime: '&4ERROR. &cPlease use a correct Time format.'
+     notAPermission: '&4ERROR. &cThe Permissions doesnt exists.'
+     notEnoughtSpace: '&cThe Shop cant buy anymore Items right now.'
+     notEnoughtMoney: '&cYou dont have enough Money. You need: &f%amount%€'
+     notEnoughtMoneyOwner: '&cThe Owner doesnt have enough Money.'
+     wrongDoorArgument: '&cPlease use <open/close>.'
+     wrongDoorAdminArgument: '&cPlease use <add/remove>.'
+     notEnoughOwningItems: '&cYou dont have enough of this Material! You need %amount%.'
+     categoryError: '&4ERROR. &cCouldnt find Categorie.'
+     permissionListHeader: '&4Permissions:'
+     permissionListBody: '&7- &f%permission%'
+     permissionSet: '&6You set the Permission &f%permission% &6for &f%player% &6to &f%status%&6.'
+     userPermission: '&6%player%&7: &f%permissions%'
+     noUserPermissionsSet: '&6You didnt give anyone Permissions for your &f&l%type%&6.'
+     doorsAlreadyLocked: '&6The Doors are already locked.'
+     doorsAlreadyUnlocked: '&6The Doors are already unlocked.'
+     pleaseReconnect: '&cSomething went wrong. Please reconnect.'
+     informAdmin: '&cSomething went wrong. Please inform an Admin.'
+     featureDisabled: '&cSorry, you are not allowed to do that.'
+     noPermsForCategory: '&cSorry, you are not allowed to rent this.'
+     autoPaymentDisabled: '&cSorry, you cant change auto Payment.'
+     doorCommandDisabled: '&cSorry, but this command doesnt work here.'
+     maxExtendedReached: '&cSorry, you cant extend the rent any farther.'
+     #Shop Messages
+     shopDatabaseEntryMissing: '&cCouldnt find Shop in the Database. Maybe DB Reset but not the Plugin folder?'
+     shopAreaError: '&4ERROR. &cNo WorldEdit Selection.'
+     shopAreaCreated: '&aA Shop with the ID &f%shopId% &awas created.'
+     shopCitizenCreated: '&aYou set the NPC for the ShopID &f%shopId%&a.'
+     shopOwnerChanged: '&aShopowner was changed to &f%player% &afrom the Shop &f%shopId%&a.'
+     shopRentTimeChanged: '&aRent Time was changed to &f%time% &afor Category &f%catId%&a.'
+     shopPriceChanged: '&aRent Price was changed to &f%price% &afor Category &f%catId%&a.'
+     shopSizeNotValid: '&4ERROR. &cThe Shop Size hast to be multiplide in 9. (MAX: 54)'
+     shopSizeChanged: '&aShop Size was changed to &f%size% &afor Category &f%catId%&a.'
+     shopReseted: '&aThe ShopID &f%shopId% &awas reseted.'
+     shopDeleted: '&aThe ShopID &f%shopId% &awas deleted.'
+     shopItemBought: '&6You bought &f%amount%x %type% &6for &f%price%$&6.'
+     shopItemSelled: '&6You selled &f%amount%x %type% &6for &f%price%$&6.'
+     shopSignCreated: '&aThe Sign for the ShopID &f%shopId% &awas created.'
+     shopSignDeleted: '&aThe Sign for the ShopID &f%shopId% &awas deleted.'
+     shopCategoryUpdated: '&aYou updated the categorie &f%catId%&a.'
+     shopBought: '&6You bought the Shop with the ID: &f%shopId%&6.'
+     shopNoItemInMainHand: '&cYou got no Item in your Hand.'
+     shopItemAdded: '&6You added &f%amount%x %type% &6for &f%price% &6to your Shop.'
+     shopItemRemoved: '&6You removed &f%amount%x %type% &6from Shop.'
+     shopAlreadyBought: '&cThe Shop is already owned.'
+     shopNotBought: '&cThe Shop wasnt bought yet.'
+     notInShop: '&cYou are in no Shop.'
+     notShopOwner: '&cYou got no Permissions for this Shop.'
+     shopInvFull: '&cThe Shop is full.'
+     shopContainsItem: '&cThe Shop already owns this Item.'
+     shopExtendRent: '&6You extended the Rent for the &fShop&6.'
+     shopMessageNoInfoON: '&6You set the Transactions Informations to &aactive&6.'
+     shopMessageNoInfoOFF: '&6You set the Transactions Informations to &cdeactive&6.'
+     shopSellMessage: '&6The Player &f%player% &6has bought the Item &f%type% &6in your Shop.'
+     shopBuyMessage: '&6The Player &f%player% &6has selled the Item &f%type% &6to your Shop.'
+     shopDoorAdded: '&6The Door was added to the Shop: %shopId%.'
+     shopDoorRemoved: '&6The Door was removed from a Shop.'
+     shopDoorNotFound: '&6The Door is not linked with a Shop.'
+     shopDoorClosed: '&6The Doors from this Shop were closed.'
+     shopDoorOpened: '&6The Doors from this Shop were opened.'
+     shopDoorStillClosed: '&6The Shop is closed.'
+     shopDoorAlreadyAdded: '&6The door was already added to some Shop.'
+     shopLimitReached: '&cYou cant have more Shops.'
+     shopBackupUpdated: '&6You updated the Shop Area Backup.'
+     shopUserHelp:
+        - '&6&m                  &6[ &f&lSHOP &6]&6&m                  '
+        - '&f/shops &7- &6Shows all your owned Shops.'
+        - '&f/freeshops &7- &6Shows all free Shops.'
+        - '&f/shop help &7- &6Opens the Help Book.'
+        - '&f/shop sellitem <Price> &7- &6Sell the Item in your Hand in the Shop.'
+        - '&f/shop buyitem <Price> &7- &6Add the Item in your Hand to the Buy Shop.'
+        - '&f/shop buyitem <Type> <Price> &7- &6Add the named Item to the Buy Shop.'
+        - '&f/shop buyitem <Type> <Item Amount> <Price> &7- &6Add the named Item with the given amount to the Buy Shop.'
+        - '&f/shop setpermission <Player> <Permission> <Value> &7- &6Set Permissions for Players (Shop admins only).'
+        - '&f/shop permissions &7- &6All Shop Permissions.'
+        - '&f/shop users &7- &6List all Players with Shop Permissions.'
+        - '&f/shop door <open/close> &7- &6Lock your Shop.'
+        - '&f/shop noInfo &7- &6Get no Informations of Transactions.'
+     shopAdminHelp:
+        - '&6&m                  &6[ &f&lSHOP &6]&6&m                  '
+        - '&f/shops &7- &6Shows all your owned Shops.'
+        - '&f/freeshops &7- &6Shows all free Shops.'
+        - '&f/shop help &7- &6Opens the Help Book.'
+        - '&f/shop createCat <CategorieID> <Price> <Size> <Time> &7- &6Create a Categorie.'
+        - '&f/shop setarea <CategorieID> &7- &6Set the selected Region to the Shop Categorie.'
+        - '&f/shop setnpc &7- &6Set or Change the Position of the Shop NPC.'
+        - '&f/shop setprice <Price> &7- &6Change the Rent Price. (Changes the Categorie Settings)'
+        - '&f/shop setsize <Size> &7- &6Change the Shop Size. (Changes the Categorie Settings)'
+        - '&f/shop settime <Time> &7- &6Change the Rent Time. (Changes the Categorie Settings)'
+        - '&f/shop reset &7- &6Reset the Shop, so it can get a new Owner.'
+        - '&f/shop delete &7- &6Delete the Shop completly.'
+        - '&f/shop buy <shopId> &7- &6Rent a specific Shop.'
+        - '&f/shop sellitem <Price> &7- &6Sell the Item in your Hand in the Shop.'
+        - '&f/shop buyitem <Price> &7- &6Add the Item in your Hand to the Buy Shop.'
+        - '&f/shop buyitem <Type> <Price> &7- &6Add the named Item to the Buy Shop.'
+        - '&f/shop buyitem <Type> <Item Amount> <Price> &7- &6Add the named Item with the given amount to the Buy Shop.'
+        - '&f/shop setpermission <Player> <Permission> <Value> &7- &6Set Permissions for Players (Shop admins only).'
+        - '&f/shop permissions &7- &6All Shop Permissions.'
+        - '&f/shop users &7- &6List all Players with Shop Permissions.'
+        - '&f/shop noInfo &7- &6Get no Informations of Transactions.'
+        - '&f/shop door <open/close> &7- &6Lock your Shop.'
+        - '&f/shop door <add/remove> <ShopId> &7- &6Look at doors to at them to the Shop.'
+        - '&f/shop updateBackup &7- &6Updates the Backup.'
+        - '&f/shop info &7- &6Get the Shop Informations.'
+     shopHelpBook:
+        - '&c&lShop Help \n \n \n \n&6Plugin by TrueMB'
+        - '\n \n \n&c&lCommands'
+        - '&5&l/shops \n \n&6Shows you all the Shops that you are currently renting.'
+        - '&5&l/freeshops \n \n&6Shows you all the Shops that are currently avaible to rent.'
+        - '&5&l/shop sellitem <Price> \n \n&6Makes the Item in your hand buyable in the shop you are standing in.'
+        - '&5&l/shop buyitem <Price> \n \n&6Allows other Players to sell the Item in your Hand to your Shop.'
+        - '&5&l/shop buyitem <Type> <Price> \n \n&6Allows other Players to sell the Item Type to your Shop.'
+        - '&5&l/shop buyitem <Type> <Amount> <Price> \n \n&6Allows other Players to sell the Item Type with the given Amount to your Shop.'
+        - '&5&l/shop setpermission <Player> <Permission> <Value> \n \n&6Set Permissions for Players (Shop admins only). Look next Page for the Permissions'
+        - '&5&l/shop permissions \n \n&6Lists all the Shop Permissions'
+        - '&5&l/shop users \n \n &6Lists all Players with custom Permissions in the Shop.'
+        - '&5&l/shop door <open/close> \n \n &6Close your Shop, so that no Customers can enter.'
+        - '&5&l/shop noInfo \n \n &6Get no more Informations of Transactions in your Shop. (needs to be turned off for each owning shop)'
+        - '\n \n \n&c&lNeed To Know'
+        - '&6You can remove with Rightclick as a Shop Owner or Player with Permissions Items from the Shop after you clicked the Shop NPC with the GUI.'
+        - '&6You can create a chest in your Shop Area, so that players are able to sell Items to your Shop or to extend your Item amount of a type that you are already selling.'
+        - '&6Players can sell Items, until the Chest is full. So if you want only one item of a kind, put 63 of the same in the chest and fill the rest with another Material.'
+        - '&6Dont forget about your rent time and enough money. Normally it will pay the rent automaticly, so be sure always have enough money. Even if you are not on the Server!'
+     shopInfo:
+        - '&6&m                  &6[ &f&lSHOP Info &6]&6&m                  '
+        - '&fShop ID&7: &6%shopId%'
+        - '&fCategory&7: &6%catId%'
+        - ''
+        - '&fOwner&7: &6%owner%'
+        - ''
+        - '&fPrice&7: &6%price%'
+        - '&fInventory Size&7: &6%size%'
+        - '&fRent time&7: &6%time%'
+        - '&fDoors closed&7: &6%doorStatus%'
+     #Hotelroom Messages
+     hotelDatabaseEntryMissing: '&cCouldnt find Hotelroom in the Database.'
+     hotelAreaError: '&4ERROR. &cNo WorldEdit Selection.'
+     hotelAreaCreated: '&aThe Hotelroom with the ID &f%hotelId% &awas created.'
+     hotelOwnerChanged: '&aHotelroom owner was changed to &f%player% &afrom the Hotelroom &f%hotelId%&a.'
+     hotelRentTimeChanged: '&aRent Time was changed to &f%time% &afor Category &f%catId%&a.'
+     hotelPriceChanged: '&aRent Price was changed to &f%price% &afor Category &f%catId%&a.'
+     hotelReseted: '&aThe HotelroomID &f%hotelId% &awas resetet.'
+     hotelDeleted: '&aThe HotelroomID &f%hotelId% &awas deleted.'
+     hotelSignCreated: '&aThe Hotelroom Sign for the ID &f%hotelId% &awas created.'
+     hotelSignDeleted: '&aThe Hotelroom Sign for the ID &f%hotelId% &awas deleted.'
+     hotelBought: '&6You are now renting the Hotelroom: &f%hotelId%&6.'
+     hotelAlreadyBought: '&cThe Hotelroom is already owned.'
+     hotelExtendRent: '&6You extended the Hotelroom Rent.'
+     notInHotel: '&cYou are in no Hotelroom.'
+     notHotelOwner: '&cYou got no Permission in this Hotelroom.'
+     hotelDoorAdded: '&6The Door was added to the Hotelroom: %hotelId%.'
+     hotelDoorRemoved: '&6The Door was removed from a Hotelroom.'
+     hotelDoorNotFound: '&6The Door is not linked with a Hotelroom.'
+     hotelDoorClosed: '&6The Doors from this Hotelroom were closed.'
+     hotelDoorOpened: '&6The Doors from this Hotelroom were opened.'
+     hotelDoorStillClosed: '&6The Hotelroom is closed.'
+     hotelDoorAlreadyAdded: '&6The door was already added to some Hotelroom.'
+     hotelLimitReached: '&cYou cant have more Hotelrooms.'
+     hotelBackupUpdated: '&6You updated the Hotel Area Backup.'
+     hotelUserHelp:
+        - '&6&m                  &6[ &f&lHOTELROOM &6]&6&m                  '
+        - '&f/hotels &7- &6Shows all your owned Hotelrooms.'
+        - '&f/freehotels &7- &6Shows all free Hotelrooms.'
+        - '&f/hotel help &7- &6Opens the Help Book.'
+        - '&f/hotel setpermission <Player> <Permission> <Value> &7- &6Set Permissions for Players (Shop admins only).'
+        - '&f/hotel permissions &7- &6All Hotelroom Permissions.'
+        - '&f/hotel users &7- &6List all Players with Hotelroom Permissions.'
+        - '&f/hotel door <open/close> &7- &6Lock your Shop.'
+     hotelAdminHelp:
+        - '&6&m                  &6[ &f&lHOTELROOM &6]&6&m                  '
+        - '&f/hotels &7- &6Shows all your owned Hotelrooms.'
+        - '&f/freehotels &7- &6Shows all free Hotelrooms.'
+        - '&f/hotel help &7- &6Opens the Help Book.'
+        - '&f/hotel createCat <CategorieID> <Price> <Time> &7- &6Create a Categorie.'
+        - '&f/hotel setarea <CategorieID> &7- &6Set the selected Region to the Hotelroom Categorie.'
+        - '&f/hotel setpermission <Player> <Permission> <Value> &7- &6Set Permissions for Players (Hotelroom admins only).'
+        - '&f/hotel permissions &7- &6All Hotelroom Permissions.'
+        - '&f/hotel users &7- &6List all Players with Hotelroom Permissions.'
+        - '&f/hotel setprice <Price> &7- &6Change the Rent Price. (Changes the Categorie Settings)'
+        - '&f/hotel settime <Time> &7- &6Change the Rent Time. (Changes the Categorie Settings)'
+        - '&f/hotel reset &7- &6Reset the Hotelroom, so it can get a new Owner.'
+        - '&f/hotel delete &7- &6Delete the Hotelroom completly.'
+        - '&f/hotel buy <shopId> &7- &6Rent a specific Hotelroom.'
+        - '&f/hotel door <open/close> &7- &6Lock your Shop.'
+        - '&f/hotel door <add/remove> <ShopId> &7- &6Look at doors to at them to the Shop.'
+        - '&f/hotel updateBackup &7- &6Updates the Backup.'
+        - '&f/hotel info &7- &6Get the Shop Informations.'
+     hotelHelpBook:
+        - '&c&lShop Help \n \n \n \n&6Plugin by TrueMB'
+        - '\n \n \n&6&lCommands'
+        - '&5&l/hotels \n \n&6Shows you all the Hotelrooms that you are currently renting.'
+        - '&5&l/freehotels \n \n&6Shows you all the Hotelrooms that are currently avaible to rent.'
+        - '&5&l/hotel setpermission <Player> <Permission> <Value> \n \n&6Set Permissions for Players (Hotelroom admins only). Look next Page for the Permissions'
+        - '&5&l/hotel permissions \n \n&6Lists all the Hotelrooms Permissions'
+        - '&5&l/hotel users \n \n &6Lists all Players with custom Permissions in the Hotelrooms.'
+        - '&5&l/hotel door <open/close> \n \n &6Close your Hotelroom, so that you dont get disturbed.'
+     hotelInfo:
+        - '&6&m                  &6[ &f&lHOTEL Info &6]&6&m                  '
+        - '&fHotel ID&7: &6%hotelId%'
+        - '&fCategory&7: &6%catId%'
+        - ''
+        - '&fOwner&7: &6%owner%'
+        - ''
+        - '&fPrice&7: &6%price%'
+        - '&fRent time&7: &6%time%'
+        - '&fDoors closed&7: &6%doorStatus%'
+
+ #Do NOT touch
+ConfigVersion: 7
