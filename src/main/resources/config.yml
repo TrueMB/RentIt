@@ -135,6 +135,8 @@ UserPermissions:
          Admin: 'admin'
 #Permissions for a real Permissions System/OP
 Permissions: 
+     #For important commands
+     admin: 'rentit.admin'
      #Creating a Shop/Hotel Sign
      sign: 'rentit.sign'
      #Admin Shop Commands
@@ -428,6 +430,8 @@ Messages:
      prefix: '&7[&6&lRent&fIt&7]'
      perm: '&cYou dont have enough Permissions!'
      console: 'Sorry, only works Ingame.'
+     reloaded: '&a&lRentIt was reloaded. But better use a Server Restart next time.'
+     rentitHelp: '&cPlease use &f/rentit reload&c.'
      playerDoesntExists: '&4ERROR. &cThis Player doesnt exists.'
      notANumber: '&4ERROR. &cThe Input is not a number.'
      notABoolean: '&4ERROR. &cPlease use as a value &fTrue/False&c.'
@@ -436,7 +440,7 @@ Messages:
      notATime: '&4ERROR. &cPlease use a correct Time format.'
      notAPermission: '&4ERROR. &cThe Permissions doesnt exists.'
      notEnoughtSpace: '&cThe Shop cant buy anymore Items right now.'
-     notEnoughtMoney: '&cYou dont have enough Money. You need: &f%amount%€'
+     notEnoughtMoney: '&cYou dont have enough Money. You need: &f%amount%$'
      notEnoughtMoneyOwner: '&cThe Owner doesnt have enough Money.'
      wrongDoorArgument: '&cPlease use <open/close>.'
      wrongDoorAdminArgument: '&cPlease use <add/remove>.'
@@ -641,4 +645,4 @@ Messages:
         - '&fDoors closed&7: &6%doorStatus%'
 
  #Do NOT touch
-ConfigVersion: 7
+ConfigVersion: 8

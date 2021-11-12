@@ -26,6 +26,7 @@ import me.truemb.rentit.commands.FreeHotelsCOMMAND;
 import me.truemb.rentit.commands.FreeShopsCOMMAND;
 import me.truemb.rentit.commands.HotelCOMMAND;
 import me.truemb.rentit.commands.HotelsCOMMAND;
+import me.truemb.rentit.commands.RentItCOMMAND;
 import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.database.CategoriesSQL;
 import me.truemb.rentit.database.HotelsSQL;
@@ -48,7 +49,6 @@ import me.truemb.rentit.listener.CategoryGUIListener;
 import me.truemb.rentit.listener.HotelAreaListener;
 import me.truemb.rentit.listener.ItemBoughtListener;
 import me.truemb.rentit.listener.ItemSelledListener;
-import me.truemb.rentit.listener.MobSpawningListener;
 import me.truemb.rentit.listener.ShopListener;
 import me.truemb.rentit.listener.NPCShopListener;
 import me.truemb.rentit.listener.OwningListListener;
@@ -113,28 +113,22 @@ public class Main extends JavaPlugin {
 	public HashMap<RentTypes, HashMap<Integer, CategoryHandler>> catHandlers = new HashMap<>(); // RentType = hotel/shop - int = catID -  CategoryHandler
 	public HashMap<RentTypes, HashMap<Integer, RentTypeHandler>> rentTypeHandlers = new HashMap<>(); // RentType = hotel/shop - int = shop/hotel ID - RentTypeHandler
 
-	private static final int configVersion = 7;
+	private static final int configVersion = 8;
     private static final int SPIGOT_RESOURCE_ID = 90195;
     private static final int BSTATS_PLUGIN_ID = 12060;
     
-	int runnId;
+	private int runnId;
 	
-	//OLD?!
-	//Anvil GUI Update auf 1.17
-	//World not Found geadded bei sql setup
-	
-	//NEW
-	//Buy/sell - Inventory Load Bug
-	//IGNORE WORLDGUARD FOR SHOP NPCS
-	//COLOR CODES TRANSLATE FOR PREFIX, IF VILLAGER IS USED
-	
+	public boolean isSystemRunningOkay = true;
 	
 	@Override
 	public void onEnable() {
 		this.manageFile();
 		this.startMySql();
+
+		new RentItCOMMAND(this); //SHOULD ALWAYS RUN, EVENT WITHOUT DATABASE
 		
-		if(!Bukkit.getPluginManager().isPluginEnabled(this))
+		if(!this.isSystemRunningOkay)
 			return; //DATABASE MISSING
 		
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
@@ -181,7 +175,6 @@ public class Main extends JavaPlugin {
 		new PlayerQuitListener(this);
 		new ItemBoughtListener(this);
 		new ItemSelledListener(this);
-		new MobSpawningListener(this);
 		new ShopAreaListener(this);
 		new HotelAreaListener(this);
 		new CategoryGUIListener(this);
@@ -206,12 +199,6 @@ public class Main extends JavaPlugin {
 		this.runnId = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new PaymentRunnable(this), 20 * 10, 20 * 60).getTaskId(); //EVERY MINUTE
 		
 	}
-
-	private void initHandlers() {
-		this.getShopsSQL().setupShops();
-		this.getHotelsSQL().setupHotels();
-		this.getCategorySQL().setupCategories();
-	}
 	
 	@Override
 	public void onDisable() {
@@ -228,6 +215,104 @@ public class Main extends JavaPlugin {
 		
 		else if(this.getAsyncSQL() != null && this.getAsyncSQL().getSqlLite() != null && this.getAsyncSQL().getSqlLite().getConnection() != null)
 				this.getAsyncSQL().getSqlLite().closeConnection();
+	}
+	
+	public void initRestart() {
+
+		//------ CLOSE EVERTHING ------
+		
+		//DISABLING VILLAGERS
+		if(this.getVillagerUtils() != null)
+			this.getVillagerUtils().disableVillagers();
+		
+		//OR NPCS
+		else
+			this.getNpcUtils().disableNPCs();
+
+		//DISABLING PAYMENT RUNNABLE
+		Bukkit.getScheduler().cancelTask(this.runnId);
+		this.runnId = -1;
+		
+		//CLOSE MYSQL CONNECTION
+		if(this.getAsyncSQL() != null && this.getAsyncSQL().getMySQL() != null && this.getAsyncSQL().getMySQL().getConnection() != null)
+			this.getAsyncSQL().getMySQL().closeConnection();
+		
+		//OR SQL LITE CONNECTION
+		else if(this.getAsyncSQL() != null && this.getAsyncSQL().getSqlLite() != null && this.getAsyncSQL().getSqlLite().getConnection() != null)
+				this.getAsyncSQL().getSqlLite().closeConnection();
+		
+		//RESET CONFIG CACHE
+		this.config = null;
+		
+		//RESET HASHES
+		this.playerHandlers = new HashMap<>();
+		this.catHandlers = new HashMap<>();
+		this.rentTypeHandlers = new HashMap<>();
+		
+		
+		//------ START EVERTHING AGAIN ------
+		
+		//CACHE CONFIG
+		this.manageFile();
+		
+		//START MYSQL
+		this.startMySql();
+
+		if(!this.isSystemRunningOkay)
+			return; //DATABASE MISSING
+		
+		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
+			
+			@Override
+			public void run() {
+				initHandlers();
+			}
+		}, 20);
+		
+		//SETUP SHOP NPCS
+		if(this.manageFile().getBoolean("Options.useNPCs"))
+			this.setupCitizens();
+		
+		//OR VILLAGER
+		else {
+			this.vilUtils = new VillagerUtils(this);
+			new VillagerShopListener(this);
+		}
+		
+		//START MANAGERS
+		this.shopMeth = new UtilMethodes(this);
+		this.backupMGR = new BackupManager(this);
+		this.shopItemMGR = new ShopItemManager();
+		this.npcFM = new NPCFileManager(this);
+		this.signFM = new SignFileManager(this);
+		this.shopCacheFM = new ShopCacheFileManager(this);
+		this.areaFM = new AreaFileManager(this);
+		this.doorFM = new DoorFileManager(this);
+		
+		//LOAD ONLINE PLAYERS
+		Bukkit.getOnlinePlayers().forEach(p -> {
+
+			PlayerHandler playerHandler = new PlayerHandler(p);
+			playerHandler.init(this);
+			
+		});
+		
+		//START PAYMENT 5 SECONDS LATER, SO THAT EVERYTHING GETS LOADED FIRST
+		Main plugin = this;
+		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
+			
+			@Override
+			public void run() {
+				//PAYMENT SCHEDULER
+				plugin.runnId = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new PaymentRunnable(plugin), 20 * 10, 20 * 60).getTaskId(); //EVERY MINUTE
+			}
+		}, 5 * 20);
+	}
+
+	private void initHandlers() {
+		this.getShopsSQL().setupShops();
+		this.getHotelsSQL().setupHotels();
+		this.getCategorySQL().setupCategories();
 	}
 	
 	//CONFIG
@@ -403,7 +488,7 @@ public class Main extends JavaPlugin {
 			this.getLogger().info("{SQL}  successfully connected to Database.");
 		} catch (Exception e) {
 			this.getLogger().warning("{SQL}  Failed to start MySql (" + e.getMessage() + ")");
-			Bukkit.getPluginManager().disablePlugin(this); //DISABLE PLUGIN, SINCE IT NEEDS THE DATABASE
+			this.isSystemRunningOkay = false; //STOP PLUGIN HERE
 		}
 	}
 
