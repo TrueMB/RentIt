@@ -122,7 +122,7 @@ public class HotelsSQL {
 						
 						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						Date nextPaymentDay = formatter.parse(rs.getString("nextPayment"));
-						Timestamp nextPayment = new Timestamp(nextPaymentDay.toInstant().getEpochSecond()); //rs.getTimestamp("nextPayment");
+						Timestamp nextPayment = new Timestamp(nextPaymentDay.getTime());
 								
 						boolean autoPayment = rs.getInt("autoPayment") == 1 ? true : false;
 						
@@ -153,9 +153,7 @@ public class HotelsSQL {
 					}
 					instance.getLogger().info(String.valueOf(hotelAmount) + " Hotelrooms are loaded.");
 					return;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				} catch (ParseException e) {
+				} catch (SQLException | ParseException e) {
 					e.printStackTrace();
 				}
 			}

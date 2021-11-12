@@ -134,7 +134,7 @@ public class RentTimeClickListener implements Listener{
 					}
 		    		
 		    		
-		    		//VERLÄNGER SHOP
+		    		//VERLï¿½NGER SHOP
 					this.instance.getEconomy().withdrawPlayer(p, costs);
 
 					Timestamp oldTs = rentHandler.getNextPayment();
@@ -246,7 +246,7 @@ public class RentTimeClickListener implements Listener{
 			    		}
 					}
 		    		
-		    		//VERLÄNGER SHOP
+		    		//VERLï¿½NGER SHOP
 					this.instance.getEconomy().withdrawPlayer(p, costs);
 
 					Timestamp oldTs = rentHandler.getNextPayment();

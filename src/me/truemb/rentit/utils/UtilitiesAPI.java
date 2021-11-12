@@ -60,7 +60,7 @@ public class UtilitiesAPI {
 		
 		return ts;
 	}
-	
+
 	public static Timestamp addTimeToTimestamp(Timestamp ts, String feString) {
 		
 		for(String s : feString.split("(?<=[a-zA-Z])")) {

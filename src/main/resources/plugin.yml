@@ -7,6 +7,8 @@ depend: [WorldEdit, Vault]
 softdepend: [WorldGuard, Citizens, PlaceholderAPI]
 
 commands:
+     rentit:
+         description: For all important commands
      shop:
          description: Shop Command
          aliases: [s]

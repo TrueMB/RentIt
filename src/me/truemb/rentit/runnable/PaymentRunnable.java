@@ -120,7 +120,7 @@ public class PaymentRunnable implements Runnable {
 								return;
 							}
 
-							// VERLÄNGER SHOP
+							// VERLï¿½NGER SHOP
 							instance.getEconomy().withdrawPlayer(p, costs);
 							ts = UtilitiesAPI.addTimeToTimestamp(ts, time);
 						}
