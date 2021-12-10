@@ -4,7 +4,7 @@
   <groupId>RentIt</groupId>
   <artifactId>RentIt</artifactId>
   <name>RentIt</name>
-  <version>2.4.12</version>
+  <version>2.5.0</version>
   <description>Player Shop and Hotel Rent System</description>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -59,8 +59,8 @@
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
     <repository>
-      <id>jeff-media-gbr</id>
-      <url>https://repo.jeff-media.de/maven2/</url>
+      <id>jeff-media-public</id>
+      <url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
     </repository>
     <repository>
       <id>codemc-snapshots</id>

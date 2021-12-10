@@ -54,7 +54,7 @@ public class ConfigUpdater {
 
             Object currentValue = currentConfig.get(fullKey);
 
-            if (currentValue == null)
+            if (currentValue == null || fullKey.equals("ConfigVersion"))
                 currentValue = defaultConfig.get(fullKey);
 
             String[] splitFullKey = fullKey.split("[" + SEPARATOR + "]");

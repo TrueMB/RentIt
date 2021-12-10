@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>RentIt</groupId>
 	<artifactId>RentIt</artifactId>
-	<version>2.4.12</version>
+	<version>2.5.0</version>
 	<name>RentIt</name>
 	<description>Player Shop and Hotel Rent System</description>
 
@@ -85,8 +85,8 @@
 		
 		<!-- UPDATE CHECKER -->
 	    <repository>
-	        <id>jeff-media-gbr</id>
-	        <url>https://repo.jeff-media.de/maven2/</url>
+	        <id>jeff-media-public</id>
+	        <url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
 	    </repository>
 
 		<!-- ANVIL GUI -->
@@ -202,7 +202,7 @@
 	    <dependency>
 	        <groupId>de.jeff_media</groupId>
 	        <artifactId>SpigotUpdateChecker</artifactId>
-	        <version>1.2.5</version> <!-- Check on GitHub for the latest version -->
+	        <version>1.3.0</version> <!-- Check on GitHub for the latest version -->
 	        <scope>compile</scope>
 	    </dependency>
 
