@@ -32,6 +32,10 @@ import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.handler.SettingsHandler;
 import me.truemb.rentit.main.Main;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class UtilMethodes {
 
@@ -401,6 +405,47 @@ public class UtilMethodes {
 		this.updateAllSigns(RentTypes.SHOP, catID);
 		p.sendMessage(this.instance.getMessage("shopSizeChanged").replace("%catId%", String.valueOf(catID)));
 
+	}
+	
+	//SEND LIST
+	public void sendList(Player p, RentTypes type, int site) {
+		
+		HashMap<Integer, RentTypeHandler> hash = this.instance.rentTypeHandlers.get(type);
+		String path = type == RentTypes.HOTEL ? "hotelList" : "shopList";
+		
+		if(hash == null) {
+			p.sendMessage(this.instance.getMessage(path + ".couldntFind"));
+			return;
+		}
+		
+		if(site < 1) site = 1;
+		
+		int end = site * 10;
+		int start = end - 10;
+		
+		int size = hash.size();
+		
+		if(end > size) end = size;
+		
+		
+		p.sendMessage(this.instance.getMessage(path + ".header"));
+		
+		for(int i = start; i < end; i++) {
+			RentTypeHandler handler = hash.get(hash.keySet().toArray()[i]);
+			String id = String.valueOf(handler.getShopID());
+			
+			TextComponent component = new TextComponent(this.instance.getMessage(path + ".body")
+					.replaceAll("(?i)%" + "id" + "%", id)
+					.replaceAll("(?i)%" + "owner" + "%", handler.getOwnerName() == null ? ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("Messages." + path + ".notOwned")) : handler.getOwnerName()));
+			
+			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("Messages." + path + ".hover")))));
+			component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + type.toString().toLowerCase() + " info " + id));
+
+			p.spigot().sendMessage(component);
+		}
+		
+
+		p.sendMessage(this.instance.getMessage(path + ".footer"));
 	}
 
 	// CHECK CHESTS FOR ITEM

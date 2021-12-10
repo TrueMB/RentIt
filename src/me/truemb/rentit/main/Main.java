@@ -20,13 +20,13 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import de.jeff_media.updatechecker.UpdateChecker;
 import de.jeff_media.updatechecker.UserAgentBuilder;
-import me.truemb.rentit.commands.ShopCOMMAND;
-import me.truemb.rentit.commands.ShopsCOMMAND;
 import me.truemb.rentit.commands.FreeHotelsCOMMAND;
 import me.truemb.rentit.commands.FreeShopsCOMMAND;
 import me.truemb.rentit.commands.HotelCOMMAND;
 import me.truemb.rentit.commands.HotelsCOMMAND;
 import me.truemb.rentit.commands.RentItCOMMAND;
+import me.truemb.rentit.commands.ShopCOMMAND;
+import me.truemb.rentit.commands.ShopsCOMMAND;
 import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.database.CategoriesSQL;
 import me.truemb.rentit.database.HotelsSQL;
@@ -49,7 +49,6 @@ import me.truemb.rentit.listener.CategoryGUIListener;
 import me.truemb.rentit.listener.HotelAreaListener;
 import me.truemb.rentit.listener.ItemBoughtListener;
 import me.truemb.rentit.listener.ItemSelledListener;
-import me.truemb.rentit.listener.ShopListener;
 import me.truemb.rentit.listener.NPCShopListener;
 import me.truemb.rentit.listener.OwningListListener;
 import me.truemb.rentit.listener.PlayerJoinListener;
@@ -57,6 +56,7 @@ import me.truemb.rentit.listener.PlayerQuitListener;
 import me.truemb.rentit.listener.RentTimeClickListener;
 import me.truemb.rentit.listener.ShopAreaListener;
 import me.truemb.rentit.listener.ShopBuyOrSellListener;
+import me.truemb.rentit.listener.ShopListener;
 import me.truemb.rentit.listener.SignListener;
 import me.truemb.rentit.listener.UserConfirmationListener;
 import me.truemb.rentit.listener.VillagerShopListener;
@@ -387,7 +387,7 @@ public class Main extends JavaPlugin {
 	    }
 	    RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 	    if (rsp == null || rsp.getProvider() == null) {
-	    	this.getLogger().warning("an Economy Plugin is missing!");
+	    	this.getLogger().warning("An Economy Plugin is missing!");
 	    	return false;
 	    }
 	    this.getLogger().info(rsp.getPlugin().getName() + " Chat System was found.");

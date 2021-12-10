@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -75,6 +76,7 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 		adminSubCommands.add("setTime");
 		adminSubCommands.add("setSize");
 		adminSubCommands.add("setPrice");
+		adminSubCommands.add("list");
 	}
 
 	@Override
@@ -147,6 +149,16 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					p.sendMessage(this.instance.getMessage("shopCitizenCreated").replace("%shopId%", String.valueOf(shopId)));
 					return true;
 				}
+			} else if (args[0].equalsIgnoreCase("list")) {
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "list")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				this.instance.getMethodes().sendList(p, this.type, 1);
+				return true;
+				
 			} else if (args[0].equalsIgnoreCase("reset")) {
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "reset")) {
@@ -494,6 +506,40 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				});
 				return true;
 
+			} else if (args[0].equalsIgnoreCase("info")) {
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "info")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+
+				int shopId = Integer.parseInt(args[1]);
+
+				this.sendShopInfo(p, shopId);
+				return true;
+				
+			} else if (args[0].equalsIgnoreCase("list")) {
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "list")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+
+				int site = Integer.parseInt(args[1]);
+
+				this.instance.getMethodes().sendList(p, this.type, site);
+				return true;
+				
 			} else if (args[0].equalsIgnoreCase("door")) {
 
 				if (args[1].equalsIgnoreCase("close")) {
@@ -1325,18 +1371,25 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 		double costs = catHandler.getPrice();
 		int size = catHandler.getSize();
 		String time = catHandler.getTime();
-		boolean doorsClosed = instance.getAreaFileManager().isDoorClosed(this.type, shopId);
-
+		boolean doorsClosed = this.instance.getAreaFileManager().isDoorClosed(this.type, shopId);
+		Location loc = this.instance.getAreaFileManager().getAreaSpawn(this.type, shopId);
+		
 		String ownerName = rentHandler.getOwnerName();
 
 		for (String s : this.instance.manageFile().getStringList("Messages.shopInfo")) {
 			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
-					.replace("%shopId%", String.valueOf(shopId))
-					.replace("%catId%", String.valueOf(rentHandler.getCatID()))
-					.replace("%owner%", ownerName == null ? "" : ownerName)
-					.replace("%price%", String.valueOf(costs))
-					.replace("%size%", String.valueOf(size)).replace("%time%", time)
-					.replace("%doorStatus%", String.valueOf(doorsClosed)));
+					.replaceAll("(?i)%" + "shopid" + "%", String.valueOf(shopId))
+					.replaceAll("(?i)%" + "catid" + "%", String.valueOf(rentHandler.getCatID()))
+					.replaceAll("(?i)%" + "owner" + "%", ownerName == null ? "" : ownerName)
+					.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
+					.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+					.replaceAll("(?i)%" + "time" + "%", time)
+					.replaceAll("(?i)%" + "doorstatus" + "%", String.valueOf(doorsClosed))
+					.replaceAll("(?i)%" + "x" + "%", String.valueOf(loc.getBlockX()))
+					.replaceAll("(?i)%" + "y" + "%", String.valueOf(loc.getBlockY()))
+					.replaceAll("(?i)%" + "z" + "%", String.valueOf(loc.getBlockZ()))
+					.replaceAll("(?i)%" + "world" + "%", String.valueOf(loc.getWorld().getName()))
+			);
 		}
 	}
 
