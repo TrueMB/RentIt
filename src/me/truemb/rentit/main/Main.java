@@ -51,6 +51,7 @@ import me.truemb.rentit.listener.ItemBoughtListener;
 import me.truemb.rentit.listener.ItemSelledListener;
 import me.truemb.rentit.listener.NPCShopListener;
 import me.truemb.rentit.listener.OwningListListener;
+import me.truemb.rentit.listener.PlayerCommandSendListener;
 import me.truemb.rentit.listener.PlayerJoinListener;
 import me.truemb.rentit.listener.PlayerQuitListener;
 import me.truemb.rentit.listener.RentTimeClickListener;
@@ -126,7 +127,8 @@ public class Main extends JavaPlugin {
 		this.manageFile();
 		this.startMySql();
 
-		new RentItCOMMAND(this); //SHOULD ALWAYS RUN, EVENT WITHOUT DATABASE
+		if(!this.manageFile().getBoolean("Options.commands.rentit.disabled"))
+			new RentItCOMMAND(this); //SHOULD ALWAYS RUN, EVENT WITHOUT DATABASE
 		
 		if(!this.isSystemRunningOkay)
 			return; //DATABASE MISSING
@@ -180,13 +182,26 @@ public class Main extends JavaPlugin {
 		new CategoryGUIListener(this);
 		new ShopBuyOrSellListener(this);
 		
+		new PlayerCommandSendListener(this);
+		
 		//COMMANDS
-		new ShopCOMMAND(this);
-		new HotelCOMMAND(this);
-		new ShopsCOMMAND(this);
-		new HotelsCOMMAND(this);
-		new FreeShopsCOMMAND(this);
-		new FreeHotelsCOMMAND(this);
+		if(!this.manageFile().getBoolean("Options.commands.shop.disabled"))
+			new ShopCOMMAND(this);
+		
+		if(!this.manageFile().getBoolean("Options.commands.hotel.disabled"))
+			new HotelCOMMAND(this);
+		
+		if(!this.manageFile().getBoolean("Options.commands.shops.disabled"))
+			new ShopsCOMMAND(this);
+		
+		if(!this.manageFile().getBoolean("Options.commands.hotels.disabled"))
+			new HotelsCOMMAND(this);
+		
+		if(!this.manageFile().getBoolean("Options.commands.freeshops.disabled"))
+			new FreeShopsCOMMAND(this);
+		
+		if(!this.manageFile().getBoolean("Options.commands.freehotels.disabled"))
+			new FreeHotelsCOMMAND(this);
 		
 		//METRICS ANALYTICS
 		if(this.manageFile().getBoolean("Options.useMetrics"))

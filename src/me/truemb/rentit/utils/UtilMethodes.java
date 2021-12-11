@@ -407,6 +407,17 @@ public class UtilMethodes {
 
 	}
 	
+	public boolean isSubCommandEnabled(String command, String arg) {
+		String path = "Options.commands." + command.toLowerCase() + ".disabledSubCommands";
+		
+		if(this.instance.manageFile().isSet(path))
+			for(String args : this.instance.manageFile().getStringList(path))
+				if(args.equalsIgnoreCase(arg))
+					return false;
+		
+		return true;
+	}
+	
 	//SEND LIST
 	public void sendList(Player p, RentTypes type, int site) {
 		

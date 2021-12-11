@@ -12,6 +12,26 @@ Database:
 Options:
      #Sends anonymous data to bstats. (OnlinePlayers, Server Version, etc) But no personal Informations!
      useMetrics: true
+     #Please use a Server Restart after changing the Settings. 
+     commands:
+         freehotels:
+             disabled: false
+         freeshops:
+             disabled: false
+         hotel:
+             disabled: false
+             disabledSubCommands:
+                - ''
+         shop:
+             disabled: false
+             disabledSubCommands: {}
+         hotels:
+             disabled: false
+         shops:
+             disabled: false
+         rentit:
+             disabled: false
+             disabledSubCommands: {}
      #Using Citizens NPCs as Shops. Otherwise Villagers
      useNPCs: true
      #Shows above the Shop NPC the Prefix and DisplayName of a Player, if false: Only the Name
@@ -431,6 +451,7 @@ Messages:
      perm: '&cYou dont have enough Permissions!'
      console: 'Sorry, only works Ingame.'
      reloaded: '&a&lRentIt was reloaded. But better use a Server Restart next time.'
+     commandDisabled: '&cThis command was disabled in the config!'
      rentitHelp: '&cPlease use &f/rentit reload&c.'
      playerDoesntExists: '&4ERROR. &cThis Player doesnt exists.'
      notANumber: '&4ERROR. &cThe Input is not a number.'

@@ -68,6 +68,21 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 		adminSubCommands.add("setTime");
 		adminSubCommands.add("setPrice");
 		adminSubCommands.add("list");
+		
+		
+		//DISABLED COMMANDS
+		this.instance.manageFile().getStringList("Options.commands.hotel.disabledSubCommands").forEach(disabledSubCmds -> {
+			new ArrayList<>(this.subCommands).forEach(subCmds -> {
+				if(subCmds.equalsIgnoreCase(disabledSubCmds)) {
+					this.subCommands.remove(subCmds);
+				}
+			});
+			new ArrayList<>(this.adminSubCommands).forEach(adminSubCmds -> {
+				if(adminSubCmds.equalsIgnoreCase(disabledSubCmds)) {
+					this.adminSubCommands.remove(adminSubCmds);
+				}
+			});
+		});
 	}
 
 	@Override
@@ -83,6 +98,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 
 		if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("reset")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "reset")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "reset")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -126,6 +146,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("delete")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "delete")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "delete")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -155,6 +180,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				p.sendMessage(this.instance.getMessage("hotelDeleted").replace("%hotelId%", String.valueOf(hotelId)));
 				return true;
 			} else if (args[0].equalsIgnoreCase("permissions")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "permissions")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "hotel", "permissions")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -170,6 +200,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("info")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "info")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 				
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "info")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -188,6 +223,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("list")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "list")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "list")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -198,6 +238,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("users")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "users")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "hotel", "users")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -262,6 +307,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				});
 				return true;
 			}else if(args[0].equalsIgnoreCase("updateBackup")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "updateBackup")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "updatebackup")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -284,6 +334,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 				
 			}else if (args[0].equalsIgnoreCase("help")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "help")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "help")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -308,6 +363,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 		} else if (args.length == 2) {
 
 			if (args[0].equalsIgnoreCase("setArea")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "setarea")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "setarea")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -360,6 +420,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("info")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "info")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "info")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -377,6 +442,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("list")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "list")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "list")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -394,6 +464,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 				
 			}else if (args[0].equalsIgnoreCase("buy")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "buy")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "hotel", "buy")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -488,6 +563,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setTime")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "settime")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "settime")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -521,6 +601,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setPrice")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "setprice")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "setprice")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -547,6 +632,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("door")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "door")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (args[1].equalsIgnoreCase("close")) {
 
@@ -668,6 +758,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 			}
 		} else if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("door")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "door")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				Block b = p.getTargetBlockExact(7);
 				
@@ -711,6 +806,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 			}
 		} else if (args.length == 4) {
 			if (args[0].equalsIgnoreCase("setPermission")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "setpermission")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "hotel", "setpermission")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -792,6 +892,11 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("createCat")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "createcat")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "createcat")) {
 					p.sendMessage(this.instance.getMessage("perm"));

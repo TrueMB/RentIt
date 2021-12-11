@@ -77,6 +77,21 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 		adminSubCommands.add("setSize");
 		adminSubCommands.add("setPrice");
 		adminSubCommands.add("list");
+		
+
+		//DISABLED COMMANDS
+		this.instance.manageFile().getStringList("Options.commands.shop.disabledSubCommands").forEach(disabledSubCmds -> {
+			new ArrayList<>(this.subCommands).forEach(subCmds -> {
+				if(subCmds.equalsIgnoreCase(disabledSubCmds)) {
+					this.subCommands.remove(subCmds);
+				}
+			});
+			new ArrayList<>(this.adminSubCommands).forEach(adminSubCmds -> {
+				if(adminSubCmds.equalsIgnoreCase(disabledSubCmds)) {
+					this.adminSubCommands.remove(adminSubCmds);
+				}
+			});
+		});
 	}
 
 	@Override
@@ -92,6 +107,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 
 		if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("setNPC")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setnpc")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setnpc")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -150,6 +170,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					return true;
 				}
 			} else if (args[0].equalsIgnoreCase("list")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "list")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "list")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -160,6 +185,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("reset")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "reset")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "reset")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -216,6 +246,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("delete")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "delete")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "delete")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -271,6 +306,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("info")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "info")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "info")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -289,6 +329,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("noInfo")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "noinfo")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "noinfo")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -333,6 +378,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				}
 
 			} else if (args[0].equalsIgnoreCase("permissions")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "permissions")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "permissions")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -347,6 +397,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				}
 				return true;
 			} else if (args[0].equalsIgnoreCase("users")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "users")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 				
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "users")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -410,6 +465,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				});
 				return true;
 			}else if(args[0].equalsIgnoreCase("updateBackup")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "updatebackup")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "updatebackup")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -433,6 +493,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				
 			}else if (args[0].equalsIgnoreCase("help")) {
 				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "help")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+				
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "help")) {
 					p.sendMessage(this.instance.getMessage("perm"));
 					return true;
@@ -455,6 +520,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 		} else if (args.length == 2) {
 
 			if (args[0].equalsIgnoreCase("setArea")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setarea")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setarea")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -507,6 +577,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("info")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "info")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "info")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -524,6 +599,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("list")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "list")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "list")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -541,6 +621,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("door")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "door")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (args[1].equalsIgnoreCase("close")) {
 					
@@ -658,6 +743,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				}
 
 			} else if (args[0].equalsIgnoreCase("buy")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "buy")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buy")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -766,6 +856,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("rollback")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "rollback")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "rollback")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -799,6 +894,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setTime")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "settime")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "settime")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -840,6 +940,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setsize")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setsize")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setsize")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -871,6 +976,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setPrice")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setprice")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setprice")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -903,6 +1013,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("sellitem")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "sellitem")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "sellitem")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -982,6 +1097,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("buyitem")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "buyitem")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buyitem")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -1043,6 +1163,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 			}
 		} else if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("buyitem")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "buyitem")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buyitem")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -1104,6 +1229,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("door")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "door")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				Block b = p.getTargetBlockExact(7);
 
@@ -1147,6 +1277,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 			}
 		} else if (args.length == 4) {
 			if (args[0].equalsIgnoreCase("setPermission")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setpermission")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "setpermission")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -1220,6 +1355,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("buyitem")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "buyitem")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buyitem")) {
 					p.sendMessage(this.instance.getMessage("perm"));
@@ -1285,6 +1425,11 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 			
 		} else if (args.length == 5) {
 			if (args[0].equalsIgnoreCase("createCat")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "createcat")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
 				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "createcat")) {
 					p.sendMessage(this.instance.getMessage("perm"));
