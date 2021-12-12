@@ -15,6 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -459,14 +460,12 @@ public class UtilMethodes {
 		p.sendMessage(this.instance.getMessage(path + ".footer"));
 	}
 
-	// CHECK CHESTS FOR ITEM
-	public boolean checkChestsinArea(int shopId, ItemStack item) {
-
+	public List<Inventory> getShopChestInventories(int shopId) {
 		World world = this.instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
 		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
 		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
-
-		int amount = item.getAmount();
+		
+		List<Inventory> chestInventories = new ArrayList<>();
 
 		for (int minX = min.getBlockX(); minX <= max.getBlockX(); minX++) {
 			for (int minZ = min.getBlockZ(); minZ <= max.getBlockZ(); minZ++) {
@@ -474,50 +473,52 @@ public class UtilMethodes {
 					Block b = world.getBlockAt(minX, minY, minZ);
 					if (b != null && b.getType() == Material.CHEST) {
 						Chest chest = (Chest) b.getState();
+						Inventory chestInv = chest.getBlockInventory();
+						
+						chestInventories.add(chestInv);
+					}
+				}
+			}
+		}
+		
+		return chestInventories;
+	}
 
-						for (ItemStack items : chest.getBlockInventory().getContents()) {
-							if (items != null) {
-								if (items.isSimilar(item)) {
-									amount -= items.getAmount();
-									if (amount <= 0)
-										return true;
-								}
-							}
-						}
+	// CHECK CHESTS FOR ITEM
+	public boolean checkChestsinArea(int shopId, ItemStack item) {
+
+		List<Inventory> chestInventories = this.getShopChestInventories(shopId);
+		int amount = item.getAmount();
+
+		for(Inventory inv : chestInventories) {
+			for (ItemStack items : inv.getContents()) {
+				if (items != null) {
+					if (items.isSimilar(item)) {
+						amount -= items.getAmount();
+						if (amount <= 0)
+							return true;
 					}
 				}
 			}
 		}
 		return false;
 	}
-
+	
 	// CHECK IF SPACES
 	public boolean checkForSpaceinArea(int shopId, ItemStack item) {
 
-		World world = this.instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
-		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
-		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
-
+		List<Inventory> chestInventories = this.getShopChestInventories(shopId);
 		int amount = item.getAmount();
 
-		for (int minX = min.getBlockX(); minX <= max.getBlockX(); minX++) {
-			for (int minZ = min.getBlockZ(); minZ <= max.getBlockZ(); minZ++) {
-				for (int minY = min.getBlockY(); minY <= max.getBlockY(); minY++) {
-					Block b = world.getBlockAt(minX, minY, minZ);
-					if (b != null && b.getType() == Material.CHEST) {
-						Chest chest = (Chest) b.getState();
-
-						for (ItemStack items : chest.getBlockInventory().getContents()) {
-							if (items == null || items.getType() == Material.AIR) {
-								return true;
-							} else if (items.isSimilar(item)) {
-								if (amount > 64 - items.getAmount()) {
-									amount -= 64 - items.getAmount();
-								} else {
-									return true;
-								}
-							}
-						}
+		for(Inventory inv : chestInventories) {
+			for (ItemStack items : inv.getContents()) {
+				if (items == null || items.getType() == Material.AIR) {
+					return true;
+				} else if (items.isSimilar(item)) {
+					if (amount > 64 - items.getAmount()) {
+						amount -= 64 - items.getAmount();
+					} else {
+						return true;
 					}
 				}
 			}
@@ -527,34 +528,22 @@ public class UtilMethodes {
 
 	// REMOVES ITEMS FROM CHESTS
 	public void removeItemFromChestsInArea(int shopId, ItemStack item) {
-
-		World world = this.instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
-		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
-		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
-
+		
+		List<Inventory> chestInventories = this.getShopChestInventories(shopId);
 		int amount = item.getAmount();
 
-		for (int minX = min.getBlockX(); minX <= max.getBlockX(); minX++) {
-			for (int minZ = min.getBlockZ(); minZ <= max.getBlockZ(); minZ++) {
-				for (int minY = min.getBlockY(); minY <= max.getBlockY(); minY++) {
-					Block b = world.getBlockAt(minX, minY, minZ);
-					if (b != null && b.getType() == Material.CHEST) {
-						Chest chest = (Chest) b.getState();
-
-						for (ItemStack items : chest.getBlockInventory().getContents()) {
-							if (items != null) {
-								if (items.isSimilar(item)) {
-
-									if (amount >= items.getAmount()) {
-										amount -= items.getAmount();
-										items.setAmount(0);
-									} else {
-										items.setAmount(items.getAmount() - amount);
-										amount = 0;
-										return;
-									}
-								}
-							}
+		for(Inventory inv : chestInventories) {
+			for (ItemStack items : inv.getContents()) {
+				if (items != null) {
+					if (items.isSimilar(item)) {
+						
+						if (amount >= items.getAmount()) {
+							amount -= items.getAmount();
+							items.setAmount(0);
+						} else {
+							items.setAmount(items.getAmount() - amount);
+							amount = 0;
+							return;
 						}
 					}
 				}
@@ -565,36 +554,24 @@ public class UtilMethodes {
 	// REMOVES ITEMS FROM CHESTS
 	public void addItemToChestsInArea(int shopId, ItemStack item) {
 
-		World world = this.instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
-		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
-		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
-
+		List<Inventory> chestInventories = this.getShopChestInventories(shopId);
 		int amount = item.getAmount();
 
-		for (int minX = min.getBlockX(); minX <= max.getBlockX(); minX++) {
-			for (int minZ = min.getBlockZ(); minZ <= max.getBlockZ(); minZ++) {
-				for (int minY = min.getBlockY(); minY <= max.getBlockY(); minY++) {
-					Block b = world.getBlockAt(minX, minY, minZ);
-					if (b != null && b.getType() == Material.CHEST) {
-						Chest chest = (Chest) b.getState();
-
-						for (int i = 0; i < chest.getBlockInventory().getSize(); i++) {
-							ItemStack items = chest.getBlockInventory().getItem(i);
-							if (items == null || items.getType() == Material.AIR) {
-								chest.getBlockInventory().setItem(i, item);
-								return;
-							} else if (items.isSimilar(item)) {
-								if (amount > 64 - items.getAmount()) {
-									items.setAmount(64);
-									amount -= 64 - items.getAmount();
-									chest.getBlockInventory().setItem(i, items);
-								} else {
-									items.setAmount(items.getAmount() + amount);
-									chest.getBlockInventory().setItem(i, items);
-									return;
-								}
-							}
-						}
+		for(Inventory inv : chestInventories) {
+			for (int i = 0; i < inv.getSize(); i++) {
+				ItemStack items = inv.getItem(i);
+				if (items == null || items.getType() == Material.AIR) {
+					inv.setItem(i, item);
+					return;
+				} else if (items.isSimilar(item)) {
+					if (amount > 64 - items.getAmount()) {
+						items.setAmount(64);
+						amount -= 64 - items.getAmount();
+						inv.setItem(i, items);
+					} else {
+						items.setAmount(items.getAmount() + amount);
+						inv.setItem(i, items);
+						return;
 					}
 				}
 			}

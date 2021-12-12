@@ -170,6 +170,8 @@ Permissions:
      #Category Buyable, allows player to buy Shops or Hotels of this category
      #Adds type and category ID. So the final permission would be: rentit.category.shop.1 or rentit.category.hotel.12
      category: 'rentit.category'
+     #Permission for Admins to click on Player Backup Items. Players can click on their own without the permission.
+     backupitems: 'rentit.backupitems'
 #If you got no SubID or using a newer Minecraft Version, then just leave the subID 0 or remove it.
 #Since the newer Versions doors need to be the door_item.
 GUI:
@@ -460,6 +462,7 @@ Messages:
      notADoor: '&4ERROR. &cThe looked at Block is not a Door.'
      notATime: '&4ERROR. &cPlease use a correct Time format.'
      notAPermission: '&4ERROR. &cThe Permissions doesnt exists.'
+     notOwnBackupItems: '&cThis are not your Items. You are not allowed to use that.'
      notEnoughtSpace: '&cThe Shop cant buy anymore Items right now.'
      notEnoughtMoney: '&cYou dont have enough Money. You need: &f%amount%$'
      notEnoughtMoneyOwner: '&cThe Owner doesnt have enough Money.'

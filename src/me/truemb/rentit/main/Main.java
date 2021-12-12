@@ -58,6 +58,7 @@ import me.truemb.rentit.listener.RentTimeClickListener;
 import me.truemb.rentit.listener.ShopAreaListener;
 import me.truemb.rentit.listener.ShopBuyOrSellListener;
 import me.truemb.rentit.listener.ShopListener;
+import me.truemb.rentit.listener.ShopitemsBackupListener;
 import me.truemb.rentit.listener.SignListener;
 import me.truemb.rentit.listener.UserConfirmationListener;
 import me.truemb.rentit.listener.VillagerShopListener;
@@ -173,6 +174,7 @@ public class Main extends JavaPlugin {
 		new UserConfirmationListener(this);
 		new RentTimeClickListener(this);
 		new OwningListListener(this);
+		new PlayerCommandSendListener(this);
 		new PlayerJoinListener(this);
 		new PlayerQuitListener(this);
 		new ItemBoughtListener(this);
@@ -181,8 +183,8 @@ public class Main extends JavaPlugin {
 		new HotelAreaListener(this);
 		new CategoryGUIListener(this);
 		new ShopBuyOrSellListener(this);
+		new ShopitemsBackupListener(this);
 		
-		new PlayerCommandSendListener(this);
 		
 		//COMMANDS
 		if(!this.manageFile().getBoolean("Options.commands.shop.disabled"))
