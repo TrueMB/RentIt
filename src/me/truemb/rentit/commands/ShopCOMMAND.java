@@ -211,10 +211,13 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					return true;
 				}
 				UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
-				ItemStack[] contents = rentHandler.getSellInv() != null ? rentHandler.getSellInv().getContents() : null;
-				if(ownerUUID != null && contents != null)
-					this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId, contents);
+				//ItemStack[] contents = rentHandler.getSellInv() != null ? rentHandler.getSellInv().getContents() : null;
+				//if(ownerUUID != null && contents != null)
+				//	this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId, contents);
 
+				if(ownerUUID != null)
+					instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
+					
 				BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
 				BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
 				this.instance.getBackupManager().paste(this.type, shopId, min, max, p.getWorld(), false);
@@ -286,9 +289,12 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				}
 
 				UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
-				ItemStack[] contents = rentHandler.getSellInv() != null ? rentHandler.getSellInv().getContents() : null;
-				if(ownerUUID != null && contents != null)
-					this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId, contents);
+				//ItemStack[] contents = rentHandler.getSellInv() != null ? rentHandler.getSellInv().getContents() : null;
+				//if(ownerUUID != null && contents != null)
+				//	this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId, contents);
+				
+				if(ownerUUID != null)
+					instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
 
 				BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
 				BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
@@ -516,6 +522,36 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				p.openBook(item);
 				
 				return true;
+			}else if (args[0].equalsIgnoreCase("rollback")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "rollback")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "rollback")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
+
+				if (shopId < 0) {
+					// PLAYER NOT IN SHOP AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("notInShop"));
+					return true;
+				}
+				
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+				
+				if(rentHandler.getOwnerUUID() != null && rentHandler.getOwnerUUID().equals(uuid)) {
+					p.sendMessage(this.instance.getMessage("shopStillOwning"));
+					return true;
+				}
+
+				p.openInventory(this.instance.getRollbackInventoryManager().getMainInventory(uuid, shopId));
+				return true;
+
 			}
 		} else if (args.length == 2) {
 
@@ -887,10 +923,15 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					p.sendMessage(this.instance.getMessage("playerDoesntExists"));
 					return true;
 				}
+				
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+				
+				if(rentHandler.getOwnerUUID() != null && rentHandler.getOwnerUUID().equals(uuidTarget)) {
+					p.sendMessage(this.instance.getMessage("shopStillOwning"));
+					return true;
+				}
 
-				Inventory inv = this.instance.getShopCacheFileManager().getShopBackup(uuidTarget, shopId);
-				if(inv != null)
-					p.openInventory(inv);
+				p.openInventory(this.instance.getRollbackInventoryManager().getMainInventory(uuid, shopId));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setTime")) {

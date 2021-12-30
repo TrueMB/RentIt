@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.inventory.ItemStack;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
@@ -72,14 +71,13 @@ public class PaymentRunnable implements Runnable {
 							if (!rentHandler.isAutoPayment() || !instance.getEconomy().has(p, costs)) {
 
 								// CACHE INV
+								/*
 								if (rentHandler.getSellInv() != null) {
 									ItemStack[] content = rentHandler.getSellInv().getContents();
 									instance.getShopCacheFileManager().setShopBackup(uuid, shopId, content);
 								}
+								*/
 								
-								instance.getShopsInvSQL().updateSellInv(shopId, null);
-								instance.getShopsInvSQL().updateBuyInv(shopId, null);
-
 								// RESET SHOP
 					        	boolean autoPaymentDefault = instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
 					        	rentHandler.setAutoPayment(autoPaymentDefault);
@@ -91,6 +89,8 @@ public class PaymentRunnable implements Runnable {
 									
 									@Override
 									public void run() {
+										instance.getShopCacheFileManager().setShopBackup(uuid, shopId);
+										
 										rentHandler.reset(instance);
 
 										if(instance.getNpcUtils() != null) {
@@ -116,6 +116,9 @@ public class PaymentRunnable implements Runnable {
 										instance.getMethodes().updateSign(RentTypes.SHOP, shopId, null, time, costs, shopId);
 									}
 								});
+								
+								instance.getShopsInvSQL().updateSellInv(shopId, null);
+								instance.getShopsInvSQL().updateBuyInv(shopId, null);
 								
 								return;
 							}

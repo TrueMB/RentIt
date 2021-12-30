@@ -27,6 +27,7 @@ import me.truemb.rentit.commands.HotelsCOMMAND;
 import me.truemb.rentit.commands.RentItCOMMAND;
 import me.truemb.rentit.commands.ShopCOMMAND;
 import me.truemb.rentit.commands.ShopsCOMMAND;
+import me.truemb.rentit.data.RollbackInventoryManager;
 import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.database.CategoriesSQL;
 import me.truemb.rentit.database.HotelsSQL;
@@ -109,6 +110,8 @@ public class Main extends JavaPlugin {
 	private AreaFileManager areaFM;
 	private DoorFileManager doorFM;
 	
+	private RollbackInventoryManager rollbackInvManager;
+	
 	private UTF8YamlConfiguration config;
 
 	public HashMap<UUID, PlayerHandler> playerHandlers = new HashMap<>(); // UUID = playerUUID - SettingsHandler
@@ -163,6 +166,8 @@ public class Main extends JavaPlugin {
 		this.shopCacheFM = new ShopCacheFileManager(this);
 		this.areaFM = new AreaFileManager(this);
 		this.doorFM = new DoorFileManager(this);
+		
+		this.rollbackInvManager = new RollbackInventoryManager(this);
 				
 		this.setupPlaceholderAPI();
 		
@@ -605,5 +610,9 @@ public class Main extends JavaPlugin {
 
 	public VillagerUtils getVillagerUtils() {
 		return this.vilUtils;
+	}
+
+	public RollbackInventoryManager getRollbackInventoryManager() {
+		return rollbackInvManager;
 	}
 }
