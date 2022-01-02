@@ -11,6 +11,9 @@ import java.util.regex.Pattern;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,6 +30,7 @@ import me.truemb.rentit.commands.HotelsCOMMAND;
 import me.truemb.rentit.commands.RentItCOMMAND;
 import me.truemb.rentit.commands.ShopCOMMAND;
 import me.truemb.rentit.commands.ShopsCOMMAND;
+import me.truemb.rentit.data.RollbackInventoryData;
 import me.truemb.rentit.data.RollbackInventoryManager;
 import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.database.CategoriesSQL;
@@ -59,7 +63,7 @@ import me.truemb.rentit.listener.RentTimeClickListener;
 import me.truemb.rentit.listener.ShopAreaListener;
 import me.truemb.rentit.listener.ShopBuyOrSellListener;
 import me.truemb.rentit.listener.ShopListener;
-import me.truemb.rentit.listener.ShopitemsBackupListener;
+import me.truemb.rentit.listener.ShopItemsBackupListener;
 import me.truemb.rentit.listener.SignListener;
 import me.truemb.rentit.listener.UserConfirmationListener;
 import me.truemb.rentit.listener.VillagerShopListener;
@@ -117,6 +121,9 @@ public class Main extends JavaPlugin {
 	public HashMap<UUID, PlayerHandler> playerHandlers = new HashMap<>(); // UUID = playerUUID - SettingsHandler
 	public HashMap<RentTypes, HashMap<Integer, CategoryHandler>> catHandlers = new HashMap<>(); // RentType = hotel/shop - int = catID -  CategoryHandler
 	public HashMap<RentTypes, HashMap<Integer, RentTypeHandler>> rentTypeHandlers = new HashMap<>(); // RentType = hotel/shop - int = shop/hotel ID - RentTypeHandler
+	
+	//NAMESPACES
+	public NamespacedKey guiItem = new NamespacedKey(this, "guiItem");
 
 	private static final int configVersion = 8;
     private static final int SPIGOT_RESOURCE_ID = 90195;
@@ -188,7 +195,7 @@ public class Main extends JavaPlugin {
 		new HotelAreaListener(this);
 		new CategoryGUIListener(this);
 		new ShopBuyOrSellListener(this);
-		new ShopitemsBackupListener(this);
+		new ShopItemsBackupListener(this);
 		
 		
 		//COMMANDS
@@ -224,6 +231,29 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
+		
+		//SAVING THE ROLLBACK INVENTORY IF STILL OPENED
+		for(Player all : Bukkit.getOnlinePlayers()) {
+
+			UUID uuid = all.getUniqueId();
+			
+			RollbackInventoryData data = this.getRollbackInventoryManager().getRollbackInventoryData(uuid);
+			
+			if(data == null)
+				return;
+
+			Inventory inv = all.getOpenInventory().getTopInventory();
+			
+			data.getSiteInventory(data.getCurrentSite()).setContents(inv.getContents()); //SET CHANGES
+			
+			//SAVE INVENTORIES IN THE FILE
+			this.getShopCacheFileManager().updateShopBackup(data.getOwnerUUID(), data.getShopId(), data.getRollbackInventories());
+			
+			//CLOSE OLD DATA AND MAKE THE INVENTORY OPENABLE
+			this.getRollbackInventoryManager().closeInventory(uuid);
+			
+			all.closeInventory();
+		}
 		
 		if(this.getVillagerUtils() != null)
 			this.getVillagerUtils().disableVillagers();

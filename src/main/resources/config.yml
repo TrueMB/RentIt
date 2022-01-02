@@ -541,6 +541,8 @@ Messages:
      shopLimitReached: '&cYou cant have more Shops.'
      shopBackupUpdated: '&6You updated the Shop Area Backup.'
      shopStillOwning: '&6You are still owning the Shop.'
+     shopRollbackIsAlreadyOpen: '&cSomebody is already in the Rollback Menu. Please try again later.'
+     shopRollbackNoItems: '&cThere are no Items saved.'
      shopUserHelp:
         - '&6&m                  &6[ &f&lSHOP &6]&6&m                  '
         - '&f/shops &7- &6Shows all your owned Shops.'
@@ -608,7 +610,7 @@ Messages:
         - ''
         - '&6Location&7: &6X&7:&f%x%&7, &6Y&7:&f%y%&7, &6Z&7:&f%z% &7in &f%world%'
         - ''
-        - '&fOwner&7: &f%owner%'
+        - '&6Owner&7: &f%owner%'
         - ''
         - '&6Price&7: &f%price%'
         - '&6Inventory Size&7: &f%size%'

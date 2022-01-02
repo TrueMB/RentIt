@@ -60,6 +60,8 @@ public class UtilMethodes {
 			lore.add(ChatColor.translateAlternateColorCodes('&', s));
 		}
 
+		meta.getPersistentDataContainer().set(this.instance.guiItem, PersistentDataType.STRING, "true");
+		
 		if(id > 0) {
 			NamespacedKey key = new NamespacedKey(this.instance, "ID");
 			meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);

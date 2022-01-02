@@ -30,6 +30,7 @@ import org.bukkit.inventory.meta.BookMeta;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
+import me.truemb.rentit.data.RollbackInventoryData;
 import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;
@@ -548,8 +549,27 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					p.sendMessage(this.instance.getMessage("shopStillOwning"));
 					return true;
 				}
+				
+				if(this.instance.getRollbackInventoryManager().isOpen(uuid)) {
+					p.sendMessage(this.instance.getMessage("shopRollbackIsAlreadyOpen"));
+					return true;
+				}
 
-				p.openInventory(this.instance.getRollbackInventoryManager().getMainInventory(uuid, shopId));
+				RollbackInventoryData data = this.instance.getRollbackInventoryManager().createRollbackInventoryData(uuid, uuid, shopId);
+				data.setCurrentSite(1);
+				Inventory rollbackInv = data.getSiteInventory(1);
+				
+				if(rollbackInv == null) {
+					this.instance.getRollbackInventoryManager().closeInventory(uuid);
+					p.sendMessage(this.instance.getMessage("shopRollbackNoItems"));
+					return true;
+				}
+				
+				//CREATE A NEW INVENTORY, SO THAT THE INVENTORY DOESNT GET OVERWRITTEN
+				Inventory inv = Bukkit.createInventory(null, 54, ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.rollback.displayName")));
+				inv.setContents(rollbackInv.getContents());
+				
+				p.openInventory(inv);
 				return true;
 
 			}
@@ -930,8 +950,27 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					p.sendMessage(this.instance.getMessage("shopStillOwning"));
 					return true;
 				}
+				
+				if(this.instance.getRollbackInventoryManager().isOpen(uuidTarget)) {
+					p.sendMessage(this.instance.getMessage("shopRollbackIsAlreadyOpen"));
+					return true;
+				}
 
-				p.openInventory(this.instance.getRollbackInventoryManager().getMainInventory(uuid, shopId));
+				RollbackInventoryData data = this.instance.getRollbackInventoryManager().createRollbackInventoryData(uuid, uuidTarget, shopId);
+				data.setCurrentSite(1);
+				Inventory rollbackInv = data.getSiteInventory(1);
+				
+				if(rollbackInv == null) {
+					this.instance.getRollbackInventoryManager().closeInventory(uuid);
+					p.sendMessage(this.instance.getMessage("shopRollbackNoItems"));
+					return true;
+				}
+				
+				//CREATE A NEW INVENTORY, SO THAT THE INVENTORY DOESNT GET OVERWRITTEN
+				Inventory inv = Bukkit.createInventory(null, 54, ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.rollback.displayName")));
+				inv.setContents(rollbackInv.getContents());
+				
+				p.openInventory(inv);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setTime")) {

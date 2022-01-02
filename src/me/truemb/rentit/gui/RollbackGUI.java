@@ -28,35 +28,35 @@ public class RollbackGUI {
 					continue;
 				
 				if(counter >= 45 || inv == null) {
-					
-					//SAVE INV IN LIST
-					if(inv != null) {
-						int site = inventories.size() + 1;
-						inv.setItem(49, instance.getMethodes().getGUIItem("rollback", "returnItem"));
 
-						if(site > 1)
-							inv.setItem(45, instance.getMethodes().getGUIItem("rollback", "beforeSiteItem", shopId, site - 1));
-						if(counter >= 45)
-							inv.setItem(53, instance.getMethodes().getGUIItem("rollback", "nextSiteItem", shopId, site + 1));
-						
-						inventories.add(inv);
-					}
+					//THE ORDER OF THIS BLOCK IS IMPORTANT!
 					
-					//CREATE A NEW ONE (Next Site)
-					counter = 0;
+					int site = inventories.size() + 1;
+					
+					//ONLY CAN HAPPEN, IF AN INVENTORY WAS ALREADY CREATED. OTHERWISE IT WOULDNT REACH SUCH A HIGH COUNTER
+					if(counter >= 45)
+						inv.setItem(53, instance.getMethodes().getGUIItem("rollback", "nextSiteItem", shopId, site));
+					
+					//CREATE A NEW ONE (Next Site/First Site)
 					inv = Bukkit.createInventory(null, 54, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.rollback.displayName")));
+					//ADD INVENTORY TO LIST
+					inventories.add(inv);
+					
+					//ONLY ADDED IN THE NEXT INVENTORY, IF COUNTER REACHED
+					if(site > 1)
+						inv.setItem(45, instance.getMethodes().getGUIItem("rollback", "beforeSiteItem", shopId, site - 1));
+
+					//ADD RETURN GUI ITEMS, SINCE THIS IS ALWAYS "NEEDED"
+					inv.setItem(49, instance.getMethodes().getGUIItem("rollback", "returnItem"));
+					
+					//RESET COUNTER
+					counter = 0;
 				}
 				//Add saved Items to menu
 				inv.setItem(counter, items);
 				counter++;
 			}
 		}
-		
-		//TODO SAVE ON CLOSE
-		//OVERWRITE TAKEN ITEMS BUT NOT OF THE NEXT SITE
-		//MAYBE HASHING TO SEPERATE AND NOT ALWAYS USE THE FILE?
-		
-		
 		return inventories;
 		
 	}
