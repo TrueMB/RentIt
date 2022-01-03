@@ -74,6 +74,12 @@ public class CategoriesSQL {
 					+ "ON DUPLICATE KEY UPDATE time='" + time + "';");
 		
 	}
+	
+	public void delete(RentTypes type, int catID){
+		
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		sql.queryUpdate("DELETE FROM " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + " WHERE catID='" + catID + "'");
+	}
 
 	public void setupCategories() {
 		AsyncSQL sql = this.instance.getAsyncSQL();

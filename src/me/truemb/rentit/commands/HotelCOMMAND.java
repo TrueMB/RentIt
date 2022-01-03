@@ -58,6 +58,8 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 		subCommands.add("help");
 
 		adminSubCommands.add("createCat");
+		adminSubCommands.add("deleteCat");
+		adminSubCommands.add("listCat");
 		adminSubCommands.add("setArea");
 		adminSubCommands.add("reset");
 		adminSubCommands.add("delete");
@@ -220,6 +222,39 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				}
 
 				this.sendHotelInfo(p, hotelId);
+				return true;
+
+			} else if (args[0].equalsIgnoreCase("listcat")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "listcat")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+				
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "listcat")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+				
+				if(!this.instance.catHandlers.containsKey(this.type) || this.instance.catHandlers.get(this.type).size() <= 0) {
+					p.sendMessage(this.instance.getMessage("noCategoriesExists"));
+					return true;
+				}
+
+				HashMap<Integer, CategoryHandler> catHash = this.instance.catHandlers.get(this.type);
+				
+				for(CategoryHandler catHandler : catHash.values()) {
+					int catId = catHandler.getCatID();
+					double price = catHandler.getPrice();
+					String time = catHandler.getTime();
+					
+					p.sendMessage(this.instance.getMessage("hotelCategoryList")
+							.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
+							.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+							.replaceAll("(?i)%" + "time" + "%", time)
+							);
+				}
+				
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("list")) {
@@ -439,6 +474,50 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				int hotelId = Integer.parseInt(args[1]);
 
 				this.sendHotelInfo(p, hotelId);
+				return true;
+				
+			} else if (args[0].equalsIgnoreCase("deletecat")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "deletecat")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "deletecat")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+
+				int catId = Integer.parseInt(args[1]);
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, catId);
+				
+				if(catHandler == null) {
+					p.sendMessage(this.instance.getMessage("categoryError"));
+					return true;
+				}
+				
+				if(this.instance.rentTypeHandlers.containsKey(this.type)) {
+					for(RentTypeHandler handler : this.instance.rentTypeHandlers.get(this.type).values()) {
+						if(handler.getCatID() == catId) {
+							p.sendMessage(this.instance.getMessage("hotelCouldntDeleteCategory")
+									.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId)));
+							return true;
+						}
+					}
+				}
+				
+				this.instance.catHandlers.get(this.type).remove(catId);
+				this.instance.getCategorySQL().delete(this.type, catId);
+				
+				p.sendMessage(this.instance.getMessage("hotelCategoryDeleted")
+						.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId)));
+				
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("list")) {
@@ -939,7 +1018,7 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 
 				this.instance.getCategorySQL().updateHotelCategory(catID, price, timeS);
 				this.instance.getMethodes().updateAllSigns(this.type, catID);
-				p.sendMessage(this.instance.getMessage("shopCategoryUpdated").replace("%catId%", String.valueOf(catID)).replace("%price%", String.valueOf(price)).replace("%time%", timeS));
+				p.sendMessage(this.instance.getMessage("hotelCategoryUpdated").replace("%catId%", String.valueOf(catID)).replace("%price%", String.valueOf(price)).replace("%time%", timeS));
 				return true;
 			}
 		}

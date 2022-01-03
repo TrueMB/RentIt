@@ -66,6 +66,8 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 		subCommands.add("help");
 
 		adminSubCommands.add("createCat");
+		adminSubCommands.add("deleteCat");
+		adminSubCommands.add("listCat");
 		adminSubCommands.add("setNPC");
 		adminSubCommands.add("setArea");
 		adminSubCommands.add("reset");
@@ -333,6 +335,41 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				}
 
 				this.sendShopInfo(p, shopId);
+				return true;
+
+			} else if (args[0].equalsIgnoreCase("listcat")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "listcat")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+				
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "listcat")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+				
+				if(!this.instance.catHandlers.containsKey(this.type) || this.instance.catHandlers.get(this.type).size() <= 0) {
+					p.sendMessage(this.instance.getMessage("noCategoriesExists"));
+					return true;
+				}
+
+				HashMap<Integer, CategoryHandler> catHash = this.instance.catHandlers.get(this.type);
+				
+				for(CategoryHandler catHandler : catHash.values()) {
+					int catId = catHandler.getCatID();
+					double price = catHandler.getPrice();
+					int size = catHandler.getSize();
+					String time = catHandler.getTime();
+					
+					p.sendMessage(this.instance.getMessage("shopCategoryList")
+							.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
+							.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+							.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+							.replaceAll("(?i)%" + "time" + "%", time)
+							);
+				}
+				
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("noInfo")) {
@@ -652,6 +689,50 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				int shopId = Integer.parseInt(args[1]);
 
 				this.sendShopInfo(p, shopId);
+				return true;
+				
+			} else if (args[0].equalsIgnoreCase("deletecat")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "deletecat")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "deletecat")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+
+				int catId = Integer.parseInt(args[1]);
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, catId);
+				
+				if(catHandler == null) {
+					p.sendMessage(this.instance.getMessage("categoryError"));
+					return true;
+				}
+				
+				if(this.instance.rentTypeHandlers.containsKey(this.type)) {
+					for(RentTypeHandler handler : this.instance.rentTypeHandlers.get(this.type).values()) {
+						if(handler.getCatID() == catId) {
+							p.sendMessage(this.instance.getMessage("shopCouldntDeleteCategory")
+									.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId)));
+							return true;
+						}
+					}
+				}
+				
+				this.instance.catHandlers.get(this.type).remove(catId);
+				this.instance.getCategorySQL().delete(this.type, catId);
+				
+				p.sendMessage(this.instance.getMessage("shopCategoryDeleted")
+						.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId)));
+				
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("list")) {
