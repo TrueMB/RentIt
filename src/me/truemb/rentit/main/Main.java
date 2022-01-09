@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +13,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
@@ -74,7 +76,6 @@ import me.truemb.rentit.utils.ConfigUpdater;
 import me.truemb.rentit.utils.NPCUtils;
 import me.truemb.rentit.utils.PermissionsAPI;
 import me.truemb.rentit.utils.ShopItemManager;
-import me.truemb.rentit.utils.UTF8YamlConfiguration;
 import me.truemb.rentit.utils.UtilMethodes;
 import me.truemb.rentit.utils.VillagerUtils;
 import me.truemb.rentit.utils.WorldGuardUtils;
@@ -116,7 +117,7 @@ public class Main extends JavaPlugin {
 	
 	private RollbackInventoryManager rollbackInvManager;
 	
-	private UTF8YamlConfiguration config;
+	private YamlConfiguration config;
 
 	public HashMap<UUID, PlayerHandler> playerHandlers = new HashMap<>(); // UUID = playerUUID - SettingsHandler
 	public HashMap<RentTypes, HashMap<Integer, CategoryHandler>> catHandlers = new HashMap<>(); // RentType = hotel/shop - int = catID -  CategoryHandler
@@ -295,6 +296,7 @@ public class Main extends JavaPlugin {
 		
 		//RESET CONFIG CACHE
 		this.config = null;
+		this.reloadConfig();
 		
 		//RESET HASHES
 		this.playerHandlers = new HashMap<>();
@@ -385,7 +387,7 @@ public class Main extends JavaPlugin {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 	
-	public UTF8YamlConfiguration manageFile() {
+	public YamlConfiguration manageFile() {
 		File configFile = this.getConfigFile();
 		if (!configFile.exists())
 			saveResource("config.yml", true);
@@ -393,15 +395,23 @@ public class Main extends JavaPlugin {
 		if(this.config == null) {
 			
 			//TO GET THE CONFIG VERSION
-			this.config = new UTF8YamlConfiguration(configFile);
+			this.config = YamlConfiguration.loadConfiguration(configFile);
 			
 			//UPDATE
 			if(!this.config.isSet("ConfigVersion") || this.config.getInt("ConfigVersion") < configVersion) {
 				this.getLogger().info("Updating Config!");
 				try {
-					ConfigUpdater.update(this, "config.yml", configFile, new ArrayList<>());
+					List<String> ignore = new ArrayList<>();
+					
+					ignore.add("Options.categorySettings");
+					ignore.add("Options.maxPossible");
+					
+					ignore.add("GUI.categoryShop.items");
+					ignore.add("GUI.categoryHotel.items");
+					
+					ConfigUpdater.update(this, "config.yml", configFile, ignore);
 					this.reloadConfig();
-					this.config = new UTF8YamlConfiguration(configFile);
+					this.config = YamlConfiguration.loadConfiguration(configFile);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -442,7 +452,7 @@ public class Main extends JavaPlugin {
 	    	this.getLogger().warning("An Economy Plugin is missing!");
 	    	return false;
 	    }
-	    this.getLogger().info(rsp.getPlugin().getName() + " Chat System was found.");
+	    this.getLogger().info(rsp.getPlugin().getName() + " Economy System was found.");
 	    econ = rsp.getProvider();
 	    return econ != null;
 	}
@@ -455,7 +465,7 @@ public class Main extends JavaPlugin {
 	    }
 	    RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
 	    if (rsp == null || rsp.getProvider() == null) {
-	    	this.getLogger().warning("A Chat Plugin is missing!");
+	    	this.getLogger().warning("A Chat Plugin is missing! (Needed for Player Shop NPC Prefix)");
 	    	return false;
 	    }
 

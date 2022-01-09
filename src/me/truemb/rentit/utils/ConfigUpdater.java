@@ -9,15 +9,23 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ConfigUpdater {
+	
 
     //Used for separating keys in the keyBuilder inside parseComments method
     private static final char SEPARATOR = '.';
+
+    public static void update(Plugin plugin, String resourceName, File toUpdate, String... ignoredSections) throws IOException {
+        update(plugin, resourceName, toUpdate, Arrays.asList(ignoredSections));
+    }
 
     public static void update(Plugin plugin, String resourceName, File toUpdate, List<String> ignoredSections) throws IOException {
         Preconditions.checkArgument(toUpdate.exists(), "The toUpdate file doesn't exist!");
@@ -26,14 +34,22 @@ public class ConfigUpdater {
         FileConfiguration currentConfig = YamlConfiguration.loadConfiguration(toUpdate);
         Map<String, String> comments = parseComments(plugin, resourceName, defaultConfig);
         Map<String, String> ignoredSectionsValues = parseIgnoredSections(toUpdate, currentConfig, comments, ignoredSections == null ? Collections.emptyList() : ignoredSections);
-        write(defaultConfig, currentConfig, toUpdate, comments, ignoredSectionsValues);
+
+        // will write updated config file "contents" to a string
+        StringWriter writer = new StringWriter();
+        write(defaultConfig, currentConfig, new BufferedWriter(writer), comments, ignoredSectionsValues);
+        String value = writer.toString(); // config contents
+
+        Path toUpdatePath = toUpdate.toPath();
+        if (!value.equals(new String(Files.readAllBytes(toUpdatePath), StandardCharsets.UTF_8))) { // if updated contents are not the same as current file contents, update
+            Files.write(toUpdatePath, value.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
-    private static void write(FileConfiguration defaultConfig, FileConfiguration currentConfig, File toUpdate, Map<String, String> comments, Map<String, String> ignoredSectionsValues) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(toUpdate));
+    private static void write(FileConfiguration defaultConfig, FileConfiguration currentConfig, BufferedWriter writer, Map<String, String> comments, Map<String, String> ignoredSectionsValues) throws IOException {
         //Used for converting objects to yaml, then cleared
         FileConfiguration parserConfig = new YamlConfiguration();
-
+        
         keyLoop: for (String fullKey : defaultConfig.getKeys(true)) {
             String indents = KeyBuilder.getIndents(fullKey, SEPARATOR);
 
@@ -42,18 +58,16 @@ public class ConfigUpdater {
             } else {
                 for (Map.Entry<String, String> entry : ignoredSectionsValues.entrySet()) {
                     if (entry.getKey().equals(fullKey)) {
-                        writer.write(entry.getValue());
+                        writer.write(entry.getValue() + "\n");
                         continue keyLoop;
                     } else if (KeyBuilder.isSubKeyOf(entry.getKey(), fullKey, SEPARATOR)) {
                         continue keyLoop;
-                    } else {
-                        writeCommentIfExists(comments, writer, fullKey, indents);
                     }
                 }
+                writeCommentIfExists(comments, writer, fullKey, indents);
             }
 
             Object currentValue = currentConfig.get(fullKey);
-
             if (currentValue == null || fullKey.equals("ConfigVersion"))
                 currentValue = defaultConfig.get(fullKey);
 
@@ -138,14 +152,26 @@ public class ConfigUpdater {
 
         String currentIgnoredSection = null;
         String line;
-        while ((line = reader.readLine()) != null) {
+        lineLoop : while ((line = reader.readLine()) != null) {
             String trimmedLine = line.trim();
 
-            if (trimmedLine.isEmpty() || trimmedLine.startsWith("#") || trimmedLine.startsWith("-"))
+            //PATH IS A COMMENT
+            if (trimmedLine.isEmpty() || trimmedLine.startsWith("#"))
                 continue;
 
-            keyBuilder.parseLine(trimmedLine);
-            String fullKey = keyBuilder.toString();
+            if (trimmedLine.startsWith("-")) {
+                for (String ignoredSection : ignoredSections) {
+                    boolean isIgnoredParent = ignoredSection.equals(keyBuilder.toString());
+
+                    if (isIgnoredParent || keyBuilder.isSubKeyOf(ignoredSection)) {
+                        valueBuilder.append("\n").append(line);
+                        continue lineLoop;
+                    }
+                }
+            }else
+            	keyBuilder.parseLine(trimmedLine); //DO NOT PARSE LIST ENTRIES
+            	
+	        String fullKey = keyBuilder.toString();
 
             //If building the value for an ignored section and this line is no longer a part of the ignored section,
             //  write the valueBuilder, reset it, and set the current ignored section to null
@@ -176,7 +202,7 @@ public class ConfigUpdater {
                     //Don't set currentIgnoredSection to any ignoredSection sub-keys
                     if (isIgnoredParent)
                         currentIgnoredSection = fullKey;
-
+                    
                     break;
                 }
             }
@@ -198,5 +224,4 @@ public class ConfigUpdater {
             //Replaces all '\n' with '\n' + indents except for the last one
             writer.write(indents + comment.substring(0, comment.length() - 1).replace("\n", "\n" + indents) + "\n");
     }
-
 }
