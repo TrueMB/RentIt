@@ -76,6 +76,7 @@ import me.truemb.rentit.utils.ConfigUpdater;
 import me.truemb.rentit.utils.NPCUtils;
 import me.truemb.rentit.utils.PermissionsAPI;
 import me.truemb.rentit.utils.ShopItemManager;
+import me.truemb.rentit.utils.UTF8YamlConfiguration;
 import me.truemb.rentit.utils.UtilMethodes;
 import me.truemb.rentit.utils.VillagerUtils;
 import me.truemb.rentit.utils.WorldGuardUtils;
@@ -117,7 +118,7 @@ public class Main extends JavaPlugin {
 	
 	private RollbackInventoryManager rollbackInvManager;
 	
-	private YamlConfiguration config;
+	private UTF8YamlConfiguration config;
 
 	public HashMap<UUID, PlayerHandler> playerHandlers = new HashMap<>(); // UUID = playerUUID - SettingsHandler
 	public HashMap<RentTypes, HashMap<Integer, CategoryHandler>> catHandlers = new HashMap<>(); // RentType = hotel/shop - int = catID -  CategoryHandler
@@ -395,7 +396,7 @@ public class Main extends JavaPlugin {
 		if(this.config == null) {
 			
 			//TO GET THE CONFIG VERSION
-			this.config = YamlConfiguration.loadConfiguration(configFile);
+			this.config = new UTF8YamlConfiguration(configFile);
 			
 			//UPDATE
 			if(!this.config.isSet("ConfigVersion") || this.config.getInt("ConfigVersion") < configVersion) {
@@ -411,7 +412,7 @@ public class Main extends JavaPlugin {
 					
 					ConfigUpdater.update(this, "config.yml", configFile, ignore);
 					this.reloadConfig();
-					this.config = YamlConfiguration.loadConfiguration(configFile);
+					this.config = new UTF8YamlConfiguration(configFile);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
