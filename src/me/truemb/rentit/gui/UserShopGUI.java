@@ -34,31 +34,28 @@ public class UserShopGUI {
 
 		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.displayNameSell") + " " + ownerName));
 
+		int puf = 0;
 		if (contents != null) {
+			for (int i = 0; i < inv.getSize() && i < contents.length; i++) {
 
-			int puf = 0;
-			if (contents != null)
-				for (int i = 0; i < inv.getSize() && i < contents.length; i++) {
-
-					ItemStack item = contents[i];
-					if (item == null || item.getType() == Material.AIR) {
-							puf++;
-						continue;
-					}
-					
-					ItemMeta meta = item.getItemMeta();
-					
-					NamespacedKey idKey = new NamespacedKey(instance, "ID");
-					PersistentDataContainer container = meta.getPersistentDataContainer();
-					
-					if(!container.has(idKey , PersistentDataType.INTEGER))
-						meta.getPersistentDataContainer().set(idKey, PersistentDataType.INTEGER, shopId);
-					
-					item.setItemMeta(meta);
-					
-					inv.setItem(i - puf, item);
-
+				ItemStack item = contents[i];
+				if (item == null || item.getType() == Material.AIR) {
+					puf++;
+					continue;
 				}
+				
+				ItemMeta meta = item.getItemMeta();
+				
+				NamespacedKey idKey = new NamespacedKey(instance, "ID");
+				PersistentDataContainer container = meta.getPersistentDataContainer();
+				
+				if(!container.has(idKey , PersistentDataType.INTEGER))
+					meta.getPersistentDataContainer().set(idKey, PersistentDataType.INTEGER, shopId);
+					
+				item.setItemMeta(meta);
+				
+				inv.setItem(i - puf, item);
+			}
 		}
 		return inv;
 	}
@@ -80,31 +77,28 @@ public class UserShopGUI {
 
 		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.displayNameBuy") + " " + ownerName));
 
+		int puf = 0;
 		if (contents != null) {
-
-			int puf = 0;
-			if (contents != null)
-				for (int i = 0; i < inv.getSize() && i < contents.length; i++) {
+			for (int i = 0; i < inv.getSize() && i < contents.length; i++) {
 					
-					ItemStack item = contents[i];
-					if (item == null || item.getType() == Material.AIR) {
-						puf++;
-						continue;
-					}
-					
-					ItemMeta meta = item.getItemMeta();
-					
-					NamespacedKey idKey = new NamespacedKey(instance, "ID");
-					PersistentDataContainer container = meta.getPersistentDataContainer();
-					
-					if(!container.has(idKey , PersistentDataType.INTEGER))
-						meta.getPersistentDataContainer().set(idKey, PersistentDataType.INTEGER, shopId);
-					
-					item.setItemMeta(meta);
-					
-					inv.setItem(i - puf, item);
-
+				ItemStack item = contents[i];
+				if (item == null || item.getType() == Material.AIR) {
+					puf++;
+					continue;
 				}
+				
+				ItemMeta meta = item.getItemMeta();
+				
+				NamespacedKey idKey = new NamespacedKey(instance, "ID");
+				PersistentDataContainer container = meta.getPersistentDataContainer();
+				
+				if(!container.has(idKey , PersistentDataType.INTEGER))
+					meta.getPersistentDataContainer().set(idKey, PersistentDataType.INTEGER, shopId);
+				
+				item.setItemMeta(meta);
+				
+				inv.setItem(i - puf, item);
+			}
 		}
 		return inv;
 	}

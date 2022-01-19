@@ -124,16 +124,15 @@ public class HotelAreaListener implements Listener {
 			
 			if(!this.instance.getAreaFileManager().isDoorStatusSet(this.type, shopId)) {
 
-				if(rentHandler.getOwnerUUID() == null && (this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".doorsClosedUntilBuy") 
-						&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".doorsClosedUntilBuy"))) {
+				if(!p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) 
+						&& this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".doorsClosedUntilBuy") 
+						&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".doorsClosedUntilBuy")) {
 					
 					e.setCancelled(true);
 					e.setUseInteractedBlock(Result.DENY);
-					return;
-				}else if(rentHandler.getOwnerUUID() != null && this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".doorsClosedAfterBuy") && this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".doorsClosedAfterBuy")){
-					e.setCancelled(true);
-					e.setUseInteractedBlock(Result.DENY);
-					p.sendMessage(this.instance.getMessage("hotelDoorStillClosed"));
+					
+					if(rentHandler.getOwnerUUID() != null)
+						p.sendMessage(this.instance.getMessage("hotelDoorStillClosed"));
 					return;
 				}else {
 					e.setCancelled(false);
@@ -142,9 +141,12 @@ public class HotelAreaListener implements Listener {
 				}
 			}
 			if(this.instance.getAreaFileManager().isDoorClosed(this.type, shopId)) {
-				if((!this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".ownerBypassLock") || this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".ownerBypassLock")) 
-						&& (this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Door")) || 
-						this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin")))) {
+				if(!p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) 
+						&& ((!this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".ownerBypassLock") 
+						|| this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".ownerBypassLock")) 
+						&& (this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Door")) 
+						|| this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))))) {
+					
 					e.setCancelled(false);
 					e.setUseInteractedBlock(Result.ALLOW);
 					return;

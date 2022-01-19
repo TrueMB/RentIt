@@ -242,7 +242,7 @@ public class Main extends JavaPlugin {
 			RollbackInventoryData data = this.getRollbackInventoryManager().getRollbackInventoryData(uuid);
 			
 			if(data == null)
-				return;
+				continue;
 
 			Inventory inv = all.getOpenInventory().getTopInventory();
 			
@@ -654,6 +654,6 @@ public class Main extends JavaPlugin {
 	}
 
 	public RollbackInventoryManager getRollbackInventoryManager() {
-		return rollbackInvManager;
+		return this.rollbackInvManager;
 	}
 }

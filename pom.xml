@@ -159,7 +159,7 @@
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
-			<version>7.2.6-SNAPSHOT</version>
+			<version>7.3.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -167,7 +167,7 @@
 		<dependency>
 			<groupId>com.sk89q.worldguard</groupId>
 			<artifactId>worldguard-bukkit</artifactId> 
-			<version>7.0.5</version>
+			<version>7.0.7-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -175,7 +175,7 @@
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizensapi</artifactId>
-			<version>2.0.28-SNAPSHOT</version>
+			<version>2.0.29-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -183,7 +183,7 @@
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.10.9</version>
+			<version>2.11.1</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -191,7 +191,7 @@
 		<dependency>
 			<groupId>net.luckperms</groupId>
 			<artifactId>api</artifactId>
-			<version>5.1</version>
+			<version>5.3</version>
 			<scope>provided</scope>
 		</dependency>
 		

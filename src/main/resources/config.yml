@@ -170,8 +170,14 @@ Permissions:
   #Category Buyable, allows player to buy Shops or Hotels of this category
   #Adds type and category ID. So the final permission would be: rentit.category.shop.1 or rentit.category.hotel.12
   category: 'rentit.category'
-  #Permission for Admins to click on Player Backup Items. Players can click on their own without the permission.
+  #Permission for Admins to get Player Backup Items. Players can get the items on their own without the permission.
   backupitems: 'rentit.backupitems'
+  #Bypass Permissions
+  bypass:
+    #Open doors in the Shop/hotel
+    doors: 'rentit.bypass.doors'
+    #Open chests in the shop
+    chests: 'rentit.bypass.chests'
 #If you got no SubID or using a newer Minecraft Version, then just leave the subID 0 or remove it.
 #Since the newer Versions doors need to be the door_item.
 GUI:
