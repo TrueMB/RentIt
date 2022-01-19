@@ -3,13 +3,8 @@ package me.truemb.rentit.gui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
@@ -34,6 +29,8 @@ public class UserShopGUI {
 
 		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.displayNameSell") + " " + ownerName));
 
+		//NamespacedKey idKey = new NamespacedKey(instance, "ID");
+		
 		int puf = 0;
 		if (contents != null) {
 			for (int i = 0; i < inv.getSize() && i < contents.length; i++) {
@@ -44,16 +41,16 @@ public class UserShopGUI {
 					continue;
 				}
 				
+				/*
 				ItemMeta meta = item.getItemMeta();
 				
-				NamespacedKey idKey = new NamespacedKey(instance, "ID");
 				PersistentDataContainer container = meta.getPersistentDataContainer();
 				
 				if(!container.has(idKey , PersistentDataType.INTEGER))
-					meta.getPersistentDataContainer().set(idKey, PersistentDataType.INTEGER, shopId);
+					container.set(idKey, PersistentDataType.INTEGER, shopId);
 					
 				item.setItemMeta(meta);
-				
+				*/
 				inv.setItem(i - puf, item);
 			}
 		}
@@ -76,7 +73,9 @@ public class UserShopGUI {
 		int size = catHandler.getSize();
 
 		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.displayNameBuy") + " " + ownerName));
-
+		
+		//NamespacedKey idKey = new NamespacedKey(instance, "ID");
+		
 		int puf = 0;
 		if (contents != null) {
 			for (int i = 0; i < inv.getSize() && i < contents.length; i++) {
@@ -87,15 +86,16 @@ public class UserShopGUI {
 					continue;
 				}
 				
+				/*
 				ItemMeta meta = item.getItemMeta();
 				
-				NamespacedKey idKey = new NamespacedKey(instance, "ID");
 				PersistentDataContainer container = meta.getPersistentDataContainer();
 				
 				if(!container.has(idKey , PersistentDataType.INTEGER))
-					meta.getPersistentDataContainer().set(idKey, PersistentDataType.INTEGER, shopId);
+					container.set(idKey, PersistentDataType.INTEGER, shopId);
 				
 				item.setItemMeta(meta);
+				*/
 				
 				inv.setItem(i - puf, item);
 			}

@@ -93,7 +93,7 @@ public class NPCFileManager {
 		YamlConfiguration config = this.getConfig();
 		
 		if(!config.isSet(shopId + ".Location")) {
-			System.err.println("[" + this.instance.getDescription().getName() + "] Please set the NPC Spawn Location for the Shop: " + shopId + ". /shop setnpc");
+			this.instance.getLogger().warning("Please set the NPC Spawn Location for the Shop: " + shopId + ". /shop setnpc");
 			return null;
 		}
 		

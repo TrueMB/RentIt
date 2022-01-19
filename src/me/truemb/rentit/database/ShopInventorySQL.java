@@ -67,9 +67,7 @@ public class ShopInventorySQL {
 						ItemStack[] sellContents = !sellInv.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(sellInv) : null;
 						ItemStack[] buyContents = !buyInv.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInv) : null;
 						
-						//if(sellContents != null)
 						handler.setSellInv(UserShopGUI.getSellInv(instance, id, sellContents));
-						//if(buyContents != null)
 						handler.setBuyInv(UserShopGUI.getBuyInv(instance, id, buyContents));
 						return;
 					}
