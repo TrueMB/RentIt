@@ -77,7 +77,7 @@ public class ShopListener implements Listener {
 
 			NumberFormat formatter = new DecimalFormat("#0.00");
 
-			// Kaufen
+			// Owner sells Items
 			if (e.isLeftClick() && !ownerUUID.equals(uuid)) {
 
 				double itemPrice = ShopItemManager.getPriceFromShopItem(this.instance, item);
@@ -148,7 +148,7 @@ public class ShopListener implements Listener {
 
 			}
 
-			// VERKAUF
+			// Owner buys Item from Player
 		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameBuy") + " "))) {
 
 			e.setCancelled(true);
@@ -247,7 +247,7 @@ public class ShopListener implements Listener {
 					return;
 				}
 
-				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents());
+				this.instance.getShopsInvSQL().updateBuyInv(shopId, inv.getContents());
 				p.sendMessage(this.instance.getMessage("shopItemSelled").replace("%amount%", String.valueOf(amount)).replace("%price%", String.valueOf(formatter.format(price))).replace("%type%", StringUtils.capitalize(copyItem.getType().toString())));
 				return;
 			} else if (e.isRightClick()) {
@@ -260,7 +260,7 @@ public class ShopListener implements Listener {
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
 				e.setCurrentItem(null);
-				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents());
+				this.instance.getShopsInvSQL().updateBuyInv(shopId, inv.getContents());
 
 				p.sendMessage(this.instance.getMessage("shopItemRemoved").replace("%amount%", String.valueOf(copyItem.getAmount())).replace("%type%", StringUtils.capitalize(copyItem.getType().toString())));
 
