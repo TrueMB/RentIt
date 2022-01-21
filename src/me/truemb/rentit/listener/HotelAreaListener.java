@@ -3,6 +3,7 @@ package me.truemb.rentit.listener;
 import java.util.UUID;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Door;
@@ -141,8 +142,8 @@ public class HotelAreaListener implements Listener {
 				}
 			}
 			if(this.instance.getAreaFileManager().isDoorClosed(this.type, shopId)) {
-				if(!p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) 
-						&& ((!this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".ownerBypassLock") 
+				if(p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) 
+						|| ((!this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".ownerBypassLock") 
 						|| this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".ownerBypassLock")) 
 						&& (this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Door")) 
 						|| this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))))) {
@@ -156,6 +157,22 @@ public class HotelAreaListener implements Listener {
 					p.sendMessage(this.instance.getMessage("hotelDoorStillClosed"));
 					return;
 				}
+			}
+		}else if(b.getType() == Material.CHEST) {
+			//CHEST INTERACTION
+			
+			int hotelId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
+
+		    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(this.type, hotelId);
+
+			if (rentHandler == null)
+				return; //DOES SHOP EXISTS?
+		    
+			if(!p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.chests")) 
+					&& !this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))) {
+				
+				e.setCancelled(true);
+				p.sendMessage(this.instance.getMessage("notShopOwner"));
 			}
 		}else{
 			

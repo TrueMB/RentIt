@@ -147,7 +147,7 @@ public class ShopAreaListener implements Listener {
 				}
 			}
 			if(this.instance.getAreaFileManager().isDoorClosed(this.type, shopId)) {
-				if(!p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) && (
+				if(p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) || (
 						(!this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".ownerBypassLock") 
 						|| this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".ownerBypassLock")) 
 						&& (this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Door")) || 

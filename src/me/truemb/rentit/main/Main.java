@@ -127,7 +127,7 @@ public class Main extends JavaPlugin {
 	//NAMESPACES
 	public NamespacedKey guiItem = new NamespacedKey(this, "guiItem");
 
-	private static final int configVersion = 10;
+	private static final int configVersion = 11;
     private static final int SPIGOT_RESOURCE_ID = 90195;
     private static final int BSTATS_PLUGIN_ID = 12060;
     
