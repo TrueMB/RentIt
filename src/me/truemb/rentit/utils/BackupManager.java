@@ -69,7 +69,8 @@ public class BackupManager {
 					ex.printStackTrace();
 				}
 				
-				try (ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
+				try (@SuppressWarnings("deprecation") //TO SUPPORT LOWERE WORLDEDIT VERSIONS
+				ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
 					writer.write(clipboard);
 				} catch (IOException ex) {
 					ex.printStackTrace();

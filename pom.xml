@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>RentIt</groupId>
 	<artifactId>RentIt</artifactId>
-	<version>2.5.2</version>
+	<version>2.5.3</version>
 	<name>RentIt</name>
 	<description>Player Shop and Hotel Rent System</description>
   
@@ -34,8 +34,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>16</source>
-					<target>16</target>
+					<source>17</source>
+					<target>17</target>
 				</configuration>
 			</plugin>
 
@@ -51,10 +51,15 @@
 						</goals>
 				     	<configuration>
 					        <relocations>
-					        
+          						
+			                  <relocation>
+			                    <pattern>com.jeff_media.updatechecker</pattern>
+			                    <shadedPattern>me.truemb.rentit.updater</shadedPattern>
+			                  </relocation>
+
 					          <relocation>
 					            <pattern>org.bstats</pattern>
-					            <shadedPattern>me.truemb.rentit</shadedPattern>
+					            <shadedPattern>me.truemb.rentit.bstats</shadedPattern>
 					          </relocation>
 					          
                             <relocation>
@@ -205,9 +210,9 @@
 		
 		<!-- UPDATE CHECKER -->
 	    <dependency>
-	        <groupId>de.jeff_media</groupId>
-	        <artifactId>SpigotUpdateChecker</artifactId>
-	        <version>1.3.0</version> <!-- Check on GitHub for the latest version -->
+		    <groupId>com.jeff_media</groupId>
+			<artifactId>SpigotUpdateChecker</artifactId>
+			<version>2.2.0</version>
 	        <scope>compile</scope>
 	    </dependency>
 

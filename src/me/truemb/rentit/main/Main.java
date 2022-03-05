@@ -20,11 +20,12 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.jeff_media.updatechecker.UpdateCheckSource;
+import com.jeff_media.updatechecker.UpdateChecker;
+import com.jeff_media.updatechecker.UserAgentBuilder;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
-import de.jeff_media.updatechecker.UpdateChecker;
-import de.jeff_media.updatechecker.UserAgentBuilder;
 import me.truemb.rentit.commands.FreeHotelsCOMMAND;
 import me.truemb.rentit.commands.FreeShopsCOMMAND;
 import me.truemb.rentit.commands.HotelCOMMAND;
@@ -128,7 +129,7 @@ public class Main extends JavaPlugin {
 	public NamespacedKey guiItem = new NamespacedKey(this, "guiItem");
 
 	private static final int configVersion = 11;
-    private static final int SPIGOT_RESOURCE_ID = 90195;
+    private static final String SPIGOT_RESOURCE_ID = "90195";
     private static final int BSTATS_PLUGIN_ID = 12060;
     
 	private int runnId;
@@ -430,7 +431,8 @@ public class Main extends JavaPlugin {
 	//CHECK FOR UPDATE
 	//https://www.spigotmc.org/threads/powerful-update-checker-with-only-one-line-of-code.500010/
 	private void checkForUpdate() {
-        UpdateChecker.init(this, SPIGOT_RESOURCE_ID) // A link to a URL that contains the latest version as String
+		
+		new UpdateChecker(this, UpdateCheckSource.SPIGET, SPIGOT_RESOURCE_ID)
                 .setDownloadLink(SPIGOT_RESOURCE_ID) // You can either use a custom URL or the Spigot Resource ID
                 .setDonationLink("https://www.paypal.me/truemb")
                 .setChangelogLink(SPIGOT_RESOURCE_ID) // Same as for the Download link: URL or Spigot Resource ID

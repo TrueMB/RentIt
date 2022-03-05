@@ -9,6 +9,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.TrapDoor;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -66,10 +67,14 @@ public class HotelAreaListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDMG(EntityDamageByEntityEvent e) {
 
-		if(!(e.getDamager() instanceof Player))
-			return;
+		Player p = null;
+		if(e.getDamager() instanceof Player)
+			p = (Player) e.getDamager();
+		else if(e.getDamager() instanceof AbstractArrow && ((AbstractArrow) e.getDamager()).getShooter() instanceof Player)
+			p = (Player) ((AbstractArrow) e.getDamager()).getShooter();
 		
-		Player p = (Player) e.getDamager();		
+		if(p == null) return;
+		
 		Entity target = e.getEntity();
 		Location loc = target.getLocation();
 

@@ -35,6 +35,7 @@ public class UTF8YamlConfiguration extends YamlConfiguration {
 		Validate.notNull(file, "File cannot be null");
 		Files.createParentDirs(file);
 		String data = this.saveToString();
+		if(data == null) return;
 		Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charsets.UTF_8);
 
 		try {
@@ -74,7 +75,7 @@ public class UTF8YamlConfiguration extends YamlConfiguration {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		return "Error while running this#saveToString()";
+		return null;
 	}
 
 	@Override
