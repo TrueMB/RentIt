@@ -140,6 +140,8 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		this.manageFile();
 		this.startMySql();
+		
+		this.shopMeth = new UtilMethodes(this);
 
 		if(!this.manageFile().getBoolean("Options.commands.rentit.disabled"))
 			new RentItCOMMAND(this); //SHOULD ALWAYS RUN, EVENT WITHOUT DATABASE
@@ -155,6 +157,13 @@ public class Main extends JavaPlugin {
 			}
 		}, 20);
 		
+		this.backupMGR = new BackupManager(this);
+		this.shopItemMGR = new ShopItemManager();
+		this.npcFM = new NPCFileManager(this);
+		this.signFM = new SignFileManager(this);
+		this.shopCacheFM = new ShopCacheFileManager(this);
+		this.areaFM = new AreaFileManager(this);
+		this.doorFM = new DoorFileManager(this);
 		
 		this.setupEconomy();
 		this.permsAPI = new PermissionsAPI(this);
@@ -167,15 +176,6 @@ public class Main extends JavaPlugin {
 			this.vilUtils = new VillagerUtils(this); //VILLAGER NPC
 			new VillagerShopListener(this);
 		}
-
-		this.shopMeth = new UtilMethodes(this);
-		this.backupMGR = new BackupManager(this);
-		this.shopItemMGR = new ShopItemManager();
-		this.npcFM = new NPCFileManager(this);
-		this.signFM = new SignFileManager(this);
-		this.shopCacheFM = new ShopCacheFileManager(this);
-		this.areaFM = new AreaFileManager(this);
-		this.doorFM = new DoorFileManager(this);
 		
 		this.rollbackInvManager = new RollbackInventoryManager(this);
 				

@@ -19,7 +19,7 @@ public class RentItCOMMAND implements CommandExecutor, TabCompleter{
 		this.instance = plugin;
 		this.instance.getCommand("rentit").setExecutor(this);
 
-		adminSubCommands.add("reload");
+		this.adminSubCommands.add("reload");
 
 		//DISABLED COMMANDS
 		this.instance.manageFile().getStringList("Options.commands.rentit.disabledSubCommands").forEach(disabledSubCmds -> {
