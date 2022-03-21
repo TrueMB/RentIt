@@ -116,11 +116,6 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					return true;
 				}
 
-				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setnpc")) {
-					p.sendMessage(this.instance.getMessage("perm"));
-					return true;
-				}
-
 				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
 
 				if (shopId < 0) {
@@ -128,6 +123,27 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					p.sendMessage(this.instance.getMessage("notInShop"));
 					return true;
 				} else {
+
+		        	RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+					if (rentHandler == null) {
+						p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+						return true;
+					}
+					
+					CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+
+					if (catHandler == null) {
+						p.sendMessage(instance.getMessage("categoryError"));
+						return true;
+					}
+					
+		        	boolean allowUsersToMoveNPC = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + ".allowUsersToMoveNPC") ? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + ".allowUsersToMoveNPC") : false;
+		        	
+					if((rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) || !allowUsersToMoveNPC) && !this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setnpc")) {
+						p.sendMessage(this.instance.getMessage("perm"));
+						return true;
+					}
 					
 					if(this.instance.getNpcUtils() != null) {
 						//NPC

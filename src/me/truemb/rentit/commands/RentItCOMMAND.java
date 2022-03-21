@@ -46,8 +46,7 @@ public class RentItCOMMAND implements CommandExecutor, TabCompleter{
 				return true;
 			}
 			
-			this.instance.initRestart();
-			sender.sendMessage(this.instance.getMessage("reloaded"));
+			this.instance.initRestart(sender);
 			return true;
 		}
 		

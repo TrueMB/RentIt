@@ -59,6 +59,7 @@ Options:
   #ownerBypassLock -> Should Owner or Players with Permission be allowed to open locked doors
   #doorsClosedUntilBuy -> <true/false> Should the doors be closed until a player bought the Shop/hotelroom? True Allows player to look, until someone rents it and does /shop door close
   #doorsClosedAfterBuy -> the default status, after a player bought a Shop
+  #allowUsersToMoveNPC -> Should a user without permission be able to move the npc with /shop setnpc
   categorySettings:
     ShopCategory:
       99:
@@ -70,6 +71,7 @@ Options:
         ownerBypassLock: true
         doorsClosedUntilBuy: false
         doorsClosedAfterBuy: false
+        allowUsersToMoveNPC: true
       88:
         usePermission: true
         autoPaymentDefault: true
@@ -473,6 +475,7 @@ Messages:
   prefix: '&7[&6&lRent&fIt&7]'
   perm: '&cYou dont have enough Permissions!'
   console: 'Sorry, only works Ingame.'
+  reloadedError: '&4ERROR. &cRentIt was reloaded. But there was an error. Please look into the console.'
   reloaded: '&a&lRentIt was reloaded. But better use a Server Restart next time.'
   commandDisabled: '&cThis command was disabled in the config!'
   rentitHelp: '&cPlease use &f/rentit reload&c.'
@@ -725,4 +728,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 11
+ConfigVersion: 12
