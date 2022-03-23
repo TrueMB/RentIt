@@ -51,7 +51,7 @@ public class ShopInventorySQL {
 	public void setupShopInventories(RentTypeHandler handler) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
-		int id = handler.getShopID();
+		int id = handler.getID();
 		
 		sql.prepareStatement("SELECT * FROM " + sql.t_shop_inv + " WHERE ID='" + id + "';", new Consumer<ResultSet>() {
 

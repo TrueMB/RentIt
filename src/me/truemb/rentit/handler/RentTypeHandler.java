@@ -40,7 +40,7 @@ public class RentTypeHandler {
 	}
 	
 	//GET METHODES
-	public int getShopID() {
+	public int getID() {
 		return this.id;
 	}
 
@@ -104,7 +104,7 @@ public class RentTypeHandler {
 			if(permsHandler == null)
 				continue;
 			
-			permsHandler.reset(this.getShopID());
+			permsHandler.reset(this.getID());
 		}
 		
 		//REMOVE OWNING LIST ENTRY FROM OWNER IN CACHE
@@ -113,7 +113,7 @@ public class RentTypeHandler {
 		PlayerHandler playerHandler = plugin.getMethodes().getPlayerHandler(uuid);
 		
 		if(playerHandler != null) {
-			playerHandler.removeOwningRent(type, this.getShopID());
+			playerHandler.removeOwningRent(type, this.getID());
 		}
 		
 		//RESET CACHE

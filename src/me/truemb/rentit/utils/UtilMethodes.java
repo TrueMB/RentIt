@@ -2,9 +2,12 @@ package me.truemb.rentit.utils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -178,6 +181,16 @@ public class UtilMethodes {
 		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
 
 		return typeHash.get(id);
+	}
+	
+	public Collection<RentTypeHandler> getPaymentsOfRentTypes(RentTypes type) {
+
+		if(!this.instance.rentTypeHandlers.containsKey(type))
+			return Collections.emptyList();
+
+		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
+
+		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() != null && rentType.getNextPayment() != null && rentType.getNextPayment().getTime() <= System.currentTimeMillis()).collect(Collectors.toList());
 	}
 
 	public CategoryHandler getCategory(RentTypes type, Integer id) {
@@ -446,7 +459,7 @@ public class UtilMethodes {
 		
 		for(int i = start; i < end; i++) {
 			RentTypeHandler handler = hash.get(hash.keySet().toArray()[i]);
-			String id = String.valueOf(handler.getShopID());
+			String id = String.valueOf(handler.getID());
 			
 			TextComponent component = new TextComponent(this.instance.getMessage(path + ".body")
 					.replaceAll("(?i)%" + "id" + "%", id)

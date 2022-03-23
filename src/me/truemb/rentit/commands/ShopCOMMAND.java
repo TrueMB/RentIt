@@ -1717,7 +1717,7 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 
 	private void setBuyItem(Player p, RentTypeHandler rentHandler, CategoryHandler catHandler, ItemStack item, double price) {
 
-		item = ShopItemManager.createShopItem(this.instance, item, rentHandler.getShopID(), price); // UPDATED ITEM WITH PRICE IN IT
+		item = ShopItemManager.createShopItem(this.instance, item, rentHandler.getID(), price); // UPDATED ITEM WITH PRICE IN IT
 
 		Inventory inv = rentHandler.getBuyInv();
 		
@@ -1740,7 +1740,7 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 
 		inv.addItem(item);
 
-		this.instance.getShopsInvSQL().updateBuyInv(rentHandler.getShopID(), inv.getContents()); // DATABASE UPDATE
+		this.instance.getShopsInvSQL().updateBuyInv(rentHandler.getID(), inv.getContents()); // DATABASE UPDATE
 
 		p.sendMessage(this.instance.getMessage("shopItemAdded").replace("%price%", String.valueOf(price)).replace("%type%", StringUtils.capitalize(item.getType().toString())).replace("%amount%", String.valueOf(item.getAmount())));
 	}

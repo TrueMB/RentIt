@@ -28,7 +28,7 @@ public class ItemSelledListener implements Listener {
 		Player buyer = e.getBuyer();
 		RentTypeHandler rentHandler = e.getRentTypeHandler();
 		
-		int shopId = rentHandler.getShopID();
+		int shopId = rentHandler.getID();
 
 		for (Player all : Bukkit.getOnlinePlayers()) {
 			UUID uuid = PlayerManager.getUUID(all);
