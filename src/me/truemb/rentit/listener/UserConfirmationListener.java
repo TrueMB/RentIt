@@ -97,6 +97,13 @@ public class UserConfirmationListener implements Listener {
 					return;
 				}
 				
+				UUID ownerUUID = rentHandler.getOwnerUUID();
+				if(ownerUUID != null) {
+					p.closeInventory();
+					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
+					return;
+				}
+				
 				double costs = catHandler.getPrice();
 				String time = catHandler.getTime();
 				
@@ -202,6 +209,13 @@ public class UserConfirmationListener implements Listener {
 
 				if (catHandler == null) {
 					p.sendMessage(instance.getMessage("categoryError"));
+					return;
+				}
+				
+				UUID ownerUUID = rentHandler.getOwnerUUID();
+				if(ownerUUID != null) {
+					p.closeInventory();
+					p.sendMessage(this.instance.getMessage("hotelAlreadyBought"));
 					return;
 				}
 					        	
