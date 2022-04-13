@@ -55,6 +55,7 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 		subCommands.add("permissions");
 		subCommands.add("setPermission");
 		subCommands.add("buy");
+		subCommands.add("resign");
 		subCommands.add("help");
 
 		adminSubCommands.add("createCat");
@@ -125,26 +126,45 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 					p.sendMessage(this.instance.getMessage("hotelDatabaseEntryMissing"));
 					return true;
 				}
+				
+				this.resetArea(p, rentHandler);
+				p.sendMessage(this.instance.getMessage("hotelReseted").replace("%hotelId%", String.valueOf(hotelId)));
+				return true;
 
-				BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, hotelId);
-				BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, hotelId);
-				this.instance.getBackupManager().paste(this.type, hotelId, min, max, p.getWorld(), false);
-				this.instance.getAreaFileManager().clearMember(this.type, hotelId);
+			} else if (args[0].equalsIgnoreCase("resign")) {
 				
-				rentHandler.reset(this.instance);
-				
-	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
-	        	rentHandler.setAutoPayment(autoPaymentDefault);
-				this.instance.getHotelsSQL().reset(hotelId, autoPaymentDefault); // Resets the Owner and Payment
-				this.instance.getAreaFileManager().setOwner(this.type, hotelId, null);
-				
-				this.instance.getPermissionsSQL().reset(this.type, hotelId);
-				this.instance.getMethodes().clearPlayersFromRegion(this.type, hotelId, p.getWorld());
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "resign")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
 
-				this.instance.getDoorFileManager().closeDoors(this.type, hotelId);
-				this.instance.getAreaFileManager().unsetDoorClosed(this.type, hotelId);
-				this.instance.getMethodes().updateSign(this.type, hotelId);
-				p.sendMessage(instance.getMessage("hotelReseted").replace("%hotelId%", String.valueOf(hotelId)));
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "hotel", "resign")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				int hotelId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
+
+				if (hotelId < 0) {
+					// PLAYER NOT IN hotel AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("notInHotel"));
+					return true;
+				}
+				
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
+
+				if (rentHandler == null) {
+					p.sendMessage(this.instance.getMessage("hotelDatabaseEntryMissing"));
+					return true;
+				}
+				
+				if (!p.getUniqueId().equals(rentHandler.getOwnerUUID())) {
+					p.sendMessage(this.instance.getMessage("notHotelOwner"));
+					return true;
+				}
+				
+				this.resetArea(p, rentHandler);
+				p.sendMessage(this.instance.getMessage("hotelResignContract").replace("%hotelId%", String.valueOf(hotelId)));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("delete")) {
@@ -1075,6 +1095,30 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 		for (String s : this.instance.manageFile().getStringList("Messages." + path)) {
 			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s)));
 		}
+	}
+	
+	private void resetArea(Player p, RentTypeHandler rentHandler) {
+
+		int hotelId = rentHandler.getID();
+		
+		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, hotelId);
+		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, hotelId);
+		this.instance.getBackupManager().paste(this.type, hotelId, min, max, p.getWorld(), false);
+		this.instance.getAreaFileManager().clearMember(this.type, hotelId);
+		
+		rentHandler.reset(this.instance);
+		
+    	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
+    	rentHandler.setAutoPayment(autoPaymentDefault);
+		this.instance.getHotelsSQL().reset(hotelId, autoPaymentDefault); // Resets the Owner and Payment
+		this.instance.getAreaFileManager().setOwner(this.type, hotelId, null);
+		
+		this.instance.getPermissionsSQL().reset(this.type, hotelId);
+		this.instance.getMethodes().clearPlayersFromRegion(this.type, hotelId, p.getWorld());
+
+		this.instance.getDoorFileManager().closeDoors(this.type, hotelId);
+		this.instance.getAreaFileManager().unsetDoorClosed(this.type, hotelId);
+		this.instance.getMethodes().updateSign(this.type, hotelId);
 	}
 
 	@Override

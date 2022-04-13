@@ -556,6 +556,7 @@ Messages:
   shopStillOwning: '&6You are still owning the Shop.'
   shopRollbackIsAlreadyOpen: '&cSomebody is already in the Rollback Menu. Please try again later.'
   shopRollbackNoItems: '&cThere are no Items saved.'
+  shopResignContract: '&6You resigned of the rent contract.'
   shopUserHelp:
     - '&6&m                  &6[ &f&lSHOP &6]&6&m                  '
     - '&f/shops &7- &6Shows all your owned Shops.'
@@ -570,6 +571,7 @@ Messages:
     - '&f/shop users &7- &6List all Players with Shop Permissions.'
     - '&f/shop door <open/close> &7- &6Lock your Shop.'
     - '&f/shop noInfo &7- &6Get no Informations of Transactions.'
+    - '&f/shop resign &7- &6Resign of the rent contract.'
   shopAdminHelp:
     - '&6&m                  &6[ &f&lSHOP &6]&6&m                  '
     - '&f/shops &7- &6Shows all your owned Shops.'
@@ -594,6 +596,7 @@ Messages:
     - '&f/shop permissions &7- &6All Shop Permissions.'
     - '&f/shop users &7- &6List all Players with Shop Permissions.'
     - '&f/shop noInfo &7- &6Get no Informations of Transactions.'
+    - '&f/shop resign &7- &6Resign of the rent contract.'
     - '&f/shop door <open/close> &7- &6Lock your Shop.'
     - '&f/shop door <add/remove> <ShopId> &7- &6Look at doors to at them to the Shop.'
     - '&f/shop updateBackup &7- &6Updates the Backup.'
@@ -613,6 +616,7 @@ Messages:
     - '&5&l/shop users \n \n &6Lists all Players with custom Permissions in the Shop.'
     - '&5&l/shop door <open/close> \n \n &6Close your Shop, so that no Customers can enter.'
     - '&5&l/shop noInfo \n \n &6Get no more Informations of Transactions in your Shop. (needs to be turned off for each owning shop)'
+    - '&5&l/shop resign \n \n &6Resign the rent contract. (Resets the Shop and makes it for somebody else rentable)'
     - '\n \n \n&c&lNeed To Know'
     - '&6You can remove with Rightclick as a Shop Owner or Player with Permissions Items from the Shop after you clicked the Shop NPC with the GUI.'
     - '&6You can create a chest in your Shop Area, so that players are able to sell Items to your Shop or to extend your Item amount of a type that you are already selling.'
@@ -667,6 +671,7 @@ Messages:
   hotelDoorAlreadyAdded: '&6The door was already added to some Hotelroom.'
   hotelLimitReached: '&cYou cant have more Hotelrooms.'
   hotelBackupUpdated: '&6You updated the Hotel Area Backup.'
+  hotelResignContract: '&6You resigned of the rent contract.'
   hotelUserHelp:
     - '&6&m                  &6[ &f&lHOTELROOM &6]&6&m                  '
     - '&f/hotels &7- &6Shows all your owned Hotelrooms.'
@@ -676,6 +681,7 @@ Messages:
     - '&f/hotel permissions &7- &6All Hotelroom Permissions.'
     - '&f/hotel users &7- &6List all Players with Hotelroom Permissions.'
     - '&f/hotel door <open/close> &7- &6Lock your Shop.'
+    - '&f/hotel resign &7- &6Resign of the rent contract.'
   hotelAdminHelp:
     - '&6&m                  &6[ &f&lHOTELROOM &6]&6&m                  '
     - '&f/hotels &7- &6Shows all your owned Hotelrooms.'
@@ -695,6 +701,7 @@ Messages:
     - '&f/hotel buy <shopId> &7- &6Rent a specific Hotelroom.'
     - '&f/hotel door <open/close> &7- &6Lock your Shop.'
     - '&f/hotel door <add/remove> <ShopId> &7- &6Look at doors to at them to the Shop.'
+    - '&f/hotel resign &7- &6Resign of the rent contract.'
     - '&f/hotel updateBackup &7- &6Updates the Backup.'
     - '&f/hotel info &7- &6Get the Shop Informations.'
     - '&f/hotel list &7- &6Lists all Hotels.'
@@ -707,6 +714,7 @@ Messages:
     - '&5&l/hotel permissions \n \n&6Lists all the Hotelrooms Permissions'
     - '&5&l/hotel users \n \n &6Lists all Players with custom Permissions in the Hotelrooms.'
     - '&5&l/hotel door <open/close> \n \n &6Close your Hotelroom, so that you dont get disturbed.'
+    - '&5&l/hotel resign \n \n &6Resign the rent contract. (Resets the Shop and makes it for somebody else rentable)'
   hotelInfo:
     - '&6&m                  &6[ &f&lHOTEL Info &6]&6&m                  '
     - '&6Hotel ID&7: &f%hotelId%'
@@ -728,4 +736,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 12
+ConfigVersion: 13

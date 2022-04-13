@@ -63,6 +63,7 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 		subCommands.add("buy");
 		subCommands.add("sellItem");
 		subCommands.add("buyItem");
+		subCommands.add("resign");
 		subCommands.add("help");
 
 		adminSubCommands.add("createCat");
@@ -214,7 +215,7 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					p.sendMessage(this.instance.getMessage("perm"));
 					return true;
 				}
-
+				
 				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
 
 				if (shopId < 0) {
@@ -229,45 +230,48 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
-				UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
-				//ItemStack[] contents = rentHandler.getSellInv() != null ? rentHandler.getSellInv().getContents() : null;
-				//if(ownerUUID != null && contents != null)
-				//	this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId, contents);
-
-				if(ownerUUID != null)
-					instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
-					
-				BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
-				BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
-				this.instance.getBackupManager().paste(this.type, shopId, min, max, p.getWorld(), false);
-				this.instance.getAreaFileManager().clearMember(this.type, shopId);
-
-				if(this.instance.getNpcUtils() != null) {
-					if (this.instance.getNpcUtils().isNPCSpawned(shopId))
-						this.instance.getNpcUtils().despawnNPC(shopId);
-				}else {
-					if(this.instance.getVillagerUtils().isVillagerSpawned(shopId))
-						this.instance.getVillagerUtils().destroyVillager(shopId);
-				}
-
-				rentHandler.reset(this.instance);
 				
-	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
-	        	rentHandler.setAutoPayment(autoPaymentDefault);
-				this.instance.getShopsSQL().reset(shopId, autoPaymentDefault);
-				this.instance.getAreaFileManager().setOwner(this.type, shopId, null);
-				
-				this.instance.getPermissionsSQL().reset(this.type, shopId);
-				this.instance.getMethodes().clearPlayersFromRegion(type, shopId, p.getWorld());
-
-				this.instance.getDoorFileManager().closeDoors(this.type, shopId);
-				this.instance.getAreaFileManager().unsetDoorClosed(this.type, shopId);
-				this.instance.getMethodes().updateSign(this.type, shopId);
-
+				this.resetArea(p, rentHandler);
 				p.sendMessage(this.instance.getMessage("shopReseted").replace("%shopId%", String.valueOf(shopId)));
 				return true;
 
-			} else if (args[0].equalsIgnoreCase("delete")) {
+			} else if (args[0].equalsIgnoreCase("resign")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "resign")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "resign")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+				
+				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
+
+				if (shopId < 0) {
+					// PLAYER NOT IN SHOP AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("notInShop"));
+					return true;
+				}
+
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+				if (rentHandler == null) {
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
+					return true;
+				}
+				
+				if (!p.getUniqueId().equals(rentHandler.getOwnerUUID())) {
+					p.sendMessage(this.instance.getMessage("notShopOwner"));
+					return true;
+				}
+				
+				this.resetArea(p, rentHandler);
+				p.sendMessage(this.instance.getMessage("shopResignContract").replace("%shopId%", String.valueOf(shopId)));
+				return true;
+
+			}else if (args[0].equalsIgnoreCase("delete")) {
 				
 				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "delete")) {
 					sender.sendMessage(this.instance.getMessage("commandDisabled"));
@@ -1743,6 +1747,43 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 		this.instance.getShopsInvSQL().updateBuyInv(rentHandler.getID(), inv.getContents()); // DATABASE UPDATE
 
 		p.sendMessage(this.instance.getMessage("shopItemAdded").replace("%price%", String.valueOf(price)).replace("%type%", StringUtils.capitalize(item.getType().toString())).replace("%amount%", String.valueOf(item.getAmount())));
+	}
+	
+	private void resetArea(Player p, RentTypeHandler rentHandler) {
+		
+		int shopId = rentHandler.getID();
+		UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
+
+		if(ownerUUID != null)
+			this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
+			
+		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
+		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
+		this.instance.getBackupManager().paste(this.type, shopId, min, max, p.getWorld(), false);
+		this.instance.getAreaFileManager().clearMember(this.type, shopId);
+
+		if(this.instance.getNpcUtils() != null) {
+			if (this.instance.getNpcUtils().isNPCSpawned(shopId))
+				this.instance.getNpcUtils().despawnNPC(shopId);
+		}else {
+			if(this.instance.getVillagerUtils().isVillagerSpawned(shopId))
+				this.instance.getVillagerUtils().destroyVillager(shopId);
+		}
+
+		rentHandler.reset(this.instance);
+		
+    	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
+    	rentHandler.setAutoPayment(autoPaymentDefault);
+		this.instance.getShopsSQL().reset(shopId, autoPaymentDefault);
+		this.instance.getAreaFileManager().setOwner(this.type, shopId, null);
+		
+		this.instance.getPermissionsSQL().reset(this.type, shopId);
+		this.instance.getMethodes().clearPlayersFromRegion(type, shopId, p.getWorld());
+
+		this.instance.getDoorFileManager().closeDoors(this.type, shopId);
+		this.instance.getAreaFileManager().unsetDoorClosed(this.type, shopId);
+		this.instance.getMethodes().updateSign(this.type, shopId);
+
 	}
 
 	@Override
