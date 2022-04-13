@@ -324,7 +324,7 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 							for (UUID uuids : hash.keySet()) {
 
 								OfflinePlayer target = Bukkit.getOfflinePlayer(uuids);
-								String ingameName = target.getName();
+								String ingameName = target != null && target.getName() != null ? target.getName() : PlayerManager.getName(uuids.toString());
 
 								List<String> list = hash.get(uuids);
 								String permissions = "";
