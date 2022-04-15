@@ -177,7 +177,6 @@ public class HotelAreaListener implements Listener {
 					&& !this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))) {
 				
 				e.setCancelled(true);
-				p.sendMessage(this.instance.getMessage("notShopOwner"));
 			}
 		}else{
 			

@@ -1488,7 +1488,7 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				}
 
 				String target = args[1];
-				String permission = args[2];
+				String permission = args[2].toLowerCase();
 				boolean value = args[3].equalsIgnoreCase("true") ? true : false;
 
 				for (String permsPath : this.instance.manageFile().getConfigurationSection("UserPermissions.shop").getKeys(false)) {
@@ -1814,6 +1814,7 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 			}
 	
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("door")) {
+			
 			if("add".startsWith(args[1]) && this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "door.add")) {
 				list.add("add");
 			}else if("remove".startsWith(args[1]) && this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "door.remove")) {
@@ -1822,6 +1823,31 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				list.add("open");
 			}else if("close".startsWith(args[1]) && this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "door.close")) {
 				list.add("close");
+			}
+			
+		}else if(args.length > 2 && args[0].equalsIgnoreCase("setPermission")) {
+			if(args.length == 2) {
+				
+				for(Player all : Bukkit.getOnlinePlayers())
+					if(all.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+						list.add(all.getName());
+				
+			}else if(args.length == 3) {
+
+				for (String permsPath : this.instance.manageFile().getConfigurationSection("UserPermissions.shop").getKeys(false)) {
+					String cfgPerm = this.instance.manageFile().getString("UserPermissions.shop." + permsPath);
+					
+					if(cfgPerm.toLowerCase().startsWith(args[2].toLowerCase()))
+						list.add(cfgPerm);
+				}
+					
+			}else if(args.length == 4) {
+				
+				if("true".toLowerCase().startsWith(args[3].toLowerCase()))
+					list.add("true");
+				else if("false".toLowerCase().startsWith(args[3].toLowerCase()))
+					list.add("false");
+				
 			}
 		}
 		

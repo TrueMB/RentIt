@@ -930,25 +930,25 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				}
 
 				String target = args[1];
-				String permission = args[2];
+				String permission = args[2].toLowerCase();
 				boolean value = args[3].equalsIgnoreCase("true") ? true : false;
 
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("hotelDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("hotelDatabaseEntryMissing"));
 					return true;
 				}
 
-				if (!this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, instance.manageFile().getString("UserPermissions.hotel.Admin"))) {
-					p.sendMessage(instance.getMessage("notHotelOwner"));
+				if (!this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))) {
+					p.sendMessage(this.instance.getMessage("notHotelOwner"));
 					return true;
 				}
 
-				for (String permsPath : instance.manageFile().getConfigurationSection("UserPermissions.hotel").getKeys(false)) {
-					String cfgPerm = instance.manageFile().getString("UserPermissions.hotel." + permsPath);
+				for (String permsPath : this.instance.manageFile().getConfigurationSection("UserPermissions.hotel").getKeys(false)) {
+					String cfgPerm = this.instance.manageFile().getString("UserPermissions.hotel." + permsPath);
 					if (permission.equalsIgnoreCase(cfgPerm)) {
-
+						
 						UUID uuidTarget = null;
 						if (PlayerManager.getPlayer(target) != null) {
 							uuidTarget = PlayerManager.getUUID(target);
@@ -1149,6 +1149,7 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 			}
 	
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("door")) {
+			
 			if("add".startsWith(args[1]) && this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "door.add")) {
 				list.add("add");
 			}else if("remove".startsWith(args[1]) && this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "door.remove")) {
@@ -1157,6 +1158,31 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 				list.add("open");
 			}else if("close".startsWith(args[1]) && this.instance.getMethodes().hasPermissionForCommand(p, false, "hotel", "door.close")) {
 				list.add("close");
+			}
+			
+		}else if(args.length > 2 && args[0].equalsIgnoreCase("setPermission")) {
+			if(args.length == 2) {
+				
+				for(Player all : Bukkit.getOnlinePlayers())
+					if(all.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+						list.add(all.getName());
+				
+			}else if(args.length == 3) {
+
+				for (String permsPath : this.instance.manageFile().getConfigurationSection("UserPermissions.hotel").getKeys(false)) {
+					String cfgPerm = this.instance.manageFile().getString("UserPermissions.hotel." + permsPath);
+					
+					if(cfgPerm.toLowerCase().startsWith(args[2].toLowerCase()))
+						list.add(cfgPerm);
+				}
+					
+			}else if(args.length == 4) {
+				
+				if("true".toLowerCase().startsWith(args[3].toLowerCase()))
+					list.add("true");
+				else if("false".toLowerCase().startsWith(args[3].toLowerCase()))
+					list.add("false");
+				
 			}
 		}
 		
