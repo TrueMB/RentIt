@@ -967,14 +967,14 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 						
 						this.instance.getPermissionsSQL().setPermission(uuidTarget, this.type, hotelId, permission, value);
 
-						if (this.instance.manageFile().getString("UserPermissions.hotel.Admin").equalsIgnoreCase(permission) || instance.manageFile().getString("UserPermissions.hotel.Build").equalsIgnoreCase(permission)) {
+						if (this.instance.manageFile().getString("UserPermissions.hotel.Admin").equalsIgnoreCase(permission) || this.instance.manageFile().getString("UserPermissions.hotel.Build").equalsIgnoreCase(permission)) {
 
 							if (value) {
 								this.instance.getAreaFileManager().addMember(this.type, hotelId, uuidTarget);
 								this.instance.getMethodes().addMemberToRegion(this.type, hotelId, this.instance.getAreaFileManager().getWorldFromArea(this.type, hotelId), uuidTarget);
 
-							}else if (!this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, instance.manageFile().getString("UserPermissions.hotel.Admin"))
-									&& !this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, instance.manageFile().getString("UserPermissions.hotel.Build"))) {
+							}else if (!this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))
+									&& !this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Build"))) {
 
 								this.instance.getAreaFileManager().removeMember(this.type, hotelId, uuidTarget);
 								this.instance.getMethodes().removeMemberToRegion(this.type, hotelId, this.instance.getAreaFileManager().getWorldFromArea(this.type, hotelId), uuidTarget);

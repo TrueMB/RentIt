@@ -296,9 +296,16 @@ public class Main extends JavaPlugin {
 					getVillagerUtils().disableVillagers();
 				
 				//OR NPCS
-				else if(getNpcUtils() != null)
-					getNpcUtils().disableNPCs();
-		
+				else if(getNpcUtils() != null) {
+					Bukkit.getScheduler().runTask(plugin, new Runnable() {
+						
+						@Override
+						public void run() {
+							getNpcUtils().disableNPCs();
+						}
+					});
+				}
+				
 				//DISABLING PAYMENT RUNNABLE
 				Bukkit.getScheduler().cancelTask(runnId);
 				runnId = -1;

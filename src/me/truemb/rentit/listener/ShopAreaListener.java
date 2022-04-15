@@ -173,7 +173,7 @@ public class ShopAreaListener implements Listener {
 			
 			int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
 
-		    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(this.type, shopId);
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 			if (rentHandler == null)
 				return; //DOES SHOP EXISTS?

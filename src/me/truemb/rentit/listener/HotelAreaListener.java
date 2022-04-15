@@ -168,7 +168,7 @@ public class HotelAreaListener implements Listener {
 			
 			int hotelId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
 
-		    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(this.type, hotelId);
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
 
 			if (rentHandler == null)
 				return; //DOES SHOP EXISTS?
@@ -177,6 +177,7 @@ public class HotelAreaListener implements Listener {
 					&& !this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))) {
 				
 				e.setCancelled(true);
+				p.sendMessage(this.instance.getMessage("notHotelOwner"));
 			}
 		}else{
 			
