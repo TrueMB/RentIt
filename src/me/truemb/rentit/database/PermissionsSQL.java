@@ -45,7 +45,7 @@ public class PermissionsSQL {
 	public void setupPermissions(UUID uuid, RentTypes type, PermissionsHandler permsHandler) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE userUUID='" + uuid.toString() + "' AND type='" + type.toString().toLowerCase() + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE userUUID='" + uuid.toString() + "' AND type='" + type.toString() + "';", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -64,7 +64,7 @@ public class PermissionsSQL {
 	public void setupWorldGuardMembers(World world, RentTypes type, int id) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE type='" + type.toString().toLowerCase() + "' AND ID='" + String.valueOf(id) + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE type='" + type.toString() + "' AND ID='" + String.valueOf(id) + "';", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {

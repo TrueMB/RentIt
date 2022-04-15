@@ -35,7 +35,7 @@ public class PlayerSettingsSQL {
 	public void setupSettings(UUID uuid, RentTypes type, SettingsHandler settingsHandler) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_settings + " WHERE uuid='" + uuid.toString() + "' AND type='" + type.toString().toLowerCase() + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_settings + " WHERE uuid='" + uuid.toString() + "' AND type='" + type.toString() + "';", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
