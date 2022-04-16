@@ -188,6 +188,11 @@ public class ShopAreaListener implements Listener {
 					return;
 				}
 			}
+		}else if(b.getType() == Material.ENDER_CHEST) {
+			
+			//ENDER CHEST INTERACTION
+			return;
+			
 		}else if(b.getType() == Material.CHEST) {
 			//CHEST INTERACTION
 			
