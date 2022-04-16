@@ -1845,7 +1845,8 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 				
 				if("true".toLowerCase().startsWith(args[3].toLowerCase()))
 					list.add("true");
-				else if("false".toLowerCase().startsWith(args[3].toLowerCase()))
+				
+				if("false".toLowerCase().startsWith(args[3].toLowerCase()))
 					list.add("false");
 				
 			}
