@@ -47,7 +47,7 @@ public class HotelAreaListener implements Listener {
 		Block b = e.getBlock();
 		Location loc = b.getLocation();
 		
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -59,7 +59,7 @@ public class HotelAreaListener implements Listener {
 		Block b = e.getBlockPlaced();
 		Location loc = b.getLocation();
 		
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -79,7 +79,7 @@ public class HotelAreaListener implements Listener {
 		Entity target = e.getEntity();
 		Location loc = target.getLocation();
 
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -98,7 +98,7 @@ public class HotelAreaListener implements Listener {
 		Entity target = e.getEntity();
 		Location loc = target.getLocation();
 
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -113,7 +113,7 @@ public class HotelAreaListener implements Listener {
 		Entity target = e.getRightClicked();
 		Location loc = target.getLocation();
 		
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -122,9 +122,6 @@ public class HotelAreaListener implements Listener {
     public void onInteraction(PlayerInteractEvent e) {
 		
 		if(e.getAction() != Action.RIGHT_CLICK_BLOCK)
-			return;
-		
-		if(e.getHand() != EquipmentSlot.HAND)
 			return;
 
 		Block b = e.getClickedBlock();
@@ -158,7 +155,8 @@ public class HotelAreaListener implements Listener {
 					e.setUseInteractedBlock(Result.DENY);
 					
 					if(rentHandler.getOwnerUUID() != null)
-						p.sendMessage(this.instance.getMessage("hotelDoorStillClosed"));
+						if(e.getHand() == EquipmentSlot.HAND)
+							p.sendMessage(this.instance.getMessage("hotelDoorStillClosed"));
 					return;
 				}else {
 					e.setCancelled(false);
@@ -179,7 +177,10 @@ public class HotelAreaListener implements Listener {
 				}else {
 					e.setCancelled(true);
 					e.setUseInteractedBlock(Result.DENY);
-					p.sendMessage(this.instance.getMessage("hotelDoorStillClosed"));
+					
+					if(e.getHand() == EquipmentSlot.HAND)
+						p.sendMessage(this.instance.getMessage("hotelDoorStillClosed"));
+					
 					return;
 				}
 			}
@@ -202,12 +203,14 @@ public class HotelAreaListener implements Listener {
 					&& !this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))) {
 				
 				e.setCancelled(true);
-				p.sendMessage(this.instance.getMessage("notHotelOwner"));
+				
+				if(e.getHand() == EquipmentSlot.HAND)
+					p.sendMessage(this.instance.getMessage("notHotelOwner"));
 			}
 		}else{
 			
 			//INTERACTION
-			boolean canceled = this.protectedRegion(p, loc);
+			boolean canceled = this.protectedRegion(p, loc, e.getHand() == EquipmentSlot.HAND);
 			if(canceled)
 				e.setCancelled(canceled);
 			else {
@@ -216,21 +219,20 @@ public class HotelAreaListener implements Listener {
 				if(p.getInventory().getItemInMainHand() == null && p.getInventory().getItemInOffHand() == null || p.getInventory().getItemInMainHand().getType().isBlock() && p.getInventory().getItemInOffHand().getType().isBlock())
 					return;
 				
-				
 				BlockFace facing = e.getBlockFace();
 				Block facingBlock = b.getRelative(facing);
 				
 				if(facingBlock == null)
 					return;
 
-				boolean canceledSpawn = this.protectedRegion(p, facingBlock.getLocation());
+				boolean canceledSpawn = this.protectedRegion(p, facingBlock.getLocation(), e.getHand() == EquipmentSlot.HAND);
 				if(canceledSpawn)
 					e.setCancelled(canceledSpawn);
 			}
 		}
     }
 	
-	private boolean protectedRegion(Player p, Location loc) {
+	private boolean protectedRegion(Player p, Location loc, boolean withMessages) {
 		
 		if(p.hasPermission(this.instance.manageFile().getString("Permissions.build")))
 			return false;
@@ -244,20 +246,23 @@ public class HotelAreaListener implements Listener {
 			return false;
 
 		if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.hotel.build")) {
-			p.sendMessage(this.instance.getMessage("featureDisabled"));
+			if(withMessages)
+				p.sendMessage(this.instance.getMessage("featureDisabled"));
 			return true;
 		}
 		
 		if(this.instance.getWorldGuard() != null) {
 			if(!this.instance.getMethodes().isMemberFromRegion(this.type, hotelId, p.getWorld(), uuid)) {
-				p.sendMessage(this.instance.getMessage("notHotelOwner"));
+				if(withMessages)
+					p.sendMessage(this.instance.getMessage("notHotelOwner"));
 				return true;
 			}
 			return false;
 		}
 
 		if(!this.instance.getAreaFileManager().isOwner(this.type, hotelId, uuid) && !this.instance.getAreaFileManager().isMember(this.type, hotelId, uuid)) {
-			p.sendMessage(this.instance.getMessage("notHotelOwner"));
+			if(withMessages)
+				p.sendMessage(this.instance.getMessage("notHotelOwner"));
 			return true;
 		}
 		return false;

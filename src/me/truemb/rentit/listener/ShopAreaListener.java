@@ -47,7 +47,7 @@ public class ShopAreaListener implements Listener {
 		Block b = e.getBlock();
 		Location loc = b.getLocation();
 		
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -59,7 +59,7 @@ public class ShopAreaListener implements Listener {
 		Block b = e.getBlockPlaced();
 		Location loc = b.getLocation();
 		
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -79,7 +79,7 @@ public class ShopAreaListener implements Listener {
 		Entity target = e.getEntity();
 		Location loc = target.getLocation();
 
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -98,7 +98,7 @@ public class ShopAreaListener implements Listener {
 		Entity target = e.getEntity();
 		Location loc = target.getLocation();
 
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -116,7 +116,7 @@ public class ShopAreaListener implements Listener {
 		if(target.hasMetadata("NPC"))
 			return;
 		
-		boolean canceled = this.protectedRegion(p, loc);
+		boolean canceled = this.protectedRegion(p, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -163,7 +163,8 @@ public class ShopAreaListener implements Listener {
 					
 					//SHOP ALREADY OWNED, BUT OWNERS CLOSED DOORS
 					if(rentHandler.getOwnerUUID() != null)
-						p.sendMessage(this.instance.getMessage("shopDoorStillClosed"));
+						if(e.getHand() == EquipmentSlot.HAND)
+							p.sendMessage(this.instance.getMessage("shopDoorStillClosed"));
 					return;
 				}else {
 					e.setCancelled(false);
@@ -184,7 +185,9 @@ public class ShopAreaListener implements Listener {
 				}else {
 					e.setCancelled(true);
 					e.setUseInteractedBlock(Result.DENY);
-					p.sendMessage(this.instance.getMessage("shopDoorStillClosed"));
+					
+					if(e.getHand() == EquipmentSlot.HAND)
+						p.sendMessage(this.instance.getMessage("shopDoorStillClosed"));
 					return;
 				}
 			}
@@ -208,11 +211,13 @@ public class ShopAreaListener implements Listener {
 					!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin")))) {
 				
 				e.setCancelled(true);
-				p.sendMessage(this.instance.getMessage("notShopOwner"));
+				
+				if(e.getHand() == EquipmentSlot.HAND)
+					p.sendMessage(this.instance.getMessage("notShopOwner"));
 			}
 		}else {
 			
-			boolean canceled = this.protectedRegion(p, loc);
+			boolean canceled = this.protectedRegion(p, loc, e.getHand() == EquipmentSlot.HAND);
 			if(canceled)
 				e.setCancelled(canceled);
 			else {
@@ -227,14 +232,14 @@ public class ShopAreaListener implements Listener {
 				if(facingBlock == null)
 					return;
 
-				boolean canceledSpawn = this.protectedRegion(p, facingBlock.getLocation());
+				boolean canceledSpawn = this.protectedRegion(p, facingBlock.getLocation(), e.getHand() == EquipmentSlot.HAND);
 				if(canceledSpawn)
 					e.setCancelled(canceledSpawn);
 			}
 		}
     }
 	
-	private boolean protectedRegion(Player p, Location loc) {
+	private boolean protectedRegion(Player p, Location loc, boolean withMessages) {
 		
 		if(p.hasPermission(this.instance.manageFile().getString("Permissions.build")))
 			return false;
@@ -248,20 +253,23 @@ public class ShopAreaListener implements Listener {
 			return false;
 
 		if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.shop.build")) {
-			p.sendMessage(this.instance.getMessage("featureDisabled"));
+			if(withMessages)
+				p.sendMessage(this.instance.getMessage("featureDisabled"));
 			return true;
 		}
 
 		if(this.instance.getWorldGuard() != null) {
 			if(!this.instance.getMethodes().isMemberFromRegion(this.type, shopId, p.getWorld(), uuid)) {
-				p.sendMessage(this.instance.getMessage("notShopOwner"));
+				if(withMessages)
+					p.sendMessage(this.instance.getMessage("notShopOwner"));
 				return true;
 			}
 			return false;
 		}
 
 		if(!this.instance.getAreaFileManager().isOwner(this.type, shopId, uuid) && !this.instance.getAreaFileManager().isMember(this.type, shopId, uuid)) {
-			p.sendMessage(this.instance.getMessage("notShopOwner"));
+			if(withMessages)
+				p.sendMessage(this.instance.getMessage("notShopOwner"));
 			return true;
 		}
 		return false;
