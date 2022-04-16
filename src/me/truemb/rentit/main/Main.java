@@ -2,6 +2,7 @@ package me.truemb.rentit.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -207,25 +209,33 @@ public class Main extends JavaPlugin {
 		new ShopBuyOrSellListener(this);
 		new ShopItemsBackupListener(this);
 		
-		
-		//COMMANDS
-		if(!this.manageFile().getBoolean("Options.commands.shop.disabled"))
-			new ShopCOMMAND(this);
-		
-		if(!this.manageFile().getBoolean("Options.commands.hotel.disabled"))
-			new HotelCOMMAND(this);
-		
-		if(!this.manageFile().getBoolean("Options.commands.shops.disabled"))
-			new ShopsCOMMAND(this);
-		
-		if(!this.manageFile().getBoolean("Options.commands.hotels.disabled"))
-			new HotelsCOMMAND(this);
-		
-		if(!this.manageFile().getBoolean("Options.commands.freeshops.disabled"))
-			new FreeShopsCOMMAND(this);
-		
-		if(!this.manageFile().getBoolean("Options.commands.freehotels.disabled"))
-			new FreeHotelsCOMMAND(this);
+		try{
+		    Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+		    commandMapField.setAccessible(true);
+		    CommandMap commandMap = (CommandMap) commandMapField.get(Bukkit.getServer());
+
+			//COMMANDS
+			if(!this.manageFile().getBoolean("Options.commands.shop.disabled"))
+				commandMap.register(this.getDescription().getName(), new ShopCOMMAND(this));
+			
+			if(!this.manageFile().getBoolean("Options.commands.hotel.disabled"))
+				commandMap.register(this.getDescription().getName(), new HotelCOMMAND(this));
+			
+			if(!this.manageFile().getBoolean("Options.commands.shops.disabled"))
+				commandMap.register(this.getDescription().getName(), new ShopsCOMMAND(this));
+			
+			if(!this.manageFile().getBoolean("Options.commands.hotels.disabled"))
+				commandMap.register(this.getDescription().getName(), new HotelsCOMMAND(this));
+			
+			if(!this.manageFile().getBoolean("Options.commands.freeshops.disabled"))
+				commandMap.register(this.getDescription().getName(), new FreeShopsCOMMAND(this));
+			
+			if(!this.manageFile().getBoolean("Options.commands.freehotels.disabled"))
+				commandMap.register(this.getDescription().getName(), new FreeHotelsCOMMAND(this));
+		    
+		}catch(Exception exception){
+		    exception.printStackTrace();
+		}
 		
 		//METRICS ANALYTICS
 		if(this.manageFile().getBoolean("Options.useMetrics"))

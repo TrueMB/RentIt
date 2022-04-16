@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -19,9 +20,9 @@ import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -39,7 +40,7 @@ import me.truemb.rentit.utils.PlayerManager;
 import me.truemb.rentit.utils.UtilitiesAPI;
 import net.md_5.bungee.api.ChatColor;
 
-public class HotelCOMMAND implements CommandExecutor, TabCompleter {
+public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 
 	private Main instance;
 	private List<String> subCommands = new ArrayList<>();
@@ -48,8 +49,8 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 	private RentTypes type = RentTypes.HOTEL;
 
 	public HotelCOMMAND(Main plugin) {
+		super("hotel", "Hotel Main Command", null, Arrays.asList("h"));
 		this.instance = plugin;
-		this.instance.getCommand("hotel").setExecutor(this);
 
 		subCommands.add("users");
 		subCommands.add("permissions");
@@ -89,7 +90,7 @@ public class HotelCOMMAND implements CommandExecutor, TabCompleter {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String label, String[] args) {
 
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(this.instance.getMessage("console"));

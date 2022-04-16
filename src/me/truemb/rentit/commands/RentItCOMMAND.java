@@ -1,23 +1,24 @@
 package me.truemb.rentit.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
 import me.truemb.rentit.main.Main;
 
-public class RentItCOMMAND implements CommandExecutor, TabCompleter{
+public class RentItCOMMAND extends BukkitCommand implements TabCompleter {
 
 	private Main instance;
 	private List<String> adminSubCommands = new ArrayList<>();
 	
 	public RentItCOMMAND(Main plugin) {
+		super("rentit", "For all important commands", null, Collections.emptyList());
 		this.instance = plugin;
-		this.instance.getCommand("rentit").setExecutor(this);
 
 		this.adminSubCommands.add("reload");
 
@@ -32,7 +33,7 @@ public class RentItCOMMAND implements CommandExecutor, TabCompleter{
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String label, String[] args) {
 		
 		if(!sender.hasPermission(this.instance.manageFile().getString("Permissions.admin"))) {
 			sender.sendMessage(this.instance.getMessage("perm"));

@@ -1,25 +1,26 @@
 package me.truemb.rentit.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.Collections;
+
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.CategoryGUI;
 import me.truemb.rentit.main.Main;
 
-public class FreeShopsCOMMAND implements CommandExecutor{
+public class FreeShopsCOMMAND extends BukkitCommand{
 
 	private Main instance;
 	
 	public FreeShopsCOMMAND(Main plugin) {
+		super("freeshops", "Lists all free Shops", null, Collections.emptyList());
 		this.instance = plugin;
-		this.instance.getCommand("freeshops").setExecutor(this);
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String label, String[] args) {
 		
 		if(!(sender instanceof Player)) {
 			sender.sendMessage(this.instance.getMessage("console"));

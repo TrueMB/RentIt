@@ -1,13 +1,14 @@
 package me.truemb.rentit.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
 import me.truemb.rentit.enums.RentTypes;
@@ -15,17 +16,17 @@ import me.truemb.rentit.gui.UserListGUI;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.PlayerManager;
 
-public class ShopsCOMMAND implements CommandExecutor, TabCompleter{
+public class ShopsCOMMAND extends BukkitCommand implements TabCompleter {
 
 	private Main instance;
 	
 	public ShopsCOMMAND(Main plugin) {
+		super("shops", "Lists all Shops", null, Collections.emptyList());
 		this.instance = plugin;
-		this.instance.getCommand("shops").setExecutor(this);
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String label, String[] args) {
 		
 		if(!(sender instanceof Player)) {
 			sender.sendMessage(this.instance.getMessage("console"));

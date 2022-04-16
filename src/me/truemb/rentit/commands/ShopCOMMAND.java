@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -20,9 +21,9 @@ import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -44,7 +45,7 @@ import me.truemb.rentit.utils.PlayerManager;
 import me.truemb.rentit.utils.ShopItemManager;
 import me.truemb.rentit.utils.UtilitiesAPI;
 
-public class ShopCOMMAND implements CommandExecutor, TabCompleter {
+public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 
 	private Main instance;
 	private List<String> subCommands = new ArrayList<>();
@@ -53,8 +54,8 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 	private RentTypes type = RentTypes.SHOP;
 
 	public ShopCOMMAND(Main plugin) {
+		super("shop", "Shop Main Command", null, Arrays.asList("s"));
 		this.instance = plugin;
-		this.instance.getCommand("shop").setExecutor(this);
 
 		subCommands.add("noinfo");
 		subCommands.add("users");
@@ -99,7 +100,7 @@ public class ShopCOMMAND implements CommandExecutor, TabCompleter {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String label, String[] args) {
 
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(this.instance.getMessage("console"));
