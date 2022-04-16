@@ -20,6 +20,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -72,6 +73,25 @@ public class ShopAreaListener implements Listener {
 			p = (Player) e.getDamager();
 		else if(e.getDamager() instanceof AbstractArrow && ((AbstractArrow) e.getDamager()).getShooter() instanceof Player)
 			p = (Player) ((AbstractArrow) e.getDamager()).getShooter();
+		
+		if(p == null) return;
+		
+		Entity target = e.getEntity();
+		Location loc = target.getLocation();
+
+		boolean canceled = this.protectedRegion(p, loc);
+		if(canceled)
+			e.setCancelled(canceled);
+    }
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+    public void onHangingDMG(HangingBreakByEntityEvent e) {
+		
+		Player p = null;
+		if(e.getRemover() instanceof Player)
+			p = (Player) e.getRemover();
+		else if(e.getRemover() instanceof AbstractArrow && ((AbstractArrow) e.getRemover()).getShooter() instanceof Player)
+			p = (Player) ((AbstractArrow) e.getRemover()).getShooter();
 		
 		if(p == null) return;
 		
