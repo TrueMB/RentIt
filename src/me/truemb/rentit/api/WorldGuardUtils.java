@@ -1,4 +1,4 @@
-package me.truemb.rentit.utils;
+package me.truemb.rentit.api;
 
 import java.util.UUID;
 
