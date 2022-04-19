@@ -12,6 +12,8 @@ Database:
 Options:
   #Sends anonymous data to bstats. (OnlinePlayers, Server Version, etc) But no personal Informations!
   useMetrics: true
+  #Are you running your Bungeecord/Spigot Server in Offline Mode?
+  offlineMode: false
   #Please use a Server Restart after changing the Settings.
   commands:
     freehotels:

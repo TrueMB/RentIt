@@ -12,12 +12,12 @@ import org.bukkit.inventory.Inventory;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class RentTypeHandler {
 	
 	private RentTypes type;
 	private int id = -1;
+	private String alias = "";
 	private int catID = -1;
 	
 	private UUID ownerUUID;
@@ -42,6 +42,10 @@ public class RentTypeHandler {
 	//GET METHODES
 	public int getID() {
 		return this.id;
+	}
+	
+	public String getAlias() {
+		return this.alias;
 	}
 
 	public int getCatID() {
@@ -71,6 +75,10 @@ public class RentTypeHandler {
 
 
 	//SET METHODES
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
 	public void setOwner(UUID ownerUUID, String ingameName) {
 		this.ownerUUID = ownerUUID;
 		this.ownerName = ingameName;
@@ -90,7 +98,7 @@ public class RentTypeHandler {
 		//PERMISSIONS RESET IN CACHE
 		for(Player all : Bukkit.getOnlinePlayers()) {
 		
-			UUID uuid = PlayerManager.getUUID(all);
+			UUID uuid = all.getUniqueId();
 			if(!plugin.playerHandlers.containsKey(uuid))
 				continue;
 			

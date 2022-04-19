@@ -65,13 +65,12 @@ public class UTF8YamlConfiguration extends YamlConfiguration {
 			yamlOptions.setAllowUnicode(true);
 			yamlRepresenter.setDefaultFlowStyle(fs);
 
-			String header = this.buildHeader();
 			String dump = yaml.dump(this.getValues(false));
 
 			if (dump.equals("{}\n"))
 				dump = "";
 
-			return header + dump;
+			return dump;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

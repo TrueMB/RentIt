@@ -20,7 +20,6 @@ import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.UserListGUI;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class OwningListListener implements Listener{
 	
@@ -37,7 +36,7 @@ public class OwningListListener implements Listener{
     public void onUserListClick(InventoryClickEvent e) {
         
         Player p = (Player) e.getWhoClicked();
-        UUID uuid = PlayerManager.getUUID(p);
+        UUID uuid = p.getUniqueId();
 		
         Inventory inv = e.getClickedInventory();
         ItemStack item = e.getCurrentItem();

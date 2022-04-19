@@ -20,7 +20,6 @@ import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class HotelsSQL {
 	
@@ -31,7 +30,7 @@ public class HotelsSQL {
 		this.instance = plugin;
 		AsyncSQL sql = this.instance.getAsyncSQL();
 
-		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_hotels + " (ID INT PRIMARY KEY, ownerUUID VARCHAR(50), ownerName VARCHAR(16), catID INT, nextPayment TIMESTAMP DEFAULT CURRENT_TIMESTAMP, autoPayment TINYINT)");
+		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_hotels + " (ID INT PRIMARY KEY, alias VARCHAR(100), ownerUUID VARCHAR(50), ownerName VARCHAR(16), catID INT, nextPayment TIMESTAMP DEFAULT CURRENT_TIMESTAMP, autoPayment TINYINT)");
 		
 	}
 	
@@ -80,7 +79,7 @@ public class HotelsSQL {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
 		Player p = playerHandler.getPlayer();
-		UUID uuid = PlayerManager.getUUID(p);
+		UUID uuid = p.getUniqueId();
 		
 		sql.prepareStatement("SELECT * FROM " + sql.t_hotels + " WHERE ownerUUID='" + uuid.toString() + "';", new Consumer<ResultSet>() {
 

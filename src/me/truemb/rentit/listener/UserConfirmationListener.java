@@ -21,7 +21,6 @@ import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 import me.truemb.rentit.utils.UtilitiesAPI;
 
 public class UserConfirmationListener implements Listener {
@@ -37,7 +36,7 @@ public class UserConfirmationListener implements Listener {
     public void onConfirmClick(InventoryClickEvent e) {
         
         Player p = (Player) e.getWhoClicked();
-        UUID uuid = PlayerManager.getUUID(p);
+        UUID uuid = p.getUniqueId();
         
         if(e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopConfirmation.displayName")))) {
           

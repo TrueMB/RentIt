@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class PlayerHandler {
 	
@@ -26,7 +25,7 @@ public class PlayerHandler {
 	
 	public void init(Main plugin) {
 		
-		UUID uuid = PlayerManager.getUUID(this.getPlayer());
+		UUID uuid = this.getPlayer().getUniqueId();
 		
 		plugin.playerHandlers.put(uuid, this);
 		

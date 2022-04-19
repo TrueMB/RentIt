@@ -20,7 +20,6 @@ import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class CategoryGUIListener implements Listener {
 
@@ -34,7 +33,7 @@ public class CategoryGUIListener implements Listener {
 	@EventHandler
 	public void onCatClick(InventoryClickEvent e) {
 		Player p = (Player) e.getWhoClicked();
-		UUID uuid = PlayerManager.getUUID(p);
+		UUID uuid = p.getUniqueId();
 		
 		PlayerHandler playerHandler = this.instance.getMethodes().getPlayerHandler(uuid);
 		if (playerHandler == null) {

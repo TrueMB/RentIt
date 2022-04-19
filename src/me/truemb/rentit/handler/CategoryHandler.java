@@ -3,6 +3,7 @@ package me.truemb.rentit.handler;
 public class CategoryHandler {
 	
 	private int catID = -1;
+	private String alias = "";
 	
 	private double price = 0D;
 	private String time = "";
@@ -31,6 +32,10 @@ public class CategoryHandler {
 	public int getCatID() {
 		return this.catID;
 	}
+	
+	public String getAlias() {
+		return this.alias;
+	}
 
 
 	//SET METHODES
@@ -44,5 +49,9 @@ public class CategoryHandler {
 
 	public void setSize(int size) {
 		this.size = size;
+	}
+	
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 }

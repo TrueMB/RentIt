@@ -8,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class PlayerQuitListener implements Listener{
 
@@ -23,7 +22,7 @@ public class PlayerQuitListener implements Listener{
 	public void onQuit(PlayerQuitEvent e) {
 		
 		Player p = e.getPlayer();
-		UUID uuid = PlayerManager.getUUID(p);
+		UUID uuid = p.getUniqueId();
 		
 		if(this.instance.playerHandlers.containsKey(uuid))
 			this.instance.playerHandlers.remove(uuid);

@@ -108,7 +108,7 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 		}
 
 		Player p = (Player) sender;
-		UUID uuid = PlayerManager.getUUID(p);
+		UUID uuid = p.getUniqueId();
 
 		if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("setNPC")) {
@@ -1025,7 +1025,7 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 					return true;
 				}
 
-				String playerName = args[1];
+				String target = args[1];
 				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
 
 				if (shopId < 0) {
@@ -1035,10 +1035,12 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				}
 
 				UUID uuidTarget = null;
-				if (PlayerManager.getPlayer(playerName) != null) {
-					uuidTarget = PlayerManager.getUUID(playerName);
+				if (Bukkit.getPlayer(target) != null) {
+					uuidTarget = Bukkit.getPlayer(target).getUniqueId();
+				} else if (this.instance.manageFile().getBoolean("Options.offlineMode")) {
+					uuidTarget = PlayerManager.generateOfflineUUID(target);
 				} else {
-					uuidTarget = PlayerManager.getUUIDOffline(playerName);
+					uuidTarget = PlayerManager.getUUIDOffline(target);
 				}
 				
 				if(uuidTarget == null) {
@@ -1497,8 +1499,10 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 					if (permission.equalsIgnoreCase(cfgPerm)) {
 
 						UUID uuidTarget = null;
-						if (PlayerManager.getPlayer(target) != null) {
-							uuidTarget = PlayerManager.getUUID(target);
+						if (Bukkit.getPlayer(target) != null) {
+							uuidTarget = Bukkit.getPlayer(target).getUniqueId();
+						} else if (this.instance.manageFile().getBoolean("Options.offlineMode")) {
+							uuidTarget = PlayerManager.generateOfflineUUID(target);
 						} else {
 							uuidTarget = PlayerManager.getUUIDOffline(target);
 						}

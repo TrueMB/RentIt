@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.UserListGUI;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class HotelsCOMMAND extends BukkitCommand implements TabCompleter {
 
@@ -40,7 +39,7 @@ public class HotelsCOMMAND extends BukkitCommand implements TabCompleter {
 			return true;
 		}
 		
-		UUID uuid = PlayerManager.getUUID(p);
+		UUID uuid = p.getUniqueId();
 		p.openInventory(UserListGUI.getListGUI(this.instance, RentTypes.HOTEL, uuid, 1));
 		return true;
 	}

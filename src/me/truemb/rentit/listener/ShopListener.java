@@ -24,7 +24,6 @@ import me.truemb.rentit.events.ItemBuyEvent;
 import me.truemb.rentit.events.ItemSellEvent;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 import me.truemb.rentit.utils.ShopItemManager;
 
 public class ShopListener implements Listener {
@@ -40,7 +39,7 @@ public class ShopListener implements Listener {
 	public void onUserClick(InventoryClickEvent e) {
 
 		Player p = (Player) e.getWhoClicked();
-		UUID uuid = PlayerManager.getUUID(p);
+		UUID uuid = p.getUniqueId();
 
 		// ANKAUF
 		if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameSell") + " "))) {

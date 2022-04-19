@@ -21,7 +21,6 @@ import me.truemb.rentit.gui.UserRentGUI;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 import me.truemb.rentit.utils.UtilitiesAPI;
 
 public class RentTimeClickListener implements Listener{
@@ -153,7 +152,7 @@ public class RentTimeClickListener implements Listener{
 				
 			}else if(instance.getMethodes().getGUIItem("shopUser", "backItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
 				p.closeInventory();
-				p.openInventory(UserListGUI.getListGUI(this.instance, RentTypes.SHOP, PlayerManager.getUUID(p), 1));
+				p.openInventory(UserListGUI.getListGUI(this.instance, RentTypes.SHOP, p.getUniqueId(), 1));
 			}
 		}else if(e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameHotelRentSettings")))) {
 			
@@ -264,7 +263,7 @@ public class RentTimeClickListener implements Listener{
 				
 			}else if(instance.getMethodes().getGUIItem("shopUser", "backItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
 				p.closeInventory();
-				p.openInventory(UserListGUI.getListGUI(this.instance, RentTypes.HOTEL, PlayerManager.getUUID(p), 1));
+				p.openInventory(UserListGUI.getListGUI(this.instance, RentTypes.HOTEL, p.getUniqueId(), 1));
 			}
 		}
 	}

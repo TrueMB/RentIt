@@ -21,7 +21,6 @@ import me.truemb.rentit.gui.UserRentGUI;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class SignListener implements Listener{
 	
@@ -208,7 +207,7 @@ public class SignListener implements Listener{
 					}
 					
 					p.openInventory(UserConfirmGUI.getShopConfirmationGUI(this.instance, shopId));
-				}else if(uuid.equals(PlayerManager.getUUID(p))) {
+				}else if(uuid.equals(p.getUniqueId())) {
 					p.openInventory(UserRentGUI.getRentSettings(this.instance, RentTypes.SHOP, shopId, true));
 				}else {
 					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
@@ -241,7 +240,7 @@ public class SignListener implements Listener{
 						}
 						
 						p.openInventory(UserConfirmGUI.getHotelConfirmationGUI(this.instance, hotelId));
-					}else if(uuid.equals(PlayerManager.getUUID(p))) {
+					}else if(uuid.equals(p.getUniqueId())) {
 						p.openInventory(UserRentGUI.getRentSettings(this.instance, RentTypes.HOTEL, hotelId, true));
 					}else {
 						p.sendMessage(this.instance.getMessage("hotelAlreadyBought"));

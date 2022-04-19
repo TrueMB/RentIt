@@ -28,7 +28,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class HotelAreaListener implements Listener {
 
@@ -129,7 +128,7 @@ public class HotelAreaListener implements Listener {
 			return;
 		
 		Player p = e.getPlayer();
-		UUID uuid = PlayerManager.getUUID(p);
+		UUID uuid = p.getUniqueId();
 		Location loc = b.getLocation();
 		
 		if(p.hasPermission(this.instance.manageFile().getString("Permissions.build")))

@@ -11,7 +11,6 @@ import me.truemb.rentit.enums.Settings;
 import me.truemb.rentit.events.ItemSellEvent;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
-import me.truemb.rentit.utils.PlayerManager;
 
 public class ItemSelledListener implements Listener {
 
@@ -31,7 +30,7 @@ public class ItemSelledListener implements Listener {
 		int shopId = rentHandler.getID();
 
 		for (Player all : Bukkit.getOnlinePlayers()) {
-			UUID uuid = PlayerManager.getUUID(all);
+			UUID uuid = all.getUniqueId();
 
 			if (this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Sell")) 
 					|| this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
