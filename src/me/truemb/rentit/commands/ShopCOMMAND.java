@@ -69,9 +69,11 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 
 		adminSubCommands.add("createCat");
 		adminSubCommands.add("deleteCat");
+		adminSubCommands.add("setAliasCat");
 		adminSubCommands.add("listCat");
 		adminSubCommands.add("setNPC");
 		adminSubCommands.add("setArea");
+		adminSubCommands.add("setAlias");
 		adminSubCommands.add("reset");
 		adminSubCommands.add("delete");
 		adminSubCommands.add("updateBackup");
@@ -690,7 +692,91 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				});
 				return true;
 
-			} else if (args[0].equalsIgnoreCase("info")) {
+			} else if (args[0].equalsIgnoreCase("setAliasCat")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setAliasCat")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setAliasCat")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
+
+				if (shopId < 0) {
+					// PLAYER NOT IN SHOP AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("notInShop"));
+					return true;
+				}
+
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+				if (rentHandler == null) {
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
+					return true;
+				}
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+				
+				if(catHandler == null) {
+					p.sendMessage(this.instance.getMessage("categoryError"));
+					return true;
+				}
+				
+				String alias = args[1];
+				alias = alias.substring(0, alias.length() > 100 ? 100 : alias.length());
+
+				this.instance.getCategorySQL().setAlias(shopId, this.type, alias);
+				catHandler.setAlias(alias);
+				
+				p.sendMessage(this.instance.getMessage("shopCategoryChangedAlias")
+						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
+						.replaceAll("(?i)%" + "alias" + "%", alias));
+				
+				return true;
+				
+			} else if (args[0].equalsIgnoreCase("setAlias")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setAlias")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setAlias")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
+
+				if (shopId < 0) {
+					// PLAYER NOT IN SHOP AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("notInShop"));
+					return true;
+				}
+
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+				if (rentHandler == null) {
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
+					return true;
+				}
+				
+				String alias = args[1];
+				alias = alias.substring(0, alias.length() > 100 ? 100 : alias.length());
+
+				this.instance.getShopsSQL().setAlias(shopId, alias);
+				rentHandler.setAlias(alias);
+				
+				p.sendMessage(this.instance.getMessage("shopChangedAlias")
+						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+						.replaceAll("(?i)%" + "alias" + "%", alias));
+				return true;
+				
+			}else if (args[0].equalsIgnoreCase("info")) {
 				
 				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "info")) {
 					sender.sendMessage(this.instance.getMessage("commandDisabled"));

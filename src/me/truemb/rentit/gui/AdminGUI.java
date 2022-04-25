@@ -23,6 +23,14 @@ public class AdminGUI {
 		if(changeSizeItemSlot >= 0)
 			inv.setItem(changeSizeItemSlot, instance.getMethodes().getGUIItem("shopAdmin", "changeSizeItem", shopId));
 		
+		int changeAliasItemSlot = instance.manageFile().getInt("GUI.shopAdmin.items.changeAliasItem.slot") - 1;
+		if(changeAliasItemSlot >= 0)
+			inv.setItem(changeAliasItemSlot, instance.getMethodes().getGUIItem("shopAdmin", "changeAliasItem", shopId));
+		
+		int changeCategoryAliasItemSlot = instance.manageFile().getInt("GUI.shopAdmin.items.changeCategoryAliasItem.slot") - 1;
+		if(changeCategoryAliasItemSlot >= 0)
+			inv.setItem(changeCategoryAliasItemSlot, instance.getMethodes().getGUIItem("shopAdmin", "changeCategoryAliasItem", shopId));
+		
 		return inv;
 		
 	}
@@ -38,6 +46,14 @@ public class AdminGUI {
 		int changePriceItemSlot = instance.manageFile().getInt("GUI.hotelAdmin.items.changePriceItem.slot") - 1;
 		if(changePriceItemSlot >= 0)
 			inv.setItem(changePriceItemSlot, instance.getMethodes().getGUIItem("hotelAdmin", "changePriceItem", hotelId));
+		
+		int changeAliasItemSlot = instance.manageFile().getInt("GUI.hotelAdmin.items.changeAliasItem.slot") - 1;
+		if(changeAliasItemSlot >= 0)
+			inv.setItem(changeAliasItemSlot, instance.getMethodes().getGUIItem("hotelAdmin", "changeAliasItem", hotelId));
+		
+		int changeCategoryAliasItemSlot = instance.manageFile().getInt("GUI.hotelAdmin.items.changeCategoryAliasItem.slot") - 1;
+		if(changeCategoryAliasItemSlot >= 0)
+			inv.setItem(changeCategoryAliasItemSlot, instance.getMethodes().getGUIItem("hotelAdmin", "changeCategoryAliasItem", hotelId));
 		
 		
 		return inv;

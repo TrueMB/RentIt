@@ -32,9 +32,10 @@ public class ShopsSQL {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shops + " (ID INT PRIMARY KEY, alias VARCHAR(100), ownerUUID VARCHAR(50), ownerName VARCHAR(16), catID INT, nextPayment TIMESTAMP DEFAULT CURRENT_TIMESTAMP, autoPayment TINYINT)");
+		
+		//UPDATES
+		sql.queryUpdate("ALTER TABLE " + sql.t_shops + " ADD COLUMN alias VARCHAR(100)");
 	}
-	
-	//TODO ADD Alias Column
 	
 	public void createShop(int id, int catID){
 		
@@ -46,6 +47,12 @@ public class ShopsSQL {
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		sql.queryUpdate("UPDATE " + sql.t_shops + " SET ownerUUID='" + ownerUUID.toString() + "', ownerName='" + ownerName + "', autoPayment='" + (autoPayment ? 1 : 0) + "' WHERE ID='" + shopId + "'");
+	}
+	
+	public void setAlias(int shopId, String alias){
+		
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		sql.queryUpdate("UPDATE " + sql.t_shops + " SET alias='" + alias + "' WHERE ID='" + shopId + "'");
 	}
 
 	public void setCatID(int shopId, int catID){
@@ -115,6 +122,7 @@ public class ShopsSQL {
 					while (rs.next()) {
 						shopAmount++;
 						int id = rs.getInt("ID");
+						String alias = rs.getString("alias") != null && !rs.getString("alias").equalsIgnoreCase("null") ? rs.getString("alias") : null;
 						int catID = rs.getInt("catID");
 						
 						UUID ownerUUID = !rs.getString("ownerUUID").equalsIgnoreCase("null") ? UUID.fromString(rs.getString("ownerUUID")) : null;
@@ -127,6 +135,7 @@ public class ShopsSQL {
 						boolean autoPayment = rs.getInt("autoPayment") == 1 ? true : false;
 						
 						RentTypeHandler handler = new RentTypeHandler(type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment);
+						handler.setAlias(alias);
 						
 						String prefix = ownerUUID != null ? instance.getPermissionsAPI().getPrefix(ownerUUID) : "";
 						

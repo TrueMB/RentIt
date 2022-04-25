@@ -19,6 +19,10 @@ public class CategoriesSQL {
 
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_categories + " (catID INT PRIMARY KEY, alias VARCHAR(100), size INT, costs DOUBLE, time VARCHAR(30))");
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_hotel_categories + " (catID INT PRIMARY KEY, alias VARCHAR(100), costs DOUBLE, time VARCHAR(30))");
+		
+		//UPDATES
+		sql.queryUpdate("ALTER TABLE " + sql.t_shop_categories + " ADD COLUMN alias VARCHAR(100)");
+		sql.queryUpdate("ALTER TABLE " + sql.t_hotel_categories + " ADD COLUMN alias VARCHAR(100)");
 	}
 	
 	
@@ -41,6 +45,12 @@ public class CategoriesSQL {
 		else //MYSQL
 			sql.queryUpdate("INSERT INTO " + sql.t_hotel_categories + " (catID, costs, time) VALUES ('" + catID + "', '" + costs + "', '" + time + "') "
 					+ "ON DUPLICATE KEY UPDATE costs='" + costs + "', time='" + time + "';");
+	}
+	
+	public void setAlias(int catId, RentTypes type, String alias){
+		
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		sql.queryUpdate("UPDATE " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + " SET alias='" + alias + "' WHERE ID='" + catId + "'");
 	}
 
 	public void setSize(int catID, int invSize){
@@ -98,11 +108,13 @@ public class CategoriesSQL {
 							catAmount++;
 							
 							int catID = rs.getInt("catID");
+							String alias = rs.getString("alias") != null && !rs.getString("alias").equalsIgnoreCase("null") ? rs.getString("alias") : null;
 							
 							double costs = rs.getDouble("costs");
 							String time = rs.getString("time");
 
 							CategoryHandler handler = new CategoryHandler(catID, costs, time);
+							handler.setAlias(alias);
 							
 							if(type.equals(RentTypes.SHOP)) {
 								int size = rs.getInt("size");

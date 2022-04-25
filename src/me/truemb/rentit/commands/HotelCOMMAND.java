@@ -61,8 +61,10 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 
 		adminSubCommands.add("createCat");
 		adminSubCommands.add("deleteCat");
+		adminSubCommands.add("setAliasCat");
 		adminSubCommands.add("listCat");
 		adminSubCommands.add("setArea");
+		adminSubCommands.add("setAlias");
 		adminSubCommands.add("reset");
 		adminSubCommands.add("delete");
 		adminSubCommands.add("updateBackup");
@@ -495,6 +497,91 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				int hotelId = Integer.parseInt(args[1]);
 
 				this.sendHotelInfo(p, hotelId);
+				return true;
+				
+			} else if (args[0].equalsIgnoreCase("setAliasCat")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "setAliasCat")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "setAliasCat")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				int hotelId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
+
+				if (hotelId < 0) {
+					// PLAYER NOT IN SHOP AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("notInHotel"));
+					return true;
+				}
+
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
+
+				if (rentHandler == null) {
+					p.sendMessage(this.instance.getMessage("hotelDatabaseEntryMissing"));
+					return true;
+				}
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+				
+				if(catHandler == null) {
+					p.sendMessage(this.instance.getMessage("categoryError"));
+					return true;
+				}
+				
+				String alias = args[1];
+				alias = alias.substring(0, alias.length() > 100 ? 100 : alias.length());
+
+				this.instance.getCategorySQL().setAlias(hotelId, this.type, alias);
+				catHandler.setAlias(alias);
+				
+				p.sendMessage(this.instance.getMessage("hotelCategoryChangedAlias")
+						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
+						.replaceAll("(?i)%" + "alias" + "%", alias));
+				
+				return true;
+				
+			} else if (args[0].equalsIgnoreCase("setAlias")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "setAlias")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "setAlias")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				int hotelId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
+
+				if (hotelId < 0) {
+					// PLAYER NOT IN SHOP AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("notInHotel"));
+					return true;
+				}
+
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
+
+				if (rentHandler == null) {
+					p.sendMessage(this.instance.getMessage("hotelDatabaseEntryMissing"));
+					return true;
+				}
+				
+				String alias = args[1];
+				alias = alias.substring(0, alias.length() > 100 ? 100 : alias.length());
+
+				this.instance.getCategorySQL().setAlias(hotelId, this.type, alias);
+				rentHandler.setAlias(alias);
+				
+				p.sendMessage(this.instance.getMessage("hotelChangedAlias")
+						.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+						.replaceAll("(?i)%" + "alias" + "%", alias));
+				
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("deletecat")) {

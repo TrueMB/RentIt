@@ -312,19 +312,33 @@ GUI:
         type: CLOCK
         lore:
           - '&fChange the Renttime'
-        slot: 3
+        slot: 1
       changePriceItem:
         displayName: '&6Change Rentprice'
         type: GOLD_NUGGET
         lore:
           - '&fChange the Rentprice'
-        slot: 5
+        slot: 3
       changeSizeItem:
         displayName: '&6Change Size'
         type: CHEST
         lore:
           - '&fChange Shop Slot Size'
+        slot: 5
+      changeAliasItem:
+        displayName: '&6Change Alias'
+        type: PAPER
+        lore:
+          - '&fChange the Alias'
+          - '&fof the Shop'
         slot: 7
+      changeCategoryAliasItem:
+        displayName: '&6Change Alias of the Category'
+        type: PAPER
+        lore:
+          - '&fChange the Alias'
+          - '&fof the Shops Category'
+        slot: 9
   #GUI that admins can see, if they shift Rightclick on a Rented Hotelroom
   hotelAdmin:
     displayName: '&4&lHotelroom Settings'
@@ -334,13 +348,27 @@ GUI:
         type: CLOCK
         lore:
           - '&fChange the Renttime'
-        slot: 4
+        slot: 2
       changePriceItem:
         displayName: '&6Change Rentprice'
         type: GOLD_NUGGET
         lore:
           - '&fChange the Rentprice'
+        slot: 4
+      changeAliasItem:
+        displayName: '&6Change Alias'
+        type: PAPER
+        lore:
+          - '&fChange the Alias'
+          - '&fof the Hotelroom'
         slot: 6
+      changeCategoryAliasItem:
+        displayName: '&6Change Alias of the Category'
+        type: PAPER
+        lore:
+          - '&fChange the Alias'
+          - '&fof the Hotelrooms Category'
+        slot: 8
   #GUI that players see, if they try to Rent a Hotelroom
   hotelConfirmation:
     displayName: '&a&lHotelrooms Confirmation'
@@ -529,6 +557,8 @@ Messages:
   shopSignDeleted: '&aThe Sign for the ShopID &f%shopId% &awas deleted.'
   shopCategoryUpdated: '&aYou updated the category &f%catId%&a.'
   shopCategoryDeleted: '&aYou deleted the category &f%catId%&a.'
+  shopCategoryChangedAlias: '&aYou updated the category &f%catId% &aalias to &f%alias%&a.'
+  shopChangedAlias: '&aYou updated the shop &f%shopId% &aalias to &f%alias%&a.'
   shopCouldntDeleteCategory: '&cCouldnt delete the Category &f%catId%&c, since there are still shops using the Category.'
   shopCategoryList: '&f%catId%&7: &6Price&7: &f%price% &7- &6Time&7: &f%time% &7- &6Size&7: &f%size%.'
   shopBought: '&6You bought the Shop with the ID: &f%shopId%&6.'
@@ -657,6 +687,8 @@ Messages:
   hotelSignDeleted: '&aThe Hotelroom Sign for the ID &f%hotelId% &awas deleted.'
   hotelCategoryUpdated: '&aYou updated the Category &f%catId%&a.'
   hotelCategoryDeleted: '&aYou deleted the Category &f%catId%&a.'
+  hotelCategoryChangedAlias: '&aYou updated the category &f%catId% &aalias to &f%alias%&a.'
+  hotelChangedAlias: '&aYou updated the hotel &f%hotelId% &aalias to &f%alias%&a.'
   hotelCouldntDeleteCategory: '&cCouldnt delete the Category &f%catId%&c, since there are still hotels using the Category.'
   hotelCategoryList: '&f%catId%&7: &6Price&7: &f%price% &7- &6Time&7: &f%time%'
   hotelBought: '&6You are now renting the Hotelroom: &f%hotelId%&6.'

@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -80,6 +81,11 @@ public class AdminShopListener implements Listener {
 
 				int catID = rentHandler.getCatID();
 
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, catID);
+
+				if (catHandler == null)
+					return null;
+
 				if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeTimeItem"))) {
 
 					// PLAYER WANTS TO CHANGE RENT TIME
@@ -92,6 +98,29 @@ public class AdminShopListener implements Listener {
 
 					// PLAYER WANTS TO CHANGE SHOP SIZE
 					this.instance.getMethodes().setSize(p, shopId, catID, text);
+				} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeAliasItem"))) {
+
+					// PLAYER WANTS TO CHANGE THE ALIAS
+					text = text.substring(0, text.length() > 100 ? 100 : text.length());
+					
+					this.instance.getShopsSQL().setAlias(shopId, text);
+					rentHandler.setAlias(text);
+					
+					p.sendMessage(this.instance.getMessage("shopChangedAlias")
+							.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+							.replaceAll("(?i)%" + "alias" + "%", text));
+					
+				} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeCategoryAliasItem"))) {
+
+					// PLAYER WANTS TO CHANGE THE CATEGORY ALIAS
+					text = text.substring(0, text.length() > 100 ? 100 : text.length());
+					
+					this.instance.getCategorySQL().setAlias(shopId, RentTypes.SHOP, text);
+					catHandler.setAlias(text);
+					
+					p.sendMessage(this.instance.getMessage("shopCategoryChangedAlias")
+							.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
+							.replaceAll("(?i)%" + "alias" + "%", text));
 				}
 				return AnvilGUI.Response.close();
 

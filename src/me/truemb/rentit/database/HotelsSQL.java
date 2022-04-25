@@ -31,7 +31,9 @@ public class HotelsSQL {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_hotels + " (ID INT PRIMARY KEY, alias VARCHAR(100), ownerUUID VARCHAR(50), ownerName VARCHAR(16), catID INT, nextPayment TIMESTAMP DEFAULT CURRENT_TIMESTAMP, autoPayment TINYINT)");
-		
+
+		//UPDATES
+		sql.queryUpdate("ALTER TABLE " + sql.t_hotels + " ADD COLUMN alias VARCHAR(100)");
 	}
 	
 	public void createHotel(int id, int catID){
@@ -43,6 +45,12 @@ public class HotelsSQL {
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET ownerUUID='" + ownerUUID.toString() + "', ownerName='" + ownerName + "', autoPayment='" + (autoPayment ? 1 : 0) + "' WHERE ID='" + hotelId + "'");
+	}
+	
+	public void setAlias(int hotelId, String alias){
+		
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET alias='" + alias + "' WHERE ID='" + hotelId + "'");
 	}
 
 	public void setCatID(int hotelId, int catID){
@@ -114,6 +122,7 @@ public class HotelsSQL {
 						hotelAmount++;
 						
 						int id = rs.getInt("ID");
+						String alias = rs.getString("alias") != null && !rs.getString("alias").equalsIgnoreCase("null") ? rs.getString("alias") : null;
 						int catID = rs.getInt("catID");
 
 						UUID ownerUUID = !rs.getString("ownerUUID").equalsIgnoreCase("null") ? UUID.fromString(rs.getString("ownerUUID")) : null;
@@ -126,6 +135,7 @@ public class HotelsSQL {
 						boolean autoPayment = rs.getInt("autoPayment") == 1 ? true : false;
 						
 						RentTypeHandler handler = new RentTypeHandler(type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment);
+						handler.setAlias(alias);
 						
 						HashMap<Integer, RentTypeHandler> hash = new HashMap<>();
 						if(instance.rentTypeHandlers.containsKey(type))

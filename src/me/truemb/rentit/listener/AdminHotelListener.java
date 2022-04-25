@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -79,6 +80,11 @@ public class AdminHotelListener implements Listener {
 
 				int catID = rentHandler.getCatID();
 
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.HOTEL, catID);
+
+				if (catHandler == null)
+					return null;
+
 				if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeTimeItem"))) {
 
 					// PLAYER WANTS TO CHANGE RENT TIME
@@ -87,6 +93,29 @@ public class AdminHotelListener implements Listener {
 
 					// PLAYER WANTS TO CHANGE RENT PRICE
 					this.instance.getMethodes().setPrice(p, RentTypes.HOTEL, catID, text);
+				} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeAliasItem"))) {
+
+					// PLAYER WANTS TO CHANGE THE ALIAS
+					text = text.substring(0, text.length() > 100 ? 100 : text.length());
+					
+					this.instance.getHotelsSQL().setAlias(hotelId, text);
+					rentHandler.setAlias(text);
+					
+					p.sendMessage(this.instance.getMessage("hotelChangedAlias")
+							.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+							.replaceAll("(?i)%" + "alias" + "%", text));
+					
+				} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeCategoryAliasItem"))) {
+
+					// PLAYER WANTS TO CHANGE THE CATEGORY ALIAS
+					text = text.substring(0, text.length() > 100 ? 100 : text.length());
+					
+					this.instance.getCategorySQL().setAlias(hotelId, RentTypes.HOTEL, text);
+					catHandler.setAlias(text);
+					
+					p.sendMessage(this.instance.getMessage("hotelCategoryChangedAlias")
+							.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
+							.replaceAll("(?i)%" + "alias" + "%", text));
 				}
 				return AnvilGUI.Response.close();
 
