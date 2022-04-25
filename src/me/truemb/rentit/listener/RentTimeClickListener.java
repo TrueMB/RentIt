@@ -146,7 +146,8 @@ public class RentTimeClickListener implements Listener{
 	        		return;
 			    	
 		    	}else {
-	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney").replace("%amount%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
+	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney")
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
 	        		return;
 		    	}
 				
@@ -257,7 +258,8 @@ public class RentTimeClickListener implements Listener{
 	        		p.sendMessage(this.instance.getMessage("hotelExtendRent"));
 	        		return;
 		    	}else {
-	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney").replace("%amount%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
+	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney")
+	        				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
 	        		return;
 		    	}
 				

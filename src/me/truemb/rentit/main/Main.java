@@ -141,9 +141,7 @@ public class Main extends JavaPlugin {
 	
 	
 	//TODO
-	//ADD ALIAS TO MESSAGES - If not null, then replace ShopId
 	//NOTIFICATION BEFORE RUNNING OUT
-	//MySQL SUPPORT WITHOUT MARIADB
 	
 	@Override
 	public void onEnable() {

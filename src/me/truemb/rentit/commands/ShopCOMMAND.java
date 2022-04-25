@@ -131,14 +131,14 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 		        	RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 					if (rentHandler == null) {
-						p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+						p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 						return true;
 					}
 					
 					CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 					if (catHandler == null) {
-						p.sendMessage(instance.getMessage("categoryError"));
+						p.sendMessage(this.instance.getMessage("categoryError"));
 						return true;
 					}
 					
@@ -187,9 +187,15 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 						}
 					}
 					
+				    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					
 					this.instance.getNPCFileManager().setNPCLocForShop(shopId, p.getLocation());
 
-					p.sendMessage(this.instance.getMessage("shopCitizenCreated").replace("%shopId%", String.valueOf(shopId)));
+					p.sendMessage(this.instance.getMessage("shopCitizenCreated")
+							.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+							.replaceAll("(?i)%" + "alias" + "%", alias));
 					return true;
 				}
 			} else if (args[0].equalsIgnoreCase("list")) {
@@ -233,9 +239,17 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 				
+			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			    
 				this.resetArea(p, rentHandler);
-				p.sendMessage(this.instance.getMessage("shopReseted").replace("%shopId%", String.valueOf(shopId)));
+				p.sendMessage(this.instance.getMessage("shopReseted")
+						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "alias" + "%", alias));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("resign")) {
@@ -269,9 +283,17 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 					p.sendMessage(this.instance.getMessage("notShopOwner"));
 					return true;
 				}
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 				
+			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			    
 				this.resetArea(p, rentHandler);
-				p.sendMessage(this.instance.getMessage("shopResignContract").replace("%shopId%", String.valueOf(shopId)));
+				p.sendMessage(this.instance.getMessage("shopResignContract")
+						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "alias" + "%", alias));
 				return true;
 
 			}else if (args[0].equalsIgnoreCase("delete")) {
@@ -333,8 +355,16 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 
 				this.instance.getAreaFileManager().unsetDoorClosed(this.type, shopId);
 				this.instance.getDoorFileManager().clearDoors(this.type, shopId);
+				
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+				
+			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+			    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
-				p.sendMessage(this.instance.getMessage("shopDeleted").replace("%shopId%", String.valueOf(shopId)));
+				p.sendMessage(this.instance.getMessage("shopDeleted")
+						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "alias" + "%", alias));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("info")) {
@@ -460,7 +490,8 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				for (String permsPath : this.instance.manageFile().getConfigurationSection("UserPermissions.shop").getKeys(false)) {
 					String cfgPerm = this.instance.manageFile().getString("UserPermissions.shop." + permsPath);
 
-					p.sendMessage(this.instance.getMessage("permissionListBody").replace("%permission%", String.valueOf(cfgPerm)));
+					p.sendMessage(this.instance.getMessage("permissionListBody")
+							.replaceAll("(?i)%" + "permission" + "%", String.valueOf(cfgPerm)));
 				}
 				return true;
 			} else if (args[0].equalsIgnoreCase("users")) {
@@ -507,7 +538,8 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 							}
 							
 							if(hash.isEmpty()) {
-								p.sendMessage(instance.getMessage("noUserPermissionsSet").replace("%type%", StringUtils.capitalize(type.toString().toLowerCase())));
+								p.sendMessage(instance.getMessage("noUserPermissionsSet")
+										.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(type.toString().toLowerCase())));
 								return;
 							}
 
@@ -522,7 +554,9 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 									permissions += ", " + s;
 								permissions = permissions.substring(2);
 
-								p.sendMessage(instance.getMessage("userPermission").replace("%player%", ingameName).replace("%permissions%", permissions));
+								p.sendMessage(instance.getMessage("userPermission")
+										.replaceAll("(?i)%" + "player" + "%", ingameName)
+										.replaceAll("(?i)%" + "permissions" + "%", permissions));
 							}
 							return;
 						} catch (SQLException e) {
@@ -674,11 +708,17 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 							}
 
 							boolean success = instance.getMethodes().createArea(p, type, shopId);
-							instance.getMethodes().createType(type, shopId, catID);
+							RentTypeHandler rentHandler = instance.getMethodes().createType(type, shopId, catID);
 
 							if (success) {
 								// CREATED
-								sender.sendMessage(instance.getMessage("shopAreaCreated").replace("%shopId%", String.valueOf(shopId)));
+							    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+							    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+							    
+								sender.sendMessage(instance.getMessage("shopAreaCreated")
+										.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+										.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+										.replaceAll("(?i)%" + "alias" + "%", alias));
 
 							} else {
 								// NOTE CREATED
@@ -1060,14 +1100,15 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				String time = catHandler.getTime();
 
 				if (!this.instance.getEconomy().has(p, costs)) {
-					p.sendMessage(instance.getMessage("notEnoughtMoney").replace("%amount%", String.valueOf(costs - instance.getEconomy().getBalance(p))));
+					p.sendMessage(this.instance.getMessage("notEnoughtMoney")
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
 					return true;
 				}
 
 				String owner = rentHandler.getOwnerName();
 				UUID uuidOwner = rentHandler.getOwnerUUID();
 				if (uuidOwner != null) {
-					p.sendMessage(instance.getMessage("shopAlreadyBought"));
+					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
 					return true;
 				}
 
@@ -1093,9 +1134,15 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				Timestamp ts = UtilitiesAPI.getNewTimestamp(time);
 				rentHandler.setNextPayment(ts);
 				this.instance.getShopsSQL().setNextPayment(shopId, ts);
-
-				p.teleport(instance.getAreaFileManager().getAreaSpawn(this.type, shopId));
-				p.sendMessage(instance.getMessage("shopBought").replace("%shopId%", String.valueOf(shopId)));
+				
+			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			    
+				p.teleport(this.instance.getAreaFileManager().getAreaSpawn(this.type, shopId));
+				p.sendMessage(this.instance.getMessage("shopBought")
+						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "alias" + "%", alias));
 
 				return true;
 
@@ -1193,14 +1240,14 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 
@@ -1268,7 +1315,7 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
@@ -1362,7 +1409,16 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents()); // DATABASE UPDATE
 				// this.instance.getMethodes().updateSellInv(p, shopId, inv.getContents()); // UPDATE DATABASE AND OPEN INVS
 
-				p.sendMessage(this.instance.getMessage("shopItemAdded").replace("%price%", String.valueOf(price)).replace("%type%", StringUtils.capitalize(item.getType().toString())).replace("%amount%", String.valueOf(item.getAmount())));
+			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			    
+				p.sendMessage(this.instance.getMessage("shopItemAdded")
+						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "alias" + "%", alias)
+						.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(item.getType().toString()))
+						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(item.getAmount())));
 
 				return true;
 
@@ -1536,7 +1592,17 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 						p.sendMessage(this.instance.getMessage("notADoor"));
 						return true;
 					}
-					p.sendMessage(this.instance.getMessage("shopDoorAdded").replace("%shopId%", String.valueOf(shopId)));
+
+					RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+					CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+					
+				    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+				    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+				    
+					p.sendMessage(this.instance.getMessage("shopDoorAdded")
+							.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+							.replaceAll("(?i)%" + "alias" + "%", alias));
 					return true;
 
 				} else {
@@ -1618,7 +1684,19 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 							}
 						}
 
-						p.sendMessage(this.instance.getMessage("permissionSet").replace("%permission%", String.valueOf(permission)).replace("%player%", String.valueOf(target)).replace("%status%", String.valueOf(value)));
+						RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+						CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+
+					    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+					    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					    
+						p.sendMessage(this.instance.getMessage("permissionSet")
+								.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+								.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+								.replaceAll("(?i)%" + "alias" + "%", alias)
+								.replaceAll("(?i)%" + "permission" + "%", String.valueOf(permission))
+								.replaceAll("(?i)%" + "player" + "%", String.valueOf(target))
+								.replaceAll("(?i)%" + "status" + "%", String.valueOf(value)));
 						return true;
 					}
 				}
@@ -1754,7 +1832,12 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 
 				this.instance.getCategorySQL().updateShopCategory(catID, size, price, timeS);
 				this.instance.getMethodes().updateAllSigns(this.type, catID);
-				p.sendMessage(this.instance.getMessage("shopCategoryUpdated").replace("%catId%", String.valueOf(catID)).replace("%price%", String.valueOf(price)).replace("%size%", String.valueOf(size)).replace("%time%", timeS));
+				
+				p.sendMessage(this.instance.getMessage("shopCategoryUpdated")
+						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
+						.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+						.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+						.replaceAll("(?i)%" + "time" + "%", timeS));
 				return true;
 			}
 		}
@@ -1792,11 +1875,15 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 		Location loc = this.instance.getAreaFileManager().getAreaSpawn(this.type, shopId);
 		
 		String ownerName = rentHandler.getOwnerName();
+		
+	    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
 		for (String s : this.instance.manageFile().getStringList("Messages.shopInfo")) {
 			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
-					.replaceAll("(?i)%" + "shopid" + "%", String.valueOf(shopId))
-					.replaceAll("(?i)%" + "catid" + "%", String.valueOf(rentHandler.getCatID()))
+					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+					.replaceAll("(?i)%" + "alias" + "%", alias)
 					.replaceAll("(?i)%" + "owner" + "%", ownerName == null ? "" : ownerName)
 					.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
 					.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
@@ -1837,7 +1924,10 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 
 		this.instance.getShopsInvSQL().updateBuyInv(rentHandler.getID(), inv.getContents()); // DATABASE UPDATE
 
-		p.sendMessage(this.instance.getMessage("shopItemAdded").replace("%price%", String.valueOf(price)).replace("%type%", StringUtils.capitalize(item.getType().toString())).replace("%amount%", String.valueOf(item.getAmount())));
+		p.sendMessage(this.instance.getMessage("shopItemAdded")
+				.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+				.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(item.getType().toString()))
+				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(item.getAmount())));
 	}
 	
 	private void resetArea(Player p, RentTypeHandler rentHandler) {

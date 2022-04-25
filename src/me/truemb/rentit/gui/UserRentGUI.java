@@ -58,10 +58,6 @@ public class UserRentGUI {
 	}
 		
 	public static ItemStack getInfoItem(Main instance, RentTypes type, int id) {
-		ItemStack acceptItem = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.shopUser.items.shopInfoItem.type").toUpperCase()));
-	        
-	    ItemMeta acceptItemMeta = acceptItem.getItemMeta();
-	    acceptItemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.items.shopInfoItem.displayName")));
 
 	    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(type, id);
 
@@ -79,25 +75,36 @@ public class UserRentGUI {
 	    Timestamp ts = rentHandler.getNextPayment();
 		boolean active = rentHandler.isAutoPayment();
 
+	    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(id);
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+
 		DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 	    
 		List<String> lore = new ArrayList<>();
 		for(String s : instance.manageFile().getStringList("GUI.shopUser.items.shopInfoItem.lore")) {
 			lore.add(ChatColor.translateAlternateColorCodes('&', s)
-					.replace("%shopId%", String.valueOf(id))
-					.replace("%hotelId%", String.valueOf(id))
-					.replace("%price%", String.valueOf(price))
-					.replace("%size%", String.valueOf(size))
-					.replace("%rentEnd%", df.format(ts))
-					.replace("%auto%", String.valueOf(active))
-					.replace("%time%", timeS));
+					.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
+					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
+					.replaceAll("(?i)%" + "alias" + "%", alias)
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+					.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+					.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+					.replaceAll("(?i)%" + "time" + "%", timeS)
+					.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts))
+					.replaceAll("(?i)%" + "auto" + "%", String.valueOf(active)));
 		}
 
 		NamespacedKey key = new NamespacedKey(instance, "ID");
-		acceptItemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
 		
-		acceptItemMeta.setLore(lore);
-	    acceptItem.setItemMeta(acceptItemMeta);
-	    return acceptItem;
+		ItemStack infoItem = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.shopUser.items.shopInfoItem.type").toUpperCase()));
+	        
+	    ItemMeta infoItemMeta = infoItem.getItemMeta();
+	    infoItemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.items.shopInfoItem.displayName")));
+	    
+	    infoItemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
+		
+	    infoItemMeta.setLore(lore);
+		infoItem.setItemMeta(infoItemMeta);
+	    return infoItem;
 	}
 }

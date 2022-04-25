@@ -11,13 +11,13 @@ public class ItemSellEvent extends Event{
 	
 	private static final HandlerList handlers = new HandlerList();
 	
-	private Player buyer;
+	private Player seller;
 	private RentTypeHandler rentHandler;
 	private double price;
 	private ItemStack item;
 		
-	public ItemSellEvent(Player buyer, RentTypeHandler rentHandler, ItemStack item, double price) {
-		this.buyer = buyer;
+	public ItemSellEvent(Player seller, RentTypeHandler rentHandler, ItemStack item, double price) {
+		this.seller = seller;
 		this.rentHandler = rentHandler;
 		this.item = item;
 		this.price = price;
@@ -34,8 +34,8 @@ public class ItemSellEvent extends Event{
 		return this.item;
 	}
 	
-	public Player getBuyer() {
-		return this.buyer;
+	public Player getSeller() {
+		return this.seller;
 	}
 
 	public HandlerList getHandlers() {

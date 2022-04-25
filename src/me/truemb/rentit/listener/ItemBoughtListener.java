@@ -35,7 +35,9 @@ public class ItemBoughtListener implements Listener {
 			if (this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Sell")) 
 					|| this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
 				if(this.instance.getMethodes().isSettingActive(uuid, RentTypes.SHOP, shopId, Settings.shopMessaging))
-					all.sendMessage(instance.getMessage("shopBuyMessage").replace("%type%", e.getItem().getType().toString()).replace("%player%", buyer.getName()));
+					all.sendMessage(this.instance.getMessage("shopBuyMessage")
+							.replaceAll("(?i)%" + "type" + "%", e.getItem().getType().toString())
+							.replaceAll("(?i)%" + "player" + "%", buyer.getName()));
 			}
 		}
     }

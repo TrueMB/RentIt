@@ -76,12 +76,6 @@ public class CategoryGUI {
 	}
 
 	private static ItemStack getListItem(Main instance, RentTypes type, int id) {
-		ItemStack item = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.categorySub.items." + type.toString().toLowerCase() + "ListItem.type").toUpperCase()));
-	        
-	    ItemMeta itemMeta = item.getItemMeta();
-	    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.categorySub.items." + type.toString().toLowerCase() + "ListItem.displayName")
-				.replace("%shopId%", String.valueOf(id))
-				.replace("%hotelId%", String.valueOf(id))));
 
 	    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(type, id);
 
@@ -96,6 +90,9 @@ public class CategoryGUI {
 	    double price = catHandler.getPrice();
 	    int size = catHandler.getSize();
 	    String timeS = catHandler.getTime();
+
+	    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(id);
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 	    
 	    if(timeS == null)
 	    	timeS = "!ERR!";
@@ -103,17 +100,30 @@ public class CategoryGUI {
 		List<String> lore = new ArrayList<>();
 		
 		NamespacedKey key = new NamespacedKey(instance, "ID");
-		itemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
-
+		
 		for(String s : instance.manageFile().getStringList("GUI.categorySub.items." + type.toString().toLowerCase() + "ListItem.lore")) {
 
 			lore.add(ChatColor.translateAlternateColorCodes('&', s)
-					.replace("%shopId%", String.valueOf(id))
-					.replace("%hotelId%", String.valueOf(id))
-					.replace("%price%", String.valueOf(price))
-					.replace("%size%", String.valueOf(size))
-					.replace("%time%", timeS));
+					.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
+					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
+					.replaceAll("(?i)%" + "alias" + "%", alias)
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+					.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+					.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+					.replaceAll("(?i)%" + "time" + "%", timeS));
 		}
+
+		ItemStack item = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.categorySub.items." + type.toString().toLowerCase() + "ListItem.type").toUpperCase()));
+	        
+	    ItemMeta itemMeta = item.getItemMeta();
+	    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.categorySub.items." + type.toString().toLowerCase() + "ListItem.displayName")
+				.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
+				.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
+				.replaceAll("(?i)%" + "alias" + "%", alias)
+				.replaceAll("(?i)%" + "catAlias" + "%", catAlias)));
+	    
+		itemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
+		
 		itemMeta.setLore(lore);
 	    item.setItemMeta(itemMeta);
 	    return item;

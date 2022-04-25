@@ -28,8 +28,6 @@ public class UserShopGUI {
 		int size = catHandler.getSize();
 
 		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.displayNameSell") + " " + ownerName));
-
-		//NamespacedKey idKey = new NamespacedKey(instance, "ID");
 		
 		int puf = 0;
 		if (contents != null) {
@@ -40,17 +38,6 @@ public class UserShopGUI {
 					puf++;
 					continue;
 				}
-				
-				/*
-				ItemMeta meta = item.getItemMeta();
-				
-				PersistentDataContainer container = meta.getPersistentDataContainer();
-				
-				if(!container.has(idKey , PersistentDataType.INTEGER))
-					container.set(idKey, PersistentDataType.INTEGER, shopId);
-					
-				item.setItemMeta(meta);
-				*/
 				inv.setItem(i - puf, item);
 			}
 		}
@@ -74,8 +61,6 @@ public class UserShopGUI {
 
 		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.displayNameBuy") + " " + ownerName));
 		
-		//NamespacedKey idKey = new NamespacedKey(instance, "ID");
-		
 		int puf = 0;
 		if (contents != null) {
 			for (int i = 0; i < inv.getSize() && i < contents.length; i++) {
@@ -85,17 +70,6 @@ public class UserShopGUI {
 					puf++;
 					continue;
 				}
-				
-				/*
-				ItemMeta meta = item.getItemMeta();
-				
-				PersistentDataContainer container = meta.getPersistentDataContainer();
-				
-				if(!container.has(idKey , PersistentDataType.INTEGER))
-					container.set(idKey, PersistentDataType.INTEGER, shopId);
-				
-				item.setItemMeta(meta);
-				*/
 				
 				inv.setItem(i - puf, item);
 			}

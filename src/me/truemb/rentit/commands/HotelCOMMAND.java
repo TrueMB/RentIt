@@ -130,8 +130,16 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 					return true;
 				}
 				
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+				
+			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+				
 				this.resetArea(p, rentHandler);
-				p.sendMessage(this.instance.getMessage("hotelReseted").replace("%hotelId%", String.valueOf(hotelId)));
+				p.sendMessage(this.instance.getMessage("hotelReseted")
+						.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "alias" + "%", alias));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("resign")) {
@@ -165,9 +173,17 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 					p.sendMessage(this.instance.getMessage("notHotelOwner"));
 					return true;
 				}
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 				
+			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			    
 				this.resetArea(p, rentHandler);
-				p.sendMessage(this.instance.getMessage("hotelResignContract").replace("%hotelId%", String.valueOf(hotelId)));
+				p.sendMessage(this.instance.getMessage("hotelResignContract")
+						.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "alias" + "%", alias));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("delete")) {
@@ -190,6 +206,12 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 					return true;
 				}
 
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+				
+			    String alias = rentHandler != null && rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			    
 				BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, hotelId);
 				BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, hotelId);
 				this.instance.getBackupManager().paste(this.type, hotelId, min, max, p.getWorld(), false);
@@ -202,7 +224,10 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				this.instance.getAreaFileManager().unsetDoorClosed(this.type, hotelId);
 				this.instance.getDoorFileManager().clearDoors(this.type, hotelId);
 
-				p.sendMessage(this.instance.getMessage("hotelDeleted").replace("%hotelId%", String.valueOf(hotelId)));
+				p.sendMessage(this.instance.getMessage("hotelDeleted")
+						.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "alias" + "%", alias));
 				return true;
 			} else if (args[0].equalsIgnoreCase("permissions")) {
 				
@@ -220,7 +245,8 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				for (String permsPath : this.instance.manageFile().getConfigurationSection("UserPermissions.hotel").getKeys(false)) {
 					String cfgPerm = this.instance.manageFile().getString("UserPermissions.hotel." + permsPath);
 
-					p.sendMessage(this.instance.getMessage("permissionListBody").replace("%permission%", String.valueOf(cfgPerm)));
+					p.sendMessage(this.instance.getMessage("permissionListBody")
+							.replaceAll("(?i)%" + "permission" + "%", String.valueOf(cfgPerm)));
 				}
 				return true;
 				
@@ -340,7 +366,8 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 							}
 							
 							if(hash.isEmpty()) {
-								p.sendMessage(instance.getMessage("noUserPermissionsSet").replace("%type%", StringUtils.capitalize(type.toString().toLowerCase())));
+								p.sendMessage(instance.getMessage("noUserPermissionsSet")
+										.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(type.toString().toLowerCase())));
 								return;
 							}
 
@@ -355,7 +382,9 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 									permissions += ", " + s;
 								permissions = permissions.substring(2);
 
-								p.sendMessage(instance.getMessage("userPermission").replace("%player%", ingameName).replace("%permissions%", permissions));
+								p.sendMessage(instance.getMessage("userPermission")
+										.replaceAll("(?i)%" + "player" + "%", ingameName)
+										.replaceAll("(?i)%" + "permissions" + "%", permissions));
 							}
 							return;
 						} catch (SQLException e) {
@@ -464,7 +493,16 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 							instance.getMethodes().createType(type, hotelId, catID);
 							if (success) {
 								// CREATED
-								sender.sendMessage(instance.getMessage("hotelAreaCreated").replace("%hotelId%", String.valueOf(hotelId)));
+								RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(type, hotelId);
+								CategoryHandler catHandler = instance.getMethodes().getCategory(type, rentHandler.getCatID());
+								
+							    String alias = rentHandler != null & rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+							    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+							    
+								sender.sendMessage(instance.getMessage("hotelAreaCreated")
+										.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+										.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+										.replaceAll("(?i)%" + "alias" + "%", alias));
 							} else {
 								// NOTE CREATED
 								sender.sendMessage(instance.getMessage("hotelAreaError"));
@@ -541,7 +579,7 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				
 				p.sendMessage(this.instance.getMessage("hotelCategoryChangedAlias")
 						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
-						.replaceAll("(?i)%" + "alias" + "%", alias));
+						.replaceAll("(?i)%" + "catAlias" + "%", alias));
 				
 				return true;
 				
@@ -575,7 +613,7 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				String alias = args[1];
 				alias = alias.substring(0, alias.length() > 100 ? 100 : alias.length());
 
-				this.instance.getCategorySQL().setAlias(hotelId, this.type, alias);
+				this.instance.getHotelsSQL().setAlias(hotelId, alias);
 				rentHandler.setAlias(alias);
 				
 				p.sendMessage(this.instance.getMessage("hotelChangedAlias")
@@ -724,8 +762,9 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				double costs = catHandler.getPrice();
 				String time = catHandler.getTime();
 
-				if (!instance.getEconomy().has(p, costs)) {
-					p.sendMessage(instance.getMessage("notEnoughtMoney").replace("%amount%", String.valueOf(costs - instance.getEconomy().getBalance(p))));
+				if (!this.instance.getEconomy().has(p, costs)) {
+					p.sendMessage(this.instance.getMessage("notEnoughtMoney")
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
 					return true;
 				}
 
@@ -744,9 +783,15 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				Timestamp ts = UtilitiesAPI.getNewTimestamp(time);
 				this.instance.getHotelsSQL().setNextPayment(hotelId, ts);
 				rentHandler.setNextPayment(ts);
+				
+			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+			    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
-				p.teleport(instance.getAreaFileManager().getAreaSpawn(this.type, hotelId));
-				p.sendMessage(instance.getMessage("hotelBought").replace("%hotelId%", String.valueOf(hotelId)));
+				p.teleport(this.instance.getAreaFileManager().getAreaSpawn(this.type, hotelId));
+				p.sendMessage(this.instance.getMessage("hotelBought")
+						.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "alias" + "%", alias));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setTime")) {
@@ -779,12 +824,12 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("hotelDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("hotelDatabaseEntryMissing"));
 					return true;
 				}
 
-				instance.getMethodes().setTime(p, this.type, rentHandler.getCatID(), timeS);
-				instance.getMethodes().updateAllSigns(this.type, hotelId);
+				this.instance.getMethodes().setTime(p, this.type, rentHandler.getCatID(), timeS);
+				this.instance.getMethodes().updateAllSigns(this.type, hotelId);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setPrice")) {
@@ -815,7 +860,7 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				}
 
 				int catID = rentHandler.getCatID();
-				instance.getMethodes().setPrice(p, this.type, catID, args[1]);
+				this.instance.getMethodes().setPrice(p, this.type, catID, args[1]);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("door")) {
@@ -887,7 +932,7 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 					RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
 
 					if (rentHandler == null) {
-						p.sendMessage(instance.getMessage("hotelDatabaseEntryMissing"));
+						p.sendMessage(this.instance.getMessage("hotelDatabaseEntryMissing"));
 						return true;
 					}
 					
@@ -908,7 +953,7 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 					}
 
 					this.instance.getAreaFileManager().setDoorClosed(this.type, hotelId, false);
-					// this.instance.getDoorFileManager().openDoors("shop", shopId); NOT NEEDED, SINCE PLAYERS CAN OPEN IT
+					// this.instance.getDoorFileManager().openDoors("shop", hotelId); NOT NEEDED, SINCE PLAYERS CAN OPEN IT
 
 					sender.sendMessage(this.instance.getMessage("hotelDoorOpened"));
 					return true;
@@ -953,9 +998,9 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 
 				Block b = p.getTargetBlockExact(7);
 				
-				int shopId = 0;
+				int hotelId = 0;
 				try {
-					shopId = Integer.parseInt(args[2]);
+					hotelId = Integer.parseInt(args[2]);
 				} catch (NumberFormatException ex) {
 					p.sendMessage(this.instance.getMessage("notANumber"));
 					return true;
@@ -975,15 +1020,24 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 
 					if(b.getState().getBlockData() instanceof Door) {
 						Door door = (Door) b.getState().getBlockData();
-						this.instance.getDoorFileManager().addDoor(door, b.getLocation(), this.type, shopId);
+						this.instance.getDoorFileManager().addDoor(door, b.getLocation(), this.type, hotelId);
 					}else if(b.getState().getBlockData() instanceof TrapDoor || b.getState().getBlockData() instanceof Gate) {
-						this.instance.getDoorFileManager().addDoor(b.getLocation(), this.type, shopId);
+						this.instance.getDoorFileManager().addDoor(b.getLocation(), this.type, hotelId);
 					}else {
 						p.sendMessage(this.instance.getMessage("notADoor"));
 						return true;
 					}
+
+					RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(type, hotelId);
+					CategoryHandler catHandler = instance.getMethodes().getCategory(type, rentHandler.getCatID());
 					
-					p.sendMessage(this.instance.getMessage("hotelDoorAdded").replace("%hotelId%", String.valueOf(shopId)));
+				    String alias = rentHandler != null & rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+				    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					
+					p.sendMessage(this.instance.getMessage("hotelDoorAdded")
+							.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+							.replaceAll("(?i)%" + "alias" + "%", alias));
 					return true;
 
 				} else {
@@ -1071,7 +1125,10 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 							}
 						}
 
-						p.sendMessage(this.instance.getMessage("permissionSet").replace("%permission%", String.valueOf(permission)).replace("%player%", String.valueOf(target)).replace("%status%", String.valueOf(value)));
+						p.sendMessage(this.instance.getMessage("permissionSet")
+								.replaceAll("(?i)%" + "permission" + "%", String.valueOf(permission))
+								.replaceAll("(?i)%" + "player" + "%", target)
+								.replaceAll("(?i)%" + "status" + "%", String.valueOf(value)));
 						return true;
 					}
 				}
@@ -1128,7 +1185,10 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 
 				this.instance.getCategorySQL().updateHotelCategory(catID, price, timeS);
 				this.instance.getMethodes().updateAllSigns(this.type, catID);
-				p.sendMessage(this.instance.getMessage("hotelCategoryUpdated").replace("%catId%", String.valueOf(catID)).replace("%price%", String.valueOf(price)).replace("%time%", timeS));
+				p.sendMessage(this.instance.getMessage("hotelCategoryUpdated")
+						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
+						.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+						.replaceAll("(?i)%" + "time" + "%", timeS));
 				return true;
 			}
 		}
@@ -1145,27 +1205,32 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 		RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
 
 		if (rentHandler == null) {
-			p.sendMessage(instance.getMessage("hotelDatabaseEntryMissing"));
+			p.sendMessage(this.instance.getMessage("hotelDatabaseEntryMissing"));
 			return;
 		}
 
 		CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 		if (catHandler == null) {
-			p.sendMessage(instance.getMessage("categoryError"));
+			p.sendMessage(this.instance.getMessage("categoryError"));
 			return;
 		}
 		
 		double costs = catHandler.getPrice();
 		String time = catHandler.getTime();
-		boolean doorsClosed = instance.getAreaFileManager().isDoorClosed(this.type, hotelId);
+		boolean doorsClosed = this.instance.getAreaFileManager().isDoorClosed(this.type, hotelId);
 		Location loc = this.instance.getAreaFileManager().getAreaSpawn(this.type, hotelId);
+		
+	    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
 		String owner = rentHandler.getOwnerName();
 
-		for (String s : instance.manageFile().getStringList("Messages.hotelInfo")) {
+		for (String s : this.instance.manageFile().getStringList("Messages.hotelInfo")) {
 			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
 					.replaceAll("(?i)%" + "hotelid" + "%", String.valueOf(hotelId))
+					.replaceAll("(?i)%" + "alias" + "%", alias)
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 					.replaceAll("(?i)%" + "catid" + "%", String.valueOf(rentHandler.getCatID()))
 					.replaceAll("(?i)%" + "owner" + "%", owner == null ? "" : owner)
 					.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))

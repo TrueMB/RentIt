@@ -24,7 +24,7 @@ public class ItemSelledListener implements Listener {
 	@EventHandler
 	public void onItemSelled(ItemSellEvent e) {
 
-		Player buyer = e.getBuyer();
+		Player seller = e.getSeller();
 		RentTypeHandler rentHandler = e.getRentTypeHandler();
 		
 		int shopId = rentHandler.getID();
@@ -35,7 +35,9 @@ public class ItemSelledListener implements Listener {
 			if (this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Sell")) 
 					|| this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
 				if(this.instance.getMethodes().isSettingActive(uuid, RentTypes.SHOP, shopId, Settings.shopMessaging))
-					all.sendMessage(this.instance.getMessage("shopSellMessage").replace("%type%", e.getItem().getType().toString()).replace("%player%", buyer.getName()));
+					all.sendMessage(this.instance.getMessage("shopSellMessage")
+							.replaceAll("(?i)%" + "type" + "%", e.getItem().getType().toString())
+							.replaceAll("(?i)%" + "player" + "%", seller.getName()));
 			}
 		}
 

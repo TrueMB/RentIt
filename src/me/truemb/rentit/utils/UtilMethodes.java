@@ -130,7 +130,13 @@ public class UtilMethodes {
 
 		this.instance.getCategorySQL().setCosts(catID, type, price);
 		this.updateAllSigns(type, catID);
-		p.sendMessage(this.instance.getMessage(type.toString().toLowerCase() + "PriceChanged").replace("%price%", String.valueOf(price)).replace("%catId%", String.valueOf(catID)));
+		
+	    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+	    
+		p.sendMessage(this.instance.getMessage(type.toString().toLowerCase() + "PriceChanged")
+				.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
+				.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+				.replaceAll("(?i)%" + "price" + "%", String.valueOf(price)));
 
 	}
 
@@ -212,7 +218,7 @@ public class UtilMethodes {
 	}
 	// ==========================================================
 
-	public void createType(RentTypes type, int id, int catID) {
+	public RentTypeHandler createType(RentTypes type, int id, int catID) {
 
 		if (type.equals(RentTypes.SHOP)) {
 			instance.getShopsSQL().createShop(id, catID);
@@ -229,6 +235,8 @@ public class UtilMethodes {
 		typeHash.put(id, typeHandler);
 
 		this.instance.rentTypeHandlers.put(type, typeHash);
+		
+		return typeHandler;
 	}
 
 	public void deleteType(RentTypes type, int id) {
@@ -285,12 +293,19 @@ public class UtilMethodes {
 					if (owner == null) {
 						// ZU MIETEN
 						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.sellShopSign.line" + i).replace("%time%", time).replace("%size%", String.valueOf(size)).replace("%price%", String.valueOf(price))));
+							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.sellShopSign.line" + i)
+									.replaceAll("(?i)%" + "time" + "%", time)
+									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+									.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))));
 						}
 					} else {
 						// BEREITS VERMIETET
 						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.boughtShopSign.line" + i).replace("%time%", time).replace("%owner%", owner).replace("%size%", String.valueOf(size)).replace("%price%", String.valueOf(price))));
+							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.boughtShopSign.line" + i)
+									.replaceAll("(?i)%" + "time" + "%", time)
+									.replaceAll("(?i)%" + "owner" + "%", owner)
+									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+									.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))));
 						}
 					}
 				} else if (type.equals(RentTypes.HOTEL)) {
@@ -298,12 +313,19 @@ public class UtilMethodes {
 					if (owner == null) {
 						// ZU MIETEN
 						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.sellHotelSign.line" + i).replace("%time%", time).replace("%price%", String.valueOf(price))));
+							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.sellHotelSign.line" + i)
+									.replaceAll("(?i)%" + "time" + "%", time)
+									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+									.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))));
 						}
 					} else {
 						// BEREITS VERMIETET
 						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.boughtHotelSign.line" + i).replace("%time%", time).replace("%owner%", owner).replace("%price%", String.valueOf(price))));
+							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.boughtHotelSign.line" + i)
+									.replaceAll("(?i)%" + "time" + "%", time)
+									.replaceAll("(?i)%" + "owner" + "%", owner)
+									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+									.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))));
 						}
 					}
 				}
@@ -370,7 +392,12 @@ public class UtilMethodes {
 
 		this.updateAllSigns(type, catID);
 
-		p.sendMessage(this.instance.getMessage(type.toString().toLowerCase() + "RentTimeChanged").replace("%time%", timeS).replace("%catId%", String.valueOf(catID)));
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+	    
+		p.sendMessage(this.instance.getMessage(type.toString().toLowerCase() + "RentTimeChanged")
+				.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
+				.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+				.replaceAll("(?i)%" + "time" + "%", timeS));
 
 	}
 
@@ -391,14 +418,12 @@ public class UtilMethodes {
 		}
 
 		boolean success = catID > 0;
+		CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, catID);
 
 		if (success) {
 
-			CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, catID);
-
-			if (catHandler != null) {
+			if (catHandler != null)
 				catHandler.setSize(size);
-			}
 
 			this.instance.getCategorySQL().setSize(catID, size);
 		}
@@ -417,9 +442,13 @@ public class UtilMethodes {
 		}
 
 		this.instance.getShopsInvSQL().setupShopInventories(rentHandler); // UPDATE SHOP INVENTORIES
+		
+	    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
 		this.updateAllSigns(RentTypes.SHOP, catID);
-		p.sendMessage(this.instance.getMessage("shopSizeChanged").replace("%catId%", String.valueOf(catID)));
+		p.sendMessage(this.instance.getMessage("shopSizeChanged")
+				.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
+				.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 
 	}
 	

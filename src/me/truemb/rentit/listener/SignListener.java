@@ -75,9 +75,14 @@ public class SignListener implements Listener{
 			int size = catHandler.getSize();
 
 			this.instance.getMethodes().updateSign(RentTypes.SHOP, shopId, (Sign) e.getBlock().getState(), rentHandler.getOwnerName(), time, price, size);
-			
+
+		    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+		    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+		    
 			p.sendMessage(this.instance.getMessage("shopSignCreated")
-					.replace("%shopId%", String.valueOf(shopId)));
+					.replaceAll("(?i)%" + "shopid" + "%", String.valueOf(shopId))
+					.replaceAll("(?i)%" + "alias" + "%", alias)
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 			
 		}else if(e.getLine(0).equalsIgnoreCase("[hotel]")) {
 		
@@ -116,9 +121,14 @@ public class SignListener implements Listener{
 			double price = catHandler.getPrice();
 			
 			this.instance.getMethodes().updateSign(RentTypes.HOTEL, hotelId, (Sign) e.getBlock().getState(), rentHandler.getOwnerName(), time, price, catHandler.getSize());
-			
+
+		    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+		    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+		    
 			p.sendMessage(this.instance.getMessage("hotelSignCreated")
-					.replace("%hotelId%", String.valueOf(hotelId)));
+					.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+					.replaceAll("(?i)%" + "alias" + "%", alias)
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 			
 		}
 	}
@@ -144,26 +154,50 @@ public class SignListener implements Listener{
 	private void checkIfSign(BlockBreakEvent e, Player p, Block b) {
 		int shopId = this.instance.getSignFileManager().getIdFromSign(b.getLocation(), RentTypes.SHOP);
 		if(shopId > 0) {
+			
+			RentTypes type = RentTypes.SHOP;
+			
 			if(!p.hasPermission(this.instance.manageFile().getString("Permissions.sign"))) {
 				e.setCancelled(true);
 				return;
 			}
 			
-			this.instance.getSignFileManager().removeSign(b.getLocation(), RentTypes.SHOP);
+			this.instance.getSignFileManager().removeSign(b.getLocation(), type);
+
+			RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(type, shopId);
+			CategoryHandler catHandler = this.instance.getMethodes().getCategory(type, rentHandler.getCatID());
+			
+		    String alias = rentHandler != null && rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+		    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(rentHandler.getCatID());
+		    
 			p.sendMessage(this.instance.getMessage("shopSignDeleted")
-					.replace("%shopId%", String.valueOf(shopId)));
+					.replaceAll("(?i)%" + "shopid" + "%", String.valueOf(shopId))
+					.replaceAll("(?i)%" + "alias" + "%", alias)
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 			
 		}else {
 			int hotelId = this.instance.getSignFileManager().getIdFromSign(b.getLocation(), RentTypes.HOTEL);
 			if(hotelId > 0) {
+				
+				RentTypes type = RentTypes.HOTEL;
+				
 				if(!p.hasPermission(this.instance.manageFile().getString("Permissions.sign"))) {
 					e.setCancelled(true);
 					return;
 				}
 				
-				this.instance.getSignFileManager().removeSign(b.getLocation(), RentTypes.HOTEL);
+				this.instance.getSignFileManager().removeSign(b.getLocation(), type);
+				
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(type, hotelId);
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(type, rentHandler.getCatID());
+				
+			    String alias = rentHandler != null && rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(rentHandler.getCatID());
+			    
 				p.sendMessage(this.instance.getMessage("hotelDeleted")
-						.replace("%hotelId%", String.valueOf(hotelId)));
+						.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+						.replaceAll("(?i)%" + "alias" + "%", alias)
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 				
 			}
 		}

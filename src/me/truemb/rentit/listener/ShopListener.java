@@ -100,7 +100,8 @@ public class ShopListener implements Listener {
 				}
 
 				if (!this.instance.getEconomy().has(p, price)) {
-					p.sendMessage(instance.getMessage("notEnoughtMoney").replace("%amount%", String.valueOf(formatter.format(price - this.instance.getEconomy().getBalance(p)))));
+					p.sendMessage(instance.getMessage("notEnoughtMoney")
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(formatter.format(price - this.instance.getEconomy().getBalance(p)))));
 					return;
 				}
 
@@ -127,7 +128,10 @@ public class ShopListener implements Listener {
 				}
 
 				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents());
-				p.sendMessage(this.instance.getMessage("shopItemBought").replace("%amount%", String.valueOf(amount)).replace("%price%", String.valueOf(formatter.format(price))).replace("%type%", StringUtils.capitalize(copyItem.getType().toString())));
+				p.sendMessage(this.instance.getMessage("shopItemBought")
+						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(amount))
+						.replaceAll("(?i)%" + "price" + "%", String.valueOf(formatter.format(price)))
+						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(copyItem.getType().toString())));
 				return;
 			} else if (e.isRightClick()) {
 
@@ -143,7 +147,9 @@ public class ShopListener implements Listener {
 				p.getInventory().addItem(copyItem);
 				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
 
-				p.sendMessage(this.instance.getMessage("shopItemRemoved").replace("%amount%", String.valueOf(copyItem.getAmount())).replace("%type%", StringUtils.capitalize(copyItem.getType().toString())));
+				p.sendMessage(this.instance.getMessage("shopItemRemoved")
+						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount()))
+						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(copyItem.getType().toString())));
 
 			}
 
@@ -197,7 +203,8 @@ public class ShopListener implements Listener {
 						targetItemAmount += items.getAmount();
 
 				if (targetItemAmount <= 0) {
-					p.sendMessage(this.instance.getMessage("notEnoughOwningItems").replace("%amount%", String.valueOf(1)));
+					p.sendMessage(this.instance.getMessage("notEnoughOwningItems")
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(1)));
 					return;
 				}
 				
@@ -247,7 +254,10 @@ public class ShopListener implements Listener {
 				}
 
 				this.instance.getShopsInvSQL().updateBuyInv(shopId, inv.getContents());
-				p.sendMessage(this.instance.getMessage("shopItemSelled").replace("%amount%", String.valueOf(amount)).replace("%price%", String.valueOf(formatter.format(price))).replace("%type%", StringUtils.capitalize(copyItem.getType().toString())));
+				p.sendMessage(this.instance.getMessage("shopItemSelled")
+						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(amount))
+						.replaceAll("(?i)%" + "price" + "%", String.valueOf(formatter.format(price)))
+						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(copyItem.getType().toString())));
 				return;
 			} else if (e.isRightClick()) {
 
@@ -261,7 +271,9 @@ public class ShopListener implements Listener {
 				e.setCurrentItem(null);
 				this.instance.getShopsInvSQL().updateBuyInv(shopId, inv.getContents());
 
-				p.sendMessage(this.instance.getMessage("shopItemRemoved").replace("%amount%", String.valueOf(copyItem.getAmount())).replace("%type%", StringUtils.capitalize(copyItem.getType().toString())));
+				p.sendMessage(this.instance.getMessage("shopItemRemoved")
+						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount()))
+						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(copyItem.getType().toString())));
 
 			}
 		} else if (e.getView().getTitle().startsWith("BACKUP SHOP ")) {

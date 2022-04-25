@@ -58,10 +58,6 @@ public class UserConfirmGUI {
 	}
 	
 	private static ItemStack getInfoItem(Main instance, RentTypes type, int id) {
-		ItemStack acceptItem = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.type").toUpperCase()));
-	        
-	    ItemMeta acceptItemMeta = acceptItem.getItemMeta();
-	    acceptItemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.displayName")));
 
 	    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(type, id);
 
@@ -76,23 +72,34 @@ public class UserConfirmGUI {
 	    double price = catHandler.getPrice();
 	    int size = catHandler.getSize();
 	    String timeS = catHandler.getTime();
+
+	    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(id);
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 	    	    
 		List<String> lore = new ArrayList<>();
 		for(String s : instance.manageFile().getStringList("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.lore")) {
 			lore.add(ChatColor.translateAlternateColorCodes('&', s)
 					.replace("%shopId%", String.valueOf(id))
 					.replace("%hotelId%", String.valueOf(id))
+					.replace("%alias%", alias)
+					.replace("%catAlias%", catAlias)
 					.replace("%price%", String.valueOf(price))
 					.replace("%size%", String.valueOf(size))
 					.replace("%time%", timeS));
 		}
 		
 		NamespacedKey key = new NamespacedKey(instance, "ID");
-		acceptItemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
 		
-		acceptItemMeta.setLore(lore);
-	    acceptItem.setItemMeta(acceptItemMeta);
-	    return acceptItem;
+		ItemStack infoItem = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.type").toUpperCase()));
+	        
+	    ItemMeta infoItemMeta = infoItem.getItemMeta();
+	    infoItemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.displayName")));
+	    
+	    infoItemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
+		
+	    infoItemMeta.setLore(lore);
+		infoItem.setItemMeta(infoItemMeta);
+	    return infoItem;
 	}
 
 }

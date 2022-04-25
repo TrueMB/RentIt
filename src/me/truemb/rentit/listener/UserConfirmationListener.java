@@ -107,7 +107,8 @@ public class UserConfirmationListener implements Listener {
 				String time = catHandler.getTime();
 				
 	        	if(!this.instance.getEconomy().has(p, costs)) {
-	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney").replace("%amount%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
+	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney")
+	        				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
 	        		return;
 	        	}
 
@@ -222,7 +223,8 @@ public class UserConfirmationListener implements Listener {
 	        	String time = catHandler.getTime();
 	        	
 	        	if(!this.instance.getEconomy().has(p, costs)) {
-	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney").replace("%amount%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
+	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney")
+	        				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
 	        		return;
 	        	}
 

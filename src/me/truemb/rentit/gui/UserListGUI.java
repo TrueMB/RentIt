@@ -29,7 +29,6 @@ public class UserListGUI {
 			return null;
 		
 		Inventory inv = Bukkit.createInventory(null, 18, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.owningList.displayName" + StringUtils.capitalize(type.toString().toLowerCase()) + "List")));
-		//inv.setItem(13, instance.getMethodes().getGUIItem(instance, "owningList", "cancelItem"));
 		
 		List<Integer> ids = playerHandler.getOwningList(type);
 		
@@ -56,12 +55,6 @@ public class UserListGUI {
 	}
 	
 	private static ItemStack getListItem(Main instance, RentTypes type, int id) {
-		ItemStack item = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.owningList.items." + type.toString().toLowerCase() + "ListItem.type").toUpperCase()));
-	        
-	    ItemMeta itemMeta = item.getItemMeta();
-	    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.owningList.items." + type.toString().toLowerCase() + "ListItem.displayName")
-				.replace("%shopId%", String.valueOf(id))
-				.replace("%hotelId%", String.valueOf(id))));
 	    
 	    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(type, id);
 
@@ -77,18 +70,33 @@ public class UserListGUI {
 	    int size = catHandler.getSize();
 	    String timeS = catHandler.getTime();
 
+	    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(id);
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+
 		NamespacedKey key = new NamespacedKey(instance, "ID");
+
+		ItemStack item = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.owningList.items." + type.toString().toLowerCase() + "ListItem.type").toUpperCase()));
+	        
+	    ItemMeta itemMeta = item.getItemMeta();
+	    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.owningList.items." + type.toString().toLowerCase() + "ListItem.displayName")
+				.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
+				.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
+				.replaceAll("(?i)%" + "alias" + "%", alias)
+				.replaceAll("(?i)%" + "catAlias" + "%", catAlias)));
+	    
 		itemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
 		
 		List<String> lore = new ArrayList<>();
 		
 		for(String s : instance.manageFile().getStringList("GUI.owningList.items." + type.toString().toLowerCase() + "ListItem.lore")) {
 			lore.add(ChatColor.translateAlternateColorCodes('&', s)
-					.replace("%shopId%", String.valueOf(id))
-					.replace("%hotelId%", String.valueOf(id))
-					.replace("%price%", String.valueOf(price))
-					.replace("%size%", String.valueOf(size))
-					.replace("%time%", timeS));
+					.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
+					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
+					.replaceAll("(?i)%" + "alias" + "%", alias)
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+					.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+					.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+					.replaceAll("(?i)%" + "time" + "%", timeS));
 		}
 		itemMeta.setLore(lore);
 	    item.setItemMeta(itemMeta);
