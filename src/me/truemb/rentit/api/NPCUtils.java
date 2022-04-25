@@ -160,7 +160,8 @@ public class NPCUtils {
 
         npc.getOrAddTrait(Spawned.class).setSpawned(true);
 		npc.spawn(loc);
-		npc.getEntity().setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META
+		if(npc.getEntity() != null)
+			npc.getEntity().setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META
 		CitizensAPI.getNPCRegistry().saveToStore();
 	}
 }
