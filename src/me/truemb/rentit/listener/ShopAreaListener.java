@@ -12,6 +12,7 @@ import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import me.truemb.rentit.enums.RentTypes;
@@ -62,7 +64,25 @@ public class ShopAreaListener implements Listener {
 		if(canceled)
 			e.setCancelled(canceled);
     }
-	
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+    public void onVehicleDMG(VehicleDamageEvent e) {
+		
+		Player p = null;
+		if(e.getAttacker() instanceof Player)
+			p = (Player) e.getAttacker();
+		else if(e.getAttacker() instanceof AbstractArrow && ((AbstractArrow) e.getAttacker()).getShooter() instanceof Player)
+			p = (Player) ((AbstractArrow) e.getAttacker()).getShooter();
+		
+		if(p == null) return;
+		
+		Vehicle target = e.getVehicle();
+		Location loc = target.getLocation();
+
+		boolean canceled = this.protectedRegion(p, loc, true);
+		if(canceled)
+			e.setCancelled(canceled);
+    }
 
 	@EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDMG(EntityDamageByEntityEvent e) {
