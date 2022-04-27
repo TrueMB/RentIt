@@ -25,6 +25,9 @@ public class RentTypeHandler {
 	private Timestamp nextPayment;
 	private boolean autoPayment;
 	
+	private Timestamp reminder;
+	private boolean reminded;
+	
 	private Inventory sellInv; //INVENTORY IS ALREADY LOADED AND KEEPS THE INSTANCE. SO EVERYBODY UPDATE, IF SOMETHING CHANGES
 	private Inventory buyInv;
 	
@@ -38,6 +41,13 @@ public class RentTypeHandler {
 		this.nextPayment = nextPayment;
 		this.autoPayment = autoPayment;
 	}
+	
+	//TODO IF NEXTPAYMENT GETS SET OR CREATED -> THEN CALCULATE ALSO THE REMINDER
+	//Add Config Value for Categories to define how much earlier the reminder should be get called.
+	//If not defined, no reminder will happen
+	
+	//Reminder gets already read, if it was defined. There will be one Reminder, if the player gets online.
+	//There will be only more reminders, if the server gets restarted and the cache deleted.
 	
 	//GET METHODES
 	public int getID() {
@@ -62,6 +72,14 @@ public class RentTypeHandler {
 
 	public Timestamp getNextPayment() {
 		return this.nextPayment;
+	}
+
+	public Timestamp getReminder() {
+		return this.reminder;
+	}
+
+	public boolean isReminded() {
+		return reminded;
 	}
 	
 	public boolean isAutoPayment() {
@@ -90,6 +108,14 @@ public class RentTypeHandler {
 
 	public void setNextPayment(Timestamp nextPayment) {
 		this.nextPayment = nextPayment;
+	}
+
+	public void setReminder(Timestamp reminder) {
+		this.reminder = reminder;
+	}
+
+	public void setReminded(boolean reminded) {
+		this.reminded = reminded;
 	}
 
 	//OTHERS
@@ -121,11 +147,14 @@ public class RentTypeHandler {
 		PlayerHandler playerHandler = plugin.getMethodes().getPlayerHandler(uuid);
 		
 		if(playerHandler != null) {
-			playerHandler.removeOwningRent(type, this.getID());
+			playerHandler.removeOwningRent(this.type, this.getID());
 		}
 		
 		//RESET CACHE
 		this.setOwner(null, null);
+		this.setNextPayment(null);
+		this.setReminder(null);
+		this.setReminded(false);
 		
 		//INVENTORY
 		this.setSellInv(UserShopGUI.getSellInv(plugin, id, null));

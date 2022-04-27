@@ -1,6 +1,8 @@
 package me.truemb.rentit.runnable;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -26,6 +28,8 @@ public class PaymentRunnable implements Runnable {
 
 	@Override
 	public void run() {
+		DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+		
 		Timestamp now = new Timestamp(System.currentTimeMillis());
 		Collection<RentTypeHandler> shopHandlers = this.instance.getMethodes().getPaymentsOfRentTypes(RentTypes.SHOP);
 		Collection<RentTypeHandler> hotelHandlers = this.instance.getMethodes().getPaymentsOfRentTypes(RentTypes.HOTEL);
@@ -43,8 +47,25 @@ public class PaymentRunnable implements Runnable {
 				double costs = catHandler.getPrice();
 				String time = catHandler.getTime();
 				Timestamp ts = rentHandler.getNextPayment();
+				Timestamp reminderTs = rentHandler.getReminder();
+				
+				//REMIND IF SHOP DOESNT AUTOMATICLY EXTEND
+				if(!rentHandler.isAutoPayment() && !rentHandler.isReminded() && reminderTs != null && reminderTs.before(now) && p.isOnline()) {
+					
+				    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
+				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+
+					p.getPlayer().sendMessage(this.instance.getMessage("shopRentRunningOut")
+							.replaceAll("(?i)%" + "alias" + "%", alias)
+							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+							.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
+							.replaceAll("(?i)%" + "time" + "%", time)
+							.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts)));
+					
+					rentHandler.setReminded(true);
+				}
 	
-				while (ts.before(now)) {
+				while (ts != null && ts.before(now)) {
 	
 					// ONLY IF USER WANTS MONTHLY AUTO PAY OTHERWISE RESET
 					if (!rentHandler.isAutoPayment() || !this.instance.getEconomy().has(p, costs)) {
@@ -117,8 +138,25 @@ public class PaymentRunnable implements Runnable {
 				double costs = catHandler.getPrice();
 				String time = catHandler.getTime();
 				Timestamp ts = rentHandler.getNextPayment();
+				Timestamp reminderTs = rentHandler.getReminder();
+				
+				//REMIND IF HOTEL DOESNT AUTOMATICLY EXTEND
+				if(!rentHandler.isAutoPayment() && !rentHandler.isReminded() && reminderTs != null && reminderTs.before(now) && p.isOnline()) {
+					
+				    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
+				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
-				while (ts.before(now)) {
+					p.getPlayer().sendMessage(this.instance.getMessage("hotelRentRunningOut")
+							.replaceAll("(?i)%" + "alias" + "%", alias)
+							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+							.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
+							.replaceAll("(?i)%" + "time" + "%", time)
+							.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts)));
+					
+					rentHandler.setReminded(true);
+				}
+
+				while (ts != null && ts.before(now)) {
 
 					// ONLY IF USER WANTS MONTHLY AUTO PAY OTHERWISE RESET
 					if (!rentHandler.isAutoPayment() || !this.instance.getEconomy().has(p, costs)) {
