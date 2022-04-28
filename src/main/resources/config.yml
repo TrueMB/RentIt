@@ -62,6 +62,7 @@ Options:
   #doorsClosedUntilBuy -> <true/false> Should the doors be closed until a player bought the Shop/hotelroom? True Allows player to look, until someone rents it and does /shop door close
   #doorsClosedAfterBuy -> the default status, after a player bought a Shop
   #allowUsersToMoveNPC -> Should a user without permission be able to move the npc with /shop setnpc
+  #reminderRentRunningOut -> If the player goes/is online %time% before the rent is running out, then a notification will be send.
   categorySettings:
     ShopCategory:
       99:
@@ -74,6 +75,7 @@ Options:
         doorsClosedUntilBuy: false
         doorsClosedAfterBuy: false
         allowUsersToMoveNPC: true
+        reminderRentRunningOut: '5m'
       88:
         usePermission: true
         autoPaymentDefault: true
@@ -93,6 +95,7 @@ Options:
         ownerBypassLock: true
         doorsClosedUntilBuy: false
         doorsClosedAfterBuy: false
+        reminderRentRunningOut: '1D'
       88:
         usePermission: true
         autoPaymentDefault: true
@@ -557,8 +560,8 @@ Messages:
   shopSignDeleted: '&aThe Sign for the ShopID &f%alias% &awas deleted.'
   shopCategoryUpdated: '&aYou updated the category &f%catAlias%&a.'
   shopCategoryDeleted: '&aYou deleted the category &f%catAlias%&a.'
-  shopCategoryChangedAlias: '&aYou updated the category &f%catAlias% &aalias to &f%catAlias%&a.'
-  shopChangedAlias: '&aYou updated the shop &f%alias% &aalias to &f%alias%&a.'
+  shopCategoryChangedAlias: '&aYou updated the category &f%catId% &aalias to &f%catAlias%&a.'
+  shopChangedAlias: '&aYou updated the shop &f%shopId% &aalias to &f%alias%&a.'
   shopCouldntDeleteCategory: '&cCouldnt delete the Category &f%catAlias%&c, since there are still shops using the Category.'
   shopCategoryList: '&f%catAlias%&7: &6Price&7: &f%price% &7- &6Time&7: &f%time% &7- &6Size&7: &f%size%.'
   shopBought: '&6You bought the Shop with the ID: &f%alias%&6.'
@@ -613,6 +616,8 @@ Messages:
     - '&f/shop createCat <CategoryID> <Price> <Size> <Time> &7- &6Create a Category.'
     - '&f/shop deleteCat <CategoryID> &7- &6Delete a Category.'
     - '&f/shop listCat &7- &6Lists all Categories.'
+    - '&f/shop setAlias &7- &6Set an alias for the shop.'
+    - '&f/shop setAliasCat &7- &6Set an alias for the shop Category.'
     - '&f/shop setarea <CategoryID> &7- &6Set the selected Region to the Shop Category.'
     - '&f/shop setnpc &7- &6Set or Change the Position of the Shop NPC.'
     - '&f/shop setprice <Price> &7- &6Change the Rent Price. (Changes the Category Settings)'
@@ -657,8 +662,8 @@ Messages:
     - '&6Dont forget about your rent time and enough money. Normally it will pay the rent automaticly, so be sure always have enough money. Even if you are not on the Server!'
   shopInfo:
     - '&6&m                  &6[ &f&lSHOP Info &6]&6&m                  '
-    - '&6Shop ID&7: &f%alias%'
-    - '&6Category&7: &f%catAlias%'
+    - '&6Shop ID&7: &f%shopId% &8(%alias%)'
+    - '&6Category&7: &f%catId% &8(%catAlias%)'
     - ''
     - '&6Location&7: &6X&7:&f%x%&7, &6Y&7:&f%y%&7, &6Z&7:&f%z% &7in &f%world%'
     - ''
@@ -688,8 +693,8 @@ Messages:
   hotelSignDeleted: '&aThe Hotelroom Sign for the ID &f%alias% &awas deleted.'
   hotelCategoryUpdated: '&aYou updated the Category &f%catAlias%&a.'
   hotelCategoryDeleted: '&aYou deleted the Category &f%catAlias%&a.'
-  hotelCategoryChangedAlias: '&aYou updated the category &f%catAlias% &aalias to &f%catAlias%&a.'
-  hotelChangedAlias: '&aYou updated the hotel &f%alias% &aalias to &f%alias%&a.'
+  hotelCategoryChangedAlias: '&aYou updated the category &f%catId% &aalias to &f%catAlias%&a.'
+  hotelChangedAlias: '&aYou updated the hotel &f%hotelId% &aalias to &f%alias%&a.'
   hotelCouldntDeleteCategory: '&cCouldnt delete the Category &f%catAlias%&c, since there are still hotels using the Category.'
   hotelCategoryList: '&f%catAlias%&7: &6Price&7: &f%price% &7- &6Time&7: &f%time%'
   hotelBought: '&6You are now renting the Hotelroom: &f%alias%&6.'
@@ -726,6 +731,8 @@ Messages:
     - '&f/hotel createCat <CategoryID> <Price> <Time> &7- &6Create a Category.'
     - '&f/hotel deleteCat <CategoryID> &7- &6Delete a Category.'
     - '&f/hotel listCat &7- &6Lists all Categories.'
+    - '&f/hotel setAlias &7- &6Set an alias for the hotel.'
+    - '&f/hotel setAliasCat &7- &6Set an alias for the hotel Category.'
     - '&f/hotel setarea <CategoryID> &7- &6Set the selected Region to the Hotelroom Category.'
     - '&f/hotel setpermission <Player> <Permission> <Value> &7- &6Set Permissions for Players (Hotelroom admins only).'
     - '&f/hotel permissions &7- &6All Hotelroom Permissions.'
@@ -753,8 +760,8 @@ Messages:
     - '&5&l/hotel resign \n \n &6Resign the rent contract. (Resets the Shop and makes it for somebody else rentable)'
   hotelInfo:
     - '&6&m                  &6[ &f&lHOTEL Info &6]&6&m                  '
-    - '&6Hotel ID&7: &f%alias%'
-    - '&6Category&7: &f%catAlias%'
+    - '&6Hotel ID&7: &f%hotelId% &8(%alias%)'
+    - '&6Category&7: &f%catId% &8(%catAlias%)'
     - ''
     - '&6Location&7: &6X&7:&f%x%&7, &6Y&7:&f%y%&7, &6Z&7:&f%z% &7in &f%world%'
     - ''

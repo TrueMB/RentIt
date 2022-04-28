@@ -25,7 +25,7 @@ public class PlayerQuitListener implements Listener{
 		UUID uuid = p.getUniqueId();
 		
 		if(this.instance.playerHandlers.containsKey(uuid))
-			this.instance.playerHandlers.remove(uuid);
+			this.instance.playerHandlers.get(uuid).exit(this.instance);
 	}
 
 }

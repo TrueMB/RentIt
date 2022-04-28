@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -12,12 +13,15 @@ import org.bukkit.inventory.Inventory;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.main.Main;
+import me.truemb.rentit.utils.UtilitiesAPI;
 
 public class RentTypeHandler {
 	
+	private Main instance;
+	
 	private RentTypes type;
 	private int id = -1;
-	private String alias = "";
+	private String alias = null;
 	private int catID = -1;
 	
 	private UUID ownerUUID;
@@ -31,23 +35,17 @@ public class RentTypeHandler {
 	private Inventory sellInv; //INVENTORY IS ALREADY LOADED AND KEEPS THE INSTANCE. SO EVERYBODY UPDATE, IF SOMETHING CHANGES
 	private Inventory buyInv;
 	
-	public RentTypeHandler(RentTypes type, int id, int catID, UUID ownerUUID, String ownerName, Timestamp nextPayment, boolean autoPayment) {
+	public RentTypeHandler(Main plugin, RentTypes type, int id, int catID, UUID ownerUUID, String ownerName, Timestamp nextPayment, boolean autoPayment) {
+		this.instance = plugin;
+		
 		this.type = type;
 		this.id = id;
 		this.catID = catID;
 
-		this.ownerUUID = ownerUUID;
-		this.ownerName = ownerName;
-		this.nextPayment = nextPayment;
-		this.autoPayment = autoPayment;
+		this.setOwner(ownerUUID, ownerName);
+		this.setAutoPayment(autoPayment);
+		this.setNextPayment(nextPayment);
 	}
-	
-	//TODO IF NEXTPAYMENT GETS SET OR CREATED -> THEN CALCULATE ALSO THE REMINDER
-	//Add Config Value for Categories to define how much earlier the reminder should be get called.
-	//If not defined, no reminder will happen
-	
-	//Reminder gets already read, if it was defined. There will be one Reminder, if the player gets online.
-	//There will be only more reminders, if the server gets restarted and the cache deleted.
 	
 	//GET METHODES
 	public int getID() {
@@ -91,7 +89,6 @@ public class RentTypeHandler {
 	}
 
 
-
 	//SET METHODES
 	public void setAlias(String alias) {
 		this.alias = alias;
@@ -108,6 +105,10 @@ public class RentTypeHandler {
 
 	public void setNextPayment(Timestamp nextPayment) {
 		this.nextPayment = nextPayment;
+		
+		//NEXT PAYMENT CHANGED - Reminder needs to change as well
+		if(nextPayment != null)
+			this.calculateReminderTimestamp();
 	}
 
 	public void setReminder(Timestamp reminder) {
@@ -119,16 +120,16 @@ public class RentTypeHandler {
 	}
 
 	//OTHERS
-	public void reset(Main plugin) {
+	public void reset() {
 		
 		//PERMISSIONS RESET IN CACHE
 		for(Player all : Bukkit.getOnlinePlayers()) {
 		
 			UUID uuid = all.getUniqueId();
-			if(!plugin.playerHandlers.containsKey(uuid))
+			if(!this.instance.playerHandlers.containsKey(uuid))
 				continue;
 			
-			PlayerHandler playerHandler = plugin.getMethodes().getPlayerHandler(uuid);
+			PlayerHandler playerHandler = this.instance.getMethodes().getPlayerHandler(uuid);
 			
 			if(playerHandler == null)
 				continue;
@@ -144,11 +145,10 @@ public class RentTypeHandler {
 		//REMOVE OWNING LIST ENTRY FROM OWNER IN CACHE
 		UUID uuid = this.getOwnerUUID();
 
-		PlayerHandler playerHandler = plugin.getMethodes().getPlayerHandler(uuid);
+		PlayerHandler playerHandler = this.instance.getMethodes().getPlayerHandler(uuid);
 		
-		if(playerHandler != null) {
+		if(playerHandler != null)
 			playerHandler.removeOwningRent(this.type, this.getID());
-		}
 		
 		//RESET CACHE
 		this.setOwner(null, null);
@@ -157,12 +157,31 @@ public class RentTypeHandler {
 		this.setReminded(false);
 		
 		//INVENTORY
-		this.setSellInv(UserShopGUI.getSellInv(plugin, id, null));
-		this.setBuyInv(UserShopGUI.getBuyInv(plugin, id, null));
+		this.setSellInv(UserShopGUI.getSellInv(this.instance, id, null));
+		this.setBuyInv(UserShopGUI.getBuyInv(this.instance, id, null));
 	}
 	
 	public boolean isOwned() {
 		return this.getOwnerUUID() != null;
+	}
+	
+	/**
+	 * Calculates the Reminder, if it is needed
+	 */
+	public void calculateReminderTimestamp() {
+		
+		//ONLY NEEDS TO BE REMINDED, IF RENT COULD EVENTUALLY RUN OUT
+		if(this.isAutoPayment()) return;
+		
+		String timeS = this.instance.manageFile().isSet("Options.categorySettings." + StringUtils.capitalize(this.getType().toString().toLowerCase()) + "Category." + this.getCatID() + ".reminderRentRunningOut") ? 
+				this.instance.manageFile().getString("Options.categorySettings." + StringUtils.capitalize(this.getType().toString().toLowerCase()) + "Category." + this.getCatID() + ".reminderRentRunningOut") : null;
+		
+		if(timeS == null) return; //NO REMINDER SET
+		
+		//GETS TIME BEFORE THE RENT IS RUNNING OUT
+		Timestamp reminderTs = UtilitiesAPI.getTimestampBefore(new Timestamp(System.currentTimeMillis()), timeS);
+		
+		this.setReminder(reminderTs);
 	}
 
 	public void setBuyInv(Inventory buyInv) {

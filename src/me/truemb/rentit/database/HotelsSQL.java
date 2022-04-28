@@ -3,6 +3,7 @@ package me.truemb.rentit.database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
 
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
@@ -33,7 +35,7 @@ public class HotelsSQL {
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_hotels + " (ID INT PRIMARY KEY, alias VARCHAR(100), ownerUUID VARCHAR(50), ownerName VARCHAR(16), catID INT, nextPayment TIMESTAMP DEFAULT CURRENT_TIMESTAMP, autoPayment TINYINT)");
 
 		//UPDATES
-		sql.queryUpdate("ALTER TABLE " + sql.t_hotels + " ADD COLUMN alias VARCHAR(100)");
+		sql.addColumn(sql.t_hotels, "alias", "VARCHAR(100)");
 	}
 	
 	public void createHotel(int id, int catID){
@@ -96,7 +98,40 @@ public class HotelsSQL {
 				try {
 					List<Integer> ids = playerHandler.getOwningList(type);
 					while (rs.next()) {
-						ids.add(rs.getInt("ID"));
+						int hotelId = rs.getInt("ID");
+						ids.add(hotelId);
+						
+						// REMIND PLAYER
+
+						DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+						Timestamp now = new Timestamp(System.currentTimeMillis());
+						
+						RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(type, hotelId);
+						if(rentHandler == null) continue;
+						CategoryHandler catHandler = instance.getMethodes().getCategory(type, rentHandler.getCatID());
+						if(catHandler == null) continue;
+						
+						double costs = catHandler.getPrice();
+						String time = catHandler.getTime();
+						Timestamp ts = rentHandler.getNextPayment();
+						Timestamp reminderTs = rentHandler.getReminder();
+						
+						//REMIND IF SHOP DOESNT AUTOMATICLY EXTEND
+						if(!rentHandler.isAutoPayment() && !rentHandler.isReminded() && reminderTs != null && reminderTs.before(now)) {
+							
+						    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
+						    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+
+							p.sendMessage(instance.getMessage(type.toString().toLowerCase() + "RentRunningOut")
+									.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+									.replaceAll("(?i)%" + "alias" + "%", alias)
+									.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+									.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
+									.replaceAll("(?i)%" + "time" + "%", time)
+									.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts)));
+							
+							rentHandler.setReminded(true);
+						}
 					}
 					playerHandler.setOwningRent(type, ids);
 					return;
@@ -134,7 +169,7 @@ public class HotelsSQL {
 								
 						boolean autoPayment = rs.getInt("autoPayment") == 1 ? true : false;
 						
-						RentTypeHandler handler = new RentTypeHandler(type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment);
+						RentTypeHandler handler = new RentTypeHandler(instance, type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment);
 						handler.setAlias(alias);
 						
 						HashMap<Integer, RentTypeHandler> hash = new HashMap<>();

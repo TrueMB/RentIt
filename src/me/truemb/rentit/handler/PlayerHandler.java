@@ -47,6 +47,28 @@ public class PlayerHandler {
 			this.setPermsHandler(type, permsHandler);
 		}
 	}
+	
+	public void exit(Main plugin) {
+		
+		if(this.owningRents.containsKey(RentTypes.HOTEL)) {
+			this.owningRents.get(RentTypes.HOTEL).forEach(hotelId -> {
+
+				RentTypeHandler rentHandler = plugin.getMethodes().getTypeHandler(RentTypes.HOTEL, hotelId);
+				if(rentHandler != null)
+					rentHandler.setReminded(false); //REMINDS THE PLAYER ON THE NEXT JOIN AS WELL
+			});
+		}
+		
+		if(this.owningRents.containsKey(RentTypes.SHOP)) {
+			this.owningRents.get(RentTypes.SHOP).forEach(shopId -> {
+				RentTypeHandler rentHandler = plugin.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
+				if(rentHandler != null)
+					rentHandler.setReminded(false); //REMINDS THE PLAYER ON THE NEXT JOIN AS WELL
+			});
+		}
+		
+		plugin.playerHandlers.remove(this.player.getUniqueId());
+	}
 
 	//GETTER
 	public SettingsHandler getSettingsHandler(RentTypes type) {

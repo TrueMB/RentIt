@@ -774,7 +774,7 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				
 				p.sendMessage(this.instance.getMessage("shopCategoryChangedAlias")
 						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
-						.replaceAll("(?i)%" + "alias" + "%", alias));
+						.replaceAll("(?i)%" + "catAlias" + "%", alias));
 				
 				return true;
 				
@@ -1882,6 +1882,7 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 		for (String s : this.instance.manageFile().getStringList("Messages.shopInfo")) {
 			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
 					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+					.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 					.replaceAll("(?i)%" + "alias" + "%", alias)
 					.replaceAll("(?i)%" + "owner" + "%", ownerName == null ? "" : ownerName)
@@ -1951,7 +1952,7 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				this.instance.getVillagerUtils().destroyVillager(shopId);
 		}
 
-		rentHandler.reset(this.instance);
+		rentHandler.reset();
 		
     	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
     	rentHandler.setAutoPayment(autoPaymentDefault);

@@ -231,7 +231,7 @@ public class UtilMethodes {
 		if (this.instance.rentTypeHandlers.containsKey(type))
 			typeHash = this.instance.rentTypeHandlers.get(type);
 
-		RentTypeHandler typeHandler = new RentTypeHandler(type, id, catID, null, null, new Timestamp(System.currentTimeMillis()), true);
+		RentTypeHandler typeHandler = new RentTypeHandler(this.instance, type, id, catID, null, null, new Timestamp(System.currentTimeMillis()), true);
 		typeHash.put(id, typeHandler);
 
 		this.instance.rentTypeHandlers.put(type, typeHash);

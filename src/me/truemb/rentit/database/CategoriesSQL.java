@@ -21,8 +21,8 @@ public class CategoriesSQL {
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_hotel_categories + " (catID INT PRIMARY KEY, alias VARCHAR(100), costs DOUBLE, time VARCHAR(30))");
 		
 		//UPDATES
-		sql.queryUpdate("ALTER TABLE " + sql.t_shop_categories + " ADD COLUMN alias VARCHAR(100)");
-		sql.queryUpdate("ALTER TABLE " + sql.t_hotel_categories + " ADD COLUMN alias VARCHAR(100)");
+		sql.addColumn(sql.t_shop_categories, "alias", "VARCHAR(100)");
+		sql.addColumn(sql.t_hotel_categories, "alias", "VARCHAR(100)");
 	}
 	
 	
@@ -50,7 +50,7 @@ public class CategoriesSQL {
 	public void setAlias(int catId, RentTypes type, String alias){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + " SET alias='" + alias + "' WHERE ID='" + catId + "'");
+		sql.queryUpdate("UPDATE " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + " SET alias='" + alias + "' WHERE catID='" + catId + "'");
 	}
 
 	public void setSize(int catID, int invSize){

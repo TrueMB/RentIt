@@ -131,17 +131,13 @@ public class Main extends JavaPlugin {
 	//NAMESPACES
 	public NamespacedKey guiItem = new NamespacedKey(this, "guiItem");
 
-	private static final int configVersion = 12;
+	private static final int configVersion = 13;
     private static final String SPIGOT_RESOURCE_ID = "90195";
     private static final int BSTATS_PLUGIN_ID = 12060;
     
 	private int runnId;
 	
 	public boolean isSystemRunningOkay = true;
-	
-	
-	//TODO
-	//NOTIFICATION BEFORE RUNNING OUT
 	
 	@Override
 	public void onEnable() {

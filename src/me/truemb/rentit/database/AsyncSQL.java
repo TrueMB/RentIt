@@ -17,8 +17,6 @@ import me.truemb.rentit.main.Main;
 
 public class AsyncSQL {
 	
-	//https://www.youtube.com/watch?v=dHjp0pRhGhk
-	
 	private ExecutorService executor;
 	private MySQL mySql;
 	private SqlLite sqlLite;
@@ -45,13 +43,6 @@ public class AsyncSQL {
 			this.executor = Executors.newCachedThreadPool();
 
 			this.instance.getLogger().info("Using SQLLite since MySQL was not set up.");
-			
-			/*
-			System.out.println("[" + this.instance.getDescription().getName() + "] ===================================");
-			System.out.println("[" + this.instance.getDescription().getName() + "] = Please connect a Database!   =");
-			System.out.println("[" + this.instance.getDescription().getName() + "] ===================================");
-			throw new Exception("No Database connected.");
-			*/
 		} else {
 			String host = this.instance.getConfig().getString(db + "host");
 			int port = this.instance.getConfig().getInt(db + "port");
@@ -65,6 +56,27 @@ public class AsyncSQL {
 		}
 	}
 
+	public void addColumn(String table, String name, String type) {
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		
+		if(sql.isSqlLite()) {
+			sql.prepareStatement("Select * from pragma_table_info('" + table + "') WHERE name = '" + name + "';", new Consumer<ResultSet>() {
+			
+				@Override
+				public void accept(ResultSet rs) {
+					try {
+						if(!rs.next()) //COLUMN DOESNT EXISTS
+							sql.queryUpdate("ALTER TABLE " + table + " ADD COLUMN " + name + " " + type + ";");
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} else {
+			sql.queryUpdate("ALTER TABLE " + table + " ADD COLUMN IF NOT EXISTS " + name + " " + type + ";");
+		}
+	}
+	
 	public boolean isSqlLite() {
 		return this.mySql == null;
 	}

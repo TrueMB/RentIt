@@ -31,7 +31,7 @@ public class UtilitiesAPI {
 			//Convert to LocalDateTime. Use no offset for timezone
 			LocalDateTime time = LocalDateTime.ofInstant(ts.toInstant(), ZoneOffset.ofHours(0));
 
-			//Add time. In this case, add one day.
+			//Add time
 			time = time.plus(getTimeParsed(s)); //Time from String
 
 			//Convert back to instant, again, no time zone offset.
@@ -49,7 +49,7 @@ public class UtilitiesAPI {
 			//Convert to LocalDateTime. Use no offset for timezone
 			LocalDateTime time = LocalDateTime.ofInstant(ts.toInstant(), ZoneOffset.ofHours(0));
 
-			//Add time. In this case, add one day.
+			//Add time
 			time = time.minus(getTimeParsed(s)); //Time from String
 
 			//Convert back to instant, again, no time zone offset.
@@ -67,7 +67,7 @@ public class UtilitiesAPI {
 			//Convert to LocalDateTime. Use no offset for timezone
 			LocalDateTime time = LocalDateTime.ofInstant(ts.toInstant(), ZoneOffset.ofHours(0));
 
-			//Add time. In this case, add one day.
+			//Add time
 			time = time.plus(getTimeParsed(s)); //Time from String
 
 			//Convert back to instant, again, no time zone offset.

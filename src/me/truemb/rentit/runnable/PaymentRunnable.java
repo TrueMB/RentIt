@@ -56,6 +56,7 @@ public class PaymentRunnable implements Runnable {
 				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
 					p.getPlayer().sendMessage(this.instance.getMessage("shopRentRunningOut")
+							.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
 							.replaceAll("(?i)%" + "alias" + "%", alias)
 							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 							.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
@@ -83,7 +84,7 @@ public class PaymentRunnable implements Runnable {
 							@Override
 							public void run() {
 					        	instance.getShopCacheFileManager().setShopBackup(uuid, shopId);
-								rentHandler.reset(instance);
+								rentHandler.reset();
 				
 								//REMOVE NPC
 								if(instance.getNpcUtils() != null) {
@@ -147,6 +148,7 @@ public class PaymentRunnable implements Runnable {
 				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
 					p.getPlayer().sendMessage(this.instance.getMessage("hotelRentRunningOut")
+							.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
 							.replaceAll("(?i)%" + "alias" + "%", alias)
 							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 							.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
@@ -173,7 +175,7 @@ public class PaymentRunnable implements Runnable {
 
 							@Override
 							public void run() {
-								rentHandler.reset(instance);
+								rentHandler.reset();
 								BlockVector3 min = instance.getAreaFileManager().getMinBlockpoint(RentTypes.HOTEL, hotelId);
 								BlockVector3 max = instance.getAreaFileManager().getMaxBlockpoint(RentTypes.HOTEL, hotelId);
 								World world = instance.getAreaFileManager().getWorldFromArea(RentTypes.HOTEL, hotelId);

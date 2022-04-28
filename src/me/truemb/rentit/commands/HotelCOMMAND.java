@@ -1229,6 +1229,7 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 		for (String s : this.instance.manageFile().getStringList("Messages.hotelInfo")) {
 			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
 					.replaceAll("(?i)%" + "hotelid" + "%", String.valueOf(hotelId))
+					.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
 					.replaceAll("(?i)%" + "alias" + "%", alias)
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 					.replaceAll("(?i)%" + "catid" + "%", String.valueOf(rentHandler.getCatID()))
@@ -1261,7 +1262,7 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 		this.instance.getBackupManager().paste(this.type, hotelId, min, max, p.getWorld(), false);
 		this.instance.getAreaFileManager().clearMember(this.type, hotelId);
 		
-		rentHandler.reset(this.instance);
+		rentHandler.reset();
 		
     	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
     	rentHandler.setAutoPayment(autoPaymentDefault);
