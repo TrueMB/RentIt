@@ -19,9 +19,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.TrapDoor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -40,7 +38,7 @@ import me.truemb.rentit.utils.PlayerManager;
 import me.truemb.rentit.utils.UtilitiesAPI;
 import net.md_5.bungee.api.ChatColor;
 
-public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
+public class HotelCOMMAND extends BukkitCommand {
 
 	private Main instance;
 	private List<String> subCommands = new ArrayList<>();
@@ -1288,7 +1286,7 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 	}
 
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
 
 		List<String> list = new ArrayList<>();
 		

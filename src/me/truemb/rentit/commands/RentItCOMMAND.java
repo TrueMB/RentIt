@@ -3,15 +3,13 @@ package me.truemb.rentit.commands;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
 import me.truemb.rentit.main.Main;
 
-public class RentItCOMMAND extends BukkitCommand implements TabCompleter {
+public class RentItCOMMAND extends BukkitCommand {
 
 	private Main instance;
 	private List<String> adminSubCommands = new ArrayList<>();
@@ -56,7 +54,7 @@ public class RentItCOMMAND extends BukkitCommand implements TabCompleter {
 	}
 
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
 		List<String> result = new ArrayList<>();
 
 		if(sender instanceof Player) {

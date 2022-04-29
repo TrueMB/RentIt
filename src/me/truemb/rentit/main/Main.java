@@ -139,6 +139,12 @@ public class Main extends JavaPlugin {
 	
 	public boolean isSystemRunningOkay = true;
 	
+	
+	//TODO
+	// IF CATEGORY TIME CHANGED, THEN ALSO UPDATE REMINDER
+	// ALSO REMIND, IF NEXT PAYMENT CANT BE PAYED, IF AUTOPAYMENT ENABLED
+	// FINISH TESTING REMINDER
+	
 	@Override
 	public void onEnable() {
 		this.manageFile();
@@ -226,9 +232,12 @@ public class Main extends JavaPlugin {
 			
 			if(!this.manageFile().getBoolean("Options.commands.freehotels.disabled"))
 				commandMap.register(this.getDescription().getName(), new FreeHotelsCOMMAND(this));
+			
+			if(!this.manageFile().getBoolean("Options.commands.rentit.disabled"))
+				commandMap.register(this.getDescription().getName(), new RentItCOMMAND(this));
 		    
-		}catch(Exception exception){
-		    exception.printStackTrace();
+		}catch(Exception ex){
+		    ex.printStackTrace();
 		}
 		
 		//METRICS ANALYTICS

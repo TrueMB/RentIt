@@ -20,9 +20,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.TrapDoor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -45,7 +43,7 @@ import me.truemb.rentit.utils.PlayerManager;
 import me.truemb.rentit.utils.ShopItemManager;
 import me.truemb.rentit.utils.UtilitiesAPI;
 
-public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
+public class ShopCOMMAND extends BukkitCommand {
 
 	private Main instance;
 	private List<String> subCommands = new ArrayList<>();
@@ -1978,9 +1976,9 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 		this.instance.getMethodes().updateSign(this.type, shopId);
 
 	}
-
+	
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
 		
 		List<String> list = new ArrayList<>();
 		

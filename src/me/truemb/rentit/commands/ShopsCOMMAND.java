@@ -1,13 +1,9 @@
 package me.truemb.rentit.commands;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
@@ -15,7 +11,7 @@ import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.UserListGUI;
 import me.truemb.rentit.main.Main;
 
-public class ShopsCOMMAND extends BukkitCommand implements TabCompleter {
+public class ShopsCOMMAND extends BukkitCommand{
 
 	private Main instance;
 	
@@ -42,11 +38,6 @@ public class ShopsCOMMAND extends BukkitCommand implements TabCompleter {
 		UUID uuid = p.getUniqueId();
 		p.openInventory(UserListGUI.getListGUI(this.instance, RentTypes.SHOP, uuid, 1));
 		return true;
-	}
-
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		return new ArrayList<>();
 	}
 	
 }
