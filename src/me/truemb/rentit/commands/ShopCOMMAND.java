@@ -415,8 +415,11 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 					int size = catHandler.getSize();
 					String time = catHandler.getTime();
 					
+				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					
 					p.sendMessage(this.instance.getMessage("shopCategoryList")
 							.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
+							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 							.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
 							.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
 							.replaceAll("(?i)%" + "time" + "%", time)
@@ -863,12 +866,16 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
-				
+
+			    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			    
 				if(this.instance.rentTypeHandlers.containsKey(this.type)) {
 					for(RentTypeHandler handler : this.instance.rentTypeHandlers.get(this.type).values()) {
 						if(handler.getCatID() == catId) {
+						    
 							p.sendMessage(this.instance.getMessage("shopCouldntDeleteCategory")
-									.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId)));
+									.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
+									.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 							return true;
 						}
 					}
@@ -876,9 +883,10 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 				
 				this.instance.catHandlers.get(this.type).remove(catId);
 				this.instance.getCategorySQL().delete(this.type, catId);
-				
+			    
 				p.sendMessage(this.instance.getMessage("shopCategoryDeleted")
-						.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId)));
+						.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
+						.replaceAll("(?i)%" + "catAlias" + "%", String.valueOf(catAlias)));
 				
 				return true;
 				
@@ -1830,11 +1838,14 @@ public class ShopCOMMAND extends BukkitCommand implements TabCompleter {
 					catHandler.setSize(size);
 				}
 
+			    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			    
 				this.instance.getCategorySQL().updateShopCategory(catID, size, price, timeS);
 				this.instance.getMethodes().updateAllSigns(this.type, catID);
 				
 				p.sendMessage(this.instance.getMessage("shopCategoryUpdated")
 						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 						.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
 						.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
 						.replaceAll("(?i)%" + "time" + "%", timeS));

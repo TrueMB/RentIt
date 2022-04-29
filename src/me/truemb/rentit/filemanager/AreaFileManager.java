@@ -195,7 +195,13 @@ public class AreaFileManager {
 		
 		if(this.config.getConfigurationSection(type.toString().toUpperCase()) != null) {
 			for(String idS : this.config.getConfigurationSection(type.toString().toUpperCase()).getKeys(false)) {
+				
 				String path = type.toString().toUpperCase() + "." + idS;
+				String worldname = this.config.getString(path + ".World");
+				
+				if(!worldname.equalsIgnoreCase(loc.getWorld().getName())) 
+					continue;
+				
 				BlockVector min = new BlockVector(this.config.getInt(path + ".Min.X"), this.config.getInt(path + ".Min.Y"), this.config.getInt(path + ".Min.Z"));
 				BlockVector max = new BlockVector(this.config.getInt(path + ".Max.X"), this.config.getInt(path + ".Max.Y"), this.config.getInt(path + ".Max.Z"));
 				

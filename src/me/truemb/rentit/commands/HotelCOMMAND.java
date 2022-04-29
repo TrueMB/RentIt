@@ -297,8 +297,11 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 					double price = catHandler.getPrice();
 					String time = catHandler.getTime();
 					
+				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					
 					p.sendMessage(this.instance.getMessage("hotelCategoryList")
 							.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
+							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 							.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
 							.replaceAll("(?i)%" + "time" + "%", time)
 							);
@@ -648,11 +651,15 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 					return true;
 				}
 				
+			    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+				
 				if(this.instance.rentTypeHandlers.containsKey(this.type)) {
 					for(RentTypeHandler handler : this.instance.rentTypeHandlers.get(this.type).values()) {
 						if(handler.getCatID() == catId) {
+						    
 							p.sendMessage(this.instance.getMessage("hotelCouldntDeleteCategory")
-									.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId)));
+									.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
+									.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 							return true;
 						}
 					}
@@ -662,7 +669,8 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 				this.instance.getCategorySQL().delete(this.type, catId);
 				
 				p.sendMessage(this.instance.getMessage("hotelCategoryDeleted")
-						.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId)));
+						.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 				
 				return true;
 				
@@ -1183,10 +1191,13 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 					catHandler.setTime(timeS);
 				}
 
+			    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			    
 				this.instance.getCategorySQL().updateHotelCategory(catID, price, timeS);
 				this.instance.getMethodes().updateAllSigns(this.type, catID);
 				p.sendMessage(this.instance.getMessage("hotelCategoryUpdated")
 						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 						.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
 						.replaceAll("(?i)%" + "time" + "%", timeS));
 				return true;
@@ -1232,7 +1243,6 @@ public class HotelCOMMAND extends BukkitCommand implements TabCompleter {
 					.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
 					.replaceAll("(?i)%" + "alias" + "%", alias)
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-					.replaceAll("(?i)%" + "catid" + "%", String.valueOf(rentHandler.getCatID()))
 					.replaceAll("(?i)%" + "owner" + "%", owner == null ? "" : owner)
 					.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
 					.replaceAll("(?i)%" + "time" + "%", time)
