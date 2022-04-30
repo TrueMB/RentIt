@@ -130,6 +130,8 @@ public class Main extends JavaPlugin {
 	
 	//NAMESPACES
 	public NamespacedKey guiItem = new NamespacedKey(this, "guiItem");
+	public NamespacedKey idKey = new NamespacedKey(this, "ID");
+	public NamespacedKey siteKey = new NamespacedKey(this, "Site");
 
 	private static final int configVersion = 13;
     private static final String SPIGOT_RESOURCE_ID = "90195";
@@ -138,12 +140,6 @@ public class Main extends JavaPlugin {
 	private int runnId;
 	
 	public boolean isSystemRunningOkay = true;
-	
-	
-	//TODO
-	// IF CATEGORY TIME CHANGED, THEN ALSO UPDATE REMINDER
-	// ALSO REMIND, IF NEXT PAYMENT CANT BE PAYED, IF AUTOPAYMENT ENABLED
-	// FINISH TESTING REMINDER
 	
 	@Override
 	public void onEnable() {

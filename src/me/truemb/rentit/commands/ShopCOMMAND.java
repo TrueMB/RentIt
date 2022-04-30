@@ -770,7 +770,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				String alias = args[1];
 				alias = alias.substring(0, alias.length() > 100 ? 100 : alias.length());
 
-				this.instance.getCategorySQL().setAlias(shopId, this.type, alias);
+				this.instance.getCategorySQL().setAlias(catHandler.getCatID(), this.type, alias);
 				catHandler.setAlias(alias);
 				
 				p.sendMessage(this.instance.getMessage("shopCategoryChangedAlias")

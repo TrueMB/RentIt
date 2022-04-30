@@ -50,7 +50,7 @@ public class CategoriesSQL {
 	public void setAlias(int catId, RentTypes type, String alias){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + " SET alias='" + alias + "' WHERE catID='" + catId + "'");
+		sql.queryUpdate("UPDATE " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + " SET alias='" + alias + "' WHERE catID='" + catId + "';");
 	}
 
 	public void setSize(int catID, int invSize){

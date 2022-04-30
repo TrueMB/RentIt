@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -65,15 +64,11 @@ public class UtilMethodes {
 
 		meta.getPersistentDataContainer().set(this.instance.guiItem, PersistentDataType.STRING, "true");
 		
-		if(id > 0) {
-			NamespacedKey key = new NamespacedKey(this.instance, "ID");
-			meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
-		}
+		if(id > 0)
+			meta.getPersistentDataContainer().set(this.instance.idKey, PersistentDataType.INTEGER, id);
 
-		if(site > 0) {
-			NamespacedKey key = new NamespacedKey(this.instance, "Site");
-			meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, site);
-		}
+		if(site > 0)
+			meta.getPersistentDataContainer().set(this.instance.siteKey, PersistentDataType.INTEGER, site);
 
 		meta.setLore(lore);
 		item.setItemMeta(meta);
@@ -92,9 +87,8 @@ public class UtilMethodes {
 		item = item.clone();
 		ItemMeta meta = item.getItemMeta();
 
-		NamespacedKey key = new NamespacedKey(this.instance, "ID");
-		if (meta.getPersistentDataContainer().has(key, PersistentDataType.INTEGER))
-			meta.getPersistentDataContainer().remove(key);
+		if (meta.getPersistentDataContainer().has(this.instance.idKey, PersistentDataType.INTEGER))
+			meta.getPersistentDataContainer().remove(this.instance.idKey);
 
 		item.setItemMeta(meta);
 		return item;
@@ -104,9 +98,8 @@ public class UtilMethodes {
 		item = item.clone();
 		ItemMeta meta = item.getItemMeta();
 
-		NamespacedKey key = new NamespacedKey(this.instance, "Site");
-		if (meta.getPersistentDataContainer().has(key, PersistentDataType.INTEGER))
-			meta.getPersistentDataContainer().remove(key);
+		if (meta.getPersistentDataContainer().has(this.instance.siteKey, PersistentDataType.INTEGER))
+			meta.getPersistentDataContainer().remove(this.instance.siteKey);
 
 		item.setItemMeta(meta);
 		return item;
@@ -187,6 +180,16 @@ public class UtilMethodes {
 		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
 
 		return typeHash.get(id);
+	}
+	
+	public Collection<RentTypeHandler> getRemindersOfRentTypes(RentTypes type) {
+
+		if(!this.instance.rentTypeHandlers.containsKey(type))
+			return Collections.emptyList();
+
+		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
+
+		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() != null && !rentType.isReminded() && rentType.getReminder() != null && rentType.getReminder().getTime() <= System.currentTimeMillis()).collect(Collectors.toList());
 	}
 	
 	public Collection<RentTypeHandler> getPaymentsOfRentTypes(RentTypes type) {

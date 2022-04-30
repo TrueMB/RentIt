@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,7 +32,6 @@ public class AdminHotelListener implements Listener {
 	public void onEditClick(InventoryClickEvent e) {
 
 		Player p = (Player) e.getWhoClicked();
-		// UUID uuid = PlayerManager.getUUID(p);
 
 		if (e.getClickedInventory() == null)
 			return;
@@ -52,76 +50,69 @@ public class AdminHotelListener implements Listener {
 		ItemStack item = e.getCurrentItem();
 		ItemMeta meta = item.getItemMeta();
 
-		if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeTimeItem")) || this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changePriceItem"))) {
+		if (!meta.getPersistentDataContainer().has(this.instance.guiItem, PersistentDataType.STRING))
+			return;
 
-			NamespacedKey key = new NamespacedKey(this.instance, "ID");
+		if (!meta.getPersistentDataContainer().has(this.instance.idKey, PersistentDataType.INTEGER))
+			return;
 
-			if (!meta.getPersistentDataContainer().has(key, PersistentDataType.INTEGER))
-				return;
+		int hotelId = meta.getPersistentDataContainer().get(this.instance.idKey, PersistentDataType.INTEGER);
 
-			int hotelId = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+		Builder builder = new Builder();
 
-			Builder builder = new Builder();
+		builder.onComplete((player, text) -> {
 
-			builder.onComplete((player, text) -> {
-
-				if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changePriceItem"))) {
-					try {
-						Integer.parseInt(text);
-					} catch (NumberFormatException ex) {
-						return AnvilGUI.Response.text(this.instance.getMessage("notANumber"));
-					}
+			if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changePriceItem"))) {
+				try {
+					Integer.parseInt(text);
+				} catch (NumberFormatException ex) {
+					return AnvilGUI.Response.text(this.instance.getMessage("notANumber"));
 				}
+			}
+			
+			RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.HOTEL, hotelId);
 
-				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.HOTEL, hotelId);
+			if (rentHandler == null)
+				return null;
 
-				if (rentHandler == null)
-					return null;
+			int catID = rentHandler.getCatID();
+			
+			CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.HOTEL, catID);
 
-				int catID = rentHandler.getCatID();
+			if (catHandler == null)
+				return null;
 
-				CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.HOTEL, catID);
-
-				if (catHandler == null)
-					return null;
-
-				if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeTimeItem"))) {
-
-					// PLAYER WANTS TO CHANGE RENT TIME
-					this.instance.getMethodes().setTime(p, RentTypes.HOTEL, catID, text);
-				} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changePriceItem"))) {
-
-					// PLAYER WANTS TO CHANGE RENT PRICE
-					this.instance.getMethodes().setPrice(p, RentTypes.HOTEL, catID, text);
-				} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeAliasItem"))) {
-
-					// PLAYER WANTS TO CHANGE THE ALIAS
-					text = text.substring(0, text.length() > 100 ? 100 : text.length());
-					
-					this.instance.getHotelsSQL().setAlias(hotelId, text);
-					rentHandler.setAlias(text);
-					
-					p.sendMessage(this.instance.getMessage("hotelChangedAlias")
-							.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
-							.replaceAll("(?i)%" + "alias" + "%", text));
-					
-				} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeCategoryAliasItem"))) {
-
-					// PLAYER WANTS TO CHANGE THE CATEGORY ALIAS
-					text = text.substring(0, text.length() > 100 ? 100 : text.length());
-					
-					this.instance.getCategorySQL().setAlias(hotelId, RentTypes.HOTEL, text);
-					catHandler.setAlias(text);
-					
-					p.sendMessage(this.instance.getMessage("hotelCategoryChangedAlias")
-							.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
-							.replaceAll("(?i)%" + "alias" + "%", text));
-				}
-				return AnvilGUI.Response.close();
-
-			}).itemLeft(this.getAcceptItem(meta.getDisplayName())).plugin(this.instance).open(p);
-
-		}
+			if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeTimeItem"))) {
+				// PLAYER WANTS TO CHANGE RENT TIME
+				this.instance.getMethodes().setTime(p, RentTypes.HOTEL, catID, text);
+			} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changePriceItem"))) {
+				// PLAYER WANTS TO CHANGE RENT PRICE
+				this.instance.getMethodes().setPrice(p, RentTypes.HOTEL, catID, text);
+			} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeAliasItem"))) {
+				// PLAYER WANTS TO CHANGE THE ALIAS
+				text = text.substring(0, text.length() > 100 ? 100 : text.length());
+				
+				this.instance.getHotelsSQL().setAlias(hotelId, text);
+				rentHandler.setAlias(text);
+				
+				p.sendMessage(this.instance.getMessage("hotelChangedAlias")
+						.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+						.replaceAll("(?i)%" + "alias" + "%", text));
+				
+			} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("hotelAdmin", "changeCategoryAliasItem"))) {
+				// PLAYER WANTS TO CHANGE THE CATEGORY ALIAS
+				text = text.substring(0, text.length() > 100 ? 100 : text.length());
+				
+				this.instance.getCategorySQL().setAlias(catHandler.getCatID(), RentTypes.HOTEL, text);
+				catHandler.setAlias(text);
+				
+				p.sendMessage(this.instance.getMessage("hotelCategoryChangedAlias")
+						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
+						.replaceAll("(?i)%" + "catAlias" + "%", text));
+			}
+			return AnvilGUI.Response.close();
+			
+		}).itemLeft(this.getAcceptItem(meta.getDisplayName())).plugin(this.instance).open(p);
 	}
 
 	private ItemStack getAcceptItem(String displayName) {

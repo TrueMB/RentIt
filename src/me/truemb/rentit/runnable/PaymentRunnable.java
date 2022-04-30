@@ -31,10 +31,73 @@ public class PaymentRunnable implements Runnable {
 		DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 		
 		Timestamp now = new Timestamp(System.currentTimeMillis());
-		Collection<RentTypeHandler> shopHandlers = this.instance.getMethodes().getPaymentsOfRentTypes(RentTypes.SHOP);
-		Collection<RentTypeHandler> hotelHandlers = this.instance.getMethodes().getPaymentsOfRentTypes(RentTypes.HOTEL);
+		Collection<RentTypeHandler> shopHandlerPayments = this.instance.getMethodes().getPaymentsOfRentTypes(RentTypes.SHOP);
+		Collection<RentTypeHandler> hotelHandlerPayments = this.instance.getMethodes().getPaymentsOfRentTypes(RentTypes.HOTEL);
 		
-		shopHandlers.forEach(rentHandler -> {
+		Collection<RentTypeHandler> shopHandlerReminderes = this.instance.getMethodes().getRemindersOfRentTypes(RentTypes.SHOP);
+		Collection<RentTypeHandler> hotelHandlerReminders = this.instance.getMethodes().getRemindersOfRentTypes(RentTypes.HOTEL);
+		
+		//REMINDERS
+		shopHandlerReminderes.forEach(rentHandler -> {
+
+			UUID uuid = rentHandler.getOwnerUUID();
+			OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
+
+			int shopId = rentHandler.getID();
+			CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, rentHandler.getCatID());
+
+			if (catHandler != null && p.isOnline()){
+				
+				double costs = catHandler.getPrice();
+				String time = catHandler.getTime();
+				Timestamp ts = rentHandler.getNextPayment();
+					
+				String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
+				String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+	
+				p.getPlayer().sendMessage(this.instance.getMessage("shopRentRunningOut")
+						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+						.replaceAll("(?i)%" + "alias" + "%", alias)
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
+						.replaceAll("(?i)%" + "time" + "%", time)
+						.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts)));
+					
+				rentHandler.setReminded(true);
+			}
+		});
+		
+		hotelHandlerReminders.forEach(rentHandler -> {
+
+			UUID uuid = rentHandler.getOwnerUUID();
+			OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
+
+			int hotelId = rentHandler.getID();
+			CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.HOTEL, rentHandler.getCatID());
+
+			if (catHandler != null && p.isOnline()){
+				
+				double costs = catHandler.getPrice();
+				String time = catHandler.getTime();
+				Timestamp ts = rentHandler.getNextPayment();
+					
+				String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
+				String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+	
+				p.getPlayer().sendMessage(this.instance.getMessage("shopRentRunningOut")
+						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(hotelId))
+						.replaceAll("(?i)%" + "alias" + "%", alias)
+						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+						.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
+						.replaceAll("(?i)%" + "time" + "%", time)
+						.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts)));
+					
+				rentHandler.setReminded(true);
+			}
+		});
+		
+		//PAYMENTS
+		shopHandlerPayments.forEach(rentHandler -> {
 			
 			UUID uuid = rentHandler.getOwnerUUID();
 			OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
@@ -47,24 +110,6 @@ public class PaymentRunnable implements Runnable {
 				double costs = catHandler.getPrice();
 				String time = catHandler.getTime();
 				Timestamp ts = rentHandler.getNextPayment();
-				Timestamp reminderTs = rentHandler.getReminder();
-				
-				//REMIND IF SHOP DOESNT AUTOMATICLY EXTEND
-				if(!rentHandler.isAutoPayment() && !rentHandler.isReminded() && reminderTs != null && reminderTs.before(now) && p.isOnline()) {
-					
-				    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
-				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-
-					p.getPlayer().sendMessage(this.instance.getMessage("shopRentRunningOut")
-							.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
-							.replaceAll("(?i)%" + "alias" + "%", alias)
-							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-							.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
-							.replaceAll("(?i)%" + "time" + "%", time)
-							.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts)));
-					
-					rentHandler.setReminded(true);
-				}
 	
 				while (ts != null && ts.before(now)) {
 	
@@ -126,7 +171,7 @@ public class PaymentRunnable implements Runnable {
 		});
 		
 
-		hotelHandlers.forEach(rentHandler -> {
+		hotelHandlerPayments.forEach(rentHandler -> {
 			
 			UUID uuid = rentHandler.getOwnerUUID();
 			OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
@@ -139,24 +184,6 @@ public class PaymentRunnable implements Runnable {
 				double costs = catHandler.getPrice();
 				String time = catHandler.getTime();
 				Timestamp ts = rentHandler.getNextPayment();
-				Timestamp reminderTs = rentHandler.getReminder();
-				
-				//REMIND IF HOTEL DOESNT AUTOMATICLY EXTEND
-				if(!rentHandler.isAutoPayment() && !rentHandler.isReminded() && reminderTs != null && reminderTs.before(now) && p.isOnline()) {
-					
-				    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
-				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-
-					p.getPlayer().sendMessage(this.instance.getMessage("hotelRentRunningOut")
-							.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
-							.replaceAll("(?i)%" + "alias" + "%", alias)
-							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-							.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
-							.replaceAll("(?i)%" + "time" + "%", time)
-							.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts)));
-					
-					rentHandler.setReminded(true);
-				}
 
 				while (ts != null && ts.before(now)) {
 

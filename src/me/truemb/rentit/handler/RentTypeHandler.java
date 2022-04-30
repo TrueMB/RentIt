@@ -170,16 +170,13 @@ public class RentTypeHandler {
 	 */
 	public void calculateReminderTimestamp() {
 		
-		//ONLY NEEDS TO BE REMINDED, IF RENT COULD EVENTUALLY RUN OUT
-		if(this.isAutoPayment()) return;
-		
 		String timeS = this.instance.manageFile().isSet("Options.categorySettings." + StringUtils.capitalize(this.getType().toString().toLowerCase()) + "Category." + this.getCatID() + ".reminderRentRunningOut") ? 
 				this.instance.manageFile().getString("Options.categorySettings." + StringUtils.capitalize(this.getType().toString().toLowerCase()) + "Category." + this.getCatID() + ".reminderRentRunningOut") : null;
 		
 		if(timeS == null) return; //NO REMINDER SET
 		
 		//GETS TIME BEFORE THE RENT IS RUNNING OUT
-		Timestamp reminderTs = UtilitiesAPI.getTimestampBefore(new Timestamp(System.currentTimeMillis()), timeS);
+		Timestamp reminderTs = UtilitiesAPI.getTimestampBefore(this.getNextPayment(), timeS);
 		
 		this.setReminder(reminderTs);
 	}
