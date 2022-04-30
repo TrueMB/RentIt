@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import me.truemb.rentit.utils.chests.ChestsUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -43,9 +44,11 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 public class UtilMethodes {
 
 	private Main instance;
+	private ChestsUtils chestsUtils;
 
 	public UtilMethodes(Main plugin) {
 		this.instance = plugin;
+		this.chestsUtils = new ChestsUtils(plugin);
 	}
 
 	public boolean isTimeFormat(String feString) {
@@ -533,96 +536,22 @@ public class UtilMethodes {
 
 	// CHECK CHESTS FOR ITEM
 	public boolean checkChestsinArea(int shopId, ItemStack item) {
-
-		List<Inventory> chestInventories = this.getShopChestInventories(shopId);
-		int amount = item.getAmount();
-
-		for(Inventory inv : chestInventories) {
-			for (ItemStack items : inv.getContents()) {
-				if (items != null) {
-					if (items.isSimilar(item)) {
-						amount -= items.getAmount();
-						if (amount <= 0)
-							return true;
-					}
-				}
-			}
-		}
-		return false;
+		return chestsUtils.checkChestsInArea(shopId, item);
 	}
 	
 	// CHECK IF SPACES
 	public boolean checkForSpaceinArea(int shopId, ItemStack item) {
-
-		List<Inventory> chestInventories = this.getShopChestInventories(shopId);
-		int amount = item.getAmount();
-
-		for(Inventory inv : chestInventories) {
-			for (ItemStack items : inv.getContents()) {
-				if (items == null || items.getType() == Material.AIR) {
-					return true;
-				} else if (items.isSimilar(item)) {
-					if (amount > 64 - items.getAmount()) {
-						amount -= 64 - items.getAmount();
-					} else {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
+		return chestsUtils.checkForSpaceInArea(shopId, item);
 	}
 
 	// REMOVES ITEMS FROM CHESTS
 	public void removeItemFromChestsInArea(int shopId, ItemStack item) {
-		
-		List<Inventory> chestInventories = this.getShopChestInventories(shopId);
-		int amount = item.getAmount();
-
-		for(Inventory inv : chestInventories) {
-			for (ItemStack items : inv.getContents()) {
-				if (items != null) {
-					if (items.isSimilar(item)) {
-						
-						if (amount >= items.getAmount()) {
-							amount -= items.getAmount();
-							items.setAmount(0);
-						} else {
-							items.setAmount(items.getAmount() - amount);
-							amount = 0;
-							return;
-						}
-					}
-				}
-			}
-		}
+		chestsUtils.removeItemFromChestsInArea(shopId, item);
 	}
 
-	// REMOVES ITEMS FROM CHESTS
+	// ADDS ITEMS FROM CHESTS
 	public void addItemToChestsInArea(int shopId, ItemStack item) {
-
-		List<Inventory> chestInventories = this.getShopChestInventories(shopId);
-		int amount = item.getAmount();
-
-		for(Inventory inv : chestInventories) {
-			for (int i = 0; i < inv.getSize(); i++) {
-				ItemStack items = inv.getItem(i);
-				if (items == null || items.getType() == Material.AIR) {
-					inv.setItem(i, item);
-					return;
-				} else if (items.isSimilar(item)) {
-					if (amount > 64 - items.getAmount()) {
-						items.setAmount(64);
-						amount -= 64 - items.getAmount();
-						inv.setItem(i, items);
-					} else {
-						items.setAmount(items.getAmount() + amount);
-						inv.setItem(i, items);
-						return;
-					}
-				}
-			}
-		}
+		chestsUtils.addItemToChestsInArea(shopId, item);
 	}
 
 	public void removeItemFromPlayer(Player p, ItemStack item) {
