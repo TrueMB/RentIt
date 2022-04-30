@@ -511,6 +511,7 @@ public class UtilMethodes {
 	}
 
 	public List<Inventory> getShopChestInventories(int shopId) {
+		// TODO pending
 		World world = this.instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
 		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
 		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
