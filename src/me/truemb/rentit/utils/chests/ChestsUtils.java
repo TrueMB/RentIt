@@ -14,15 +14,9 @@ import java.util.Optional;
 
 public class ChestsUtils {
     private Main instance;
-    private static Main _plugin;
 
     public ChestsUtils(Main plugin) {
         this.instance = plugin;
-        _plugin = plugin;
-    }
-
-    public static Main getPlugin() {
-        return _plugin;
     }
 
     /**
