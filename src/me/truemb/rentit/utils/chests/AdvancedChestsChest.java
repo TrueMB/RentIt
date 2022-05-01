@@ -38,12 +38,12 @@ public class AdvancedChestsChest extends SupportedChest {
     }
 
     @Override
-    public boolean hasEmptySlots() {
-        return this.chest.getSlotsLeft() > 0;
+    public List<ItemStack> getAllItems() {
+        return this.chest.getAllItems();
     }
 
     @Override
-    protected List<ItemStack> getAllItems() {
-        return this.chest.getAllItems();
+    public boolean hasEmptySlots() {
+        return this.chest.getSlotsLeft() > 0;
     }
 }

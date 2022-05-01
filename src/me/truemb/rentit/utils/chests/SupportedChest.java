@@ -18,6 +18,8 @@ public abstract class SupportedChest {
      */
     public abstract void add(ItemStack item, int amount);
 
+    public abstract List<ItemStack> getAllItems();
+
     /**
      * Counts how many of a given item there is in the chest
      */
@@ -45,8 +47,6 @@ public abstract class SupportedChest {
     public List<ItemStack> getAllSimilarItems(ItemStack item) {
         return this.getAllItems().stream().filter(i -> item.isSimilar(i)).collect(Collectors.toList());
     }
-
-    protected abstract List<ItemStack> getAllItems();
 
     protected boolean isEmptySlot(ItemStack item) {
         return item == null || item.getType() == Material.AIR;

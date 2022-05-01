@@ -510,51 +510,6 @@ public class UtilMethodes {
 		p.sendMessage(this.instance.getMessage(path + ".footer"));
 	}
 
-	public List<Inventory> getShopChestInventories(int shopId) {
-		// TODO pending
-		World world = this.instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
-		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
-		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
-		
-		List<Inventory> chestInventories = new ArrayList<>();
-
-		for (int minX = min.getBlockX(); minX <= max.getBlockX(); minX++) {
-			for (int minZ = min.getBlockZ(); minZ <= max.getBlockZ(); minZ++) {
-				for (int minY = min.getBlockY(); minY <= max.getBlockY(); minY++) {
-					Block b = world.getBlockAt(minX, minY, minZ);
-					if (b != null && b.getType() == Material.CHEST) {
-						Chest chest = (Chest) b.getState();
-						Inventory chestInv = chest.getBlockInventory();
-						
-						chestInventories.add(chestInv);
-					}
-				}
-			}
-		}
-		
-		return chestInventories;
-	}
-
-	// CHECK CHESTS FOR ITEM
-	public boolean checkChestsinArea(int shopId, ItemStack item) {
-		return chestsUtils.checkChestsInArea(shopId, item);
-	}
-	
-	// CHECK IF SPACES
-	public boolean checkForSpaceinArea(int shopId, ItemStack item) {
-		return chestsUtils.checkForSpaceInArea(shopId, item);
-	}
-
-	// REMOVES ITEMS FROM CHESTS
-	public void removeItemFromChestsInArea(int shopId, ItemStack item) {
-		chestsUtils.removeItemFromChestsInArea(shopId, item);
-	}
-
-	// ADDS ITEMS FROM CHESTS
-	public void addItemToChestsInArea(int shopId, ItemStack item) {
-		chestsUtils.addItemToChestsInArea(shopId, item);
-	}
-
 	public void removeItemFromPlayer(Player p, ItemStack item) {
 
 		int amount = item.getAmount();

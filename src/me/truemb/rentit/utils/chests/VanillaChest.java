@@ -51,7 +51,7 @@ public class VanillaChest extends SupportedChest {
     }
 
     @Override
-    protected List<ItemStack> getAllItems() {
+    public List<ItemStack> getAllItems() {
         return Arrays.stream(this.inventory.getContents()).toList();
     }
 }
