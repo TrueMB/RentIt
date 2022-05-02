@@ -9,16 +9,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import me.truemb.rentit.utils.chests.ChestsUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -44,11 +40,9 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 public class UtilMethodes {
 
 	private Main instance;
-	private ChestsUtils chestsUtils;
 
 	public UtilMethodes(Main plugin) {
 		this.instance = plugin;
-		this.chestsUtils = new ChestsUtils(plugin);
 	}
 
 	public boolean isTimeFormat(String feString) {
@@ -192,7 +186,7 @@ public class UtilMethodes {
 
 		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
 
-		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() != null && !rentType.isReminded() && rentType.getReminder() != null && rentType.getReminder().getTime() <= System.currentTimeMillis()).collect(Collectors.toList());
+		return typeHash.values().stream().filter(rentType -> !rentType.isAutoPayment() && rentType.getOwnerUUID() != null && !rentType.isReminded() && rentType.getReminder() != null && rentType.getReminder().getTime() <= System.currentTimeMillis()).collect(Collectors.toList());
 	}
 	
 	public Collection<RentTypeHandler> getPaymentsOfRentTypes(RentTypes type) {
