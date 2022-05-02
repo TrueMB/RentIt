@@ -73,6 +73,9 @@ Since this is a new Shop System and doesnt quite work like others, there is some
 **/shop door close** - Close the doors in your own Shop.<br />
 **/shop rollback** - Opens a menu with the forgotten items of the Shop.<br />
 **/shop rollback %target%** - Admin Command to get the Targets lost Items or to check them.<br />
+**/shop setAlias %alias%** - Set a different Name for the Shop.<br />
+**/shop setAliasCat %catAlias%** - Set a different Name for the Category of the Shop you are standing in.<br />
+**/shop resign** - Ends your running Contract.<br />
 
 ## Hotelroom Commands
 **/hotels** - Shows all your owned Hotelrooms.<br />
@@ -98,7 +101,9 @@ Since this is a new Shop System and doesnt quite work like others, there is some
 **/hotel door remove** - Remove a door from a Hotelroom.<br />
 **/hotel door open** - Open the doors in your own Hotelroom.<br />
 **/hotel door close** - Close the doors in your own Hotelroom.<br />
-
+**/hotel setAlias %alias%** - Set a different Name for the Hotelroom.<br />
+**/hotel setAliasCat %catAlias%** - Set a different Name for the Category of the Hotelroom you are standing in.<br />
+**/hotel resign** - Ends your running Contract.<br />
 
 # Permissions:
 All Permissions can be found in the config. You could also change the name of the permission.
@@ -173,6 +178,7 @@ This are Settings in the Config for specific Categories for Shops and Hotelrooms
 **doorsClosedUntilBuy** -> <true/false> Should the doors be closed until a player bought the Shop/hotelroom? True Allows player to look, until someone rents it and does /shop door close<br />
 **doorsClosedAfterBuy** -> the default status, after a player bought a Shop or Hotelroom<br />
 **allowUsersToMoveNPC** -> Allows Shop Owners to use the /shop setnpc command and to move their NPC.<br />
+**reminderRentRunningOut** -> Reminds the owner the given time before the rent end, if no auto payment enabled, that the rent is going to end.<br />
 
 ```
      categorySettings:
@@ -186,6 +192,7 @@ This are Settings in the Config for specific Categories for Shops and Hotelrooms
                  ownerBypassLock: true
                  doorsClosedUntilBuy: false
                  doorsClosedAfterBuy: false
+                 reminderRentRunningOut: '1m30s'
              2:
                  usePermission: true
                  autoPaymentDefault: true
@@ -205,6 +212,7 @@ This are Settings in the Config for specific Categories for Shops and Hotelrooms
                  ownerBypassLock: true
                  doorsClosedUntilBuy: false
                  doorsClosedAfterBuy: false
+                 reminderRentRunningOut: '1m'
              2:
                  usePermission: true
                  autoPaymentDefault: true
