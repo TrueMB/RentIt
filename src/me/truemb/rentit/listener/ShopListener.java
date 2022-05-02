@@ -113,9 +113,9 @@ public class ShopListener implements Listener {
 				p.getInventory().addItem(copyItem); // GIVES BUYER THE ITEM
 				Bukkit.getPluginManager().callEvent(new ItemSellEvent(p, rentHandler, copyItem, price));
 
-				if (this.instance.getMethodes().checkChestsinArea(shopId, copyItem)) {
+				if (this.instance.getChestsUtils().checkChestsInArea(shopId, copyItem)) {
 					// LOOKS IN NEARBY CHESTS
-					this.instance.getMethodes().removeItemFromChestsInArea(shopId, copyItem);
+					this.instance.getChestsUtils().removeItemFromChestsInArea(shopId, copyItem);
 
 				} else {
 					// CHANGES THE SHOP INV
@@ -237,10 +237,10 @@ public class ShopListener implements Listener {
 
 				copyItem.setAmount(amount); // SETS HOW MUCH THE PLAYER SELLED
 
-				if (this.instance.getMethodes().checkForSpaceinArea(shopId, copyItem)) {
+				if (this.instance.getChestsUtils().checkForSpaceInArea(shopId, copyItem)) {
 
 					// LOOKS IN NEARBY CHESTS
-					this.instance.getMethodes().addItemToChestsInArea(shopId, copyItem);
+					this.instance.getChestsUtils().addItemToChestsInArea(shopId, copyItem);
 					this.instance.getMethodes().removeItemFromPlayer(p, copyItem);
 
 					this.instance.getEconomy().depositPlayer(p, price); // REMVOES THE MONEY FROM THE BUYER

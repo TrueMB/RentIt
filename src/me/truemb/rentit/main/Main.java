@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.truemb.rentit.utils.chests.ChestsUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -108,6 +109,7 @@ public class Main extends JavaPlugin {
 	private BackupManager backupMGR;
 	private ShopItemManager shopItemMGR;
 	private UtilMethodes shopMeth;
+	private ChestsUtils chestsUtils;
 	
 	//SOFTDEPEND
 	private WorldGuardUtils wgUtils;
@@ -161,7 +163,8 @@ public class Main extends JavaPlugin {
 				initHandlers();
 			}
 		}, 20);
-		
+
+		this.chestsUtils = new ChestsUtils(this);
 		this.backupMGR = new BackupManager(this);
 		this.shopItemMGR = new ShopItemManager();
 		this.npcFM = new NPCFileManager(this);
@@ -370,6 +373,7 @@ public class Main extends JavaPlugin {
 				
 				//START MANAGERS
 				shopMeth = new UtilMethodes(plugin);
+				chestsUtils = new ChestsUtils(plugin);
 				backupMGR = new BackupManager(plugin);
 				shopItemMGR = new ShopItemManager();
 				npcFM = new NPCFileManager(plugin);
@@ -658,6 +662,10 @@ public class Main extends JavaPlugin {
 	
 	public UtilMethodes getMethodes() {
 		return this.shopMeth;
+	}
+
+	public ChestsUtils getChestsUtils() {
+		return this.chestsUtils;
 	}
 	
 	public SignFileManager getSignFileManager() {

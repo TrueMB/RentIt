@@ -36,6 +36,8 @@ Options:
       disabledSubCommands: {}
   #Using Citizens NPCs as Shops. Otherwise Villagers
   useNPCs: true
+  #Using also AdvancedChests for shops. Only vanilla if not.
+  useAdvancedChests: false
   #Shows above the Shop NPC the Prefix and DisplayName of a Player, if false: Only the Name
   useDisplayName: false
   #If enabled, every command gets a Permission -> Default: rentit.shop.<subcommand> and rentit.shops / rentit.freeshops -> the same for hotelrooms

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import me.truemb.rentit.utils.chests.SupportedChest;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -50,13 +51,13 @@ public class ShopCacheFileManager {
 	public void setShopBackup(UUID uuid, int id) {
 		
 		YamlConfiguration cfg = this.getConfig();
-		
-		List<Inventory> inventories = this.instance.getMethodes().getShopChestInventories(id);
+
+		List<SupportedChest> chests = this.instance.getChestsUtils().getShopChests(id);
 		
 		String basicPath = String.valueOf(id) + "." + uuid.toString();
 		
-		for(int i = 0; i < inventories.size(); i++) {
-			cfg.set(basicPath + "." + i, InventoryUtils.itemStackArrayToBase64(inventories.get(i).getContents()));
+		for(int i = 0; i < chests.size(); i++) {
+			cfg.set(basicPath + "." + i, InventoryUtils.itemStackArrayToBase64(chests.get(i).getAllItems().toArray(ItemStack[]::new)));
 		}
 		
 		RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
@@ -69,7 +70,7 @@ public class ShopCacheFileManager {
 					item = ShopItemManager.removeShopItem(this.instance, item);
 			}
 			
-			cfg.set(basicPath + "." + String.valueOf(inventories.size()), InventoryUtils.itemStackArrayToBase64(sellItems));
+			cfg.set(basicPath + "." + String.valueOf(chests.size()), InventoryUtils.itemStackArrayToBase64(sellItems));
 		}
 		
 		try {
