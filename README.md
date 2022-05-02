@@ -274,6 +274,6 @@ To rent a Hotelroom, the player only needs to click on a Sign and accept the con
 #### Spigot: 
 https://www.spigotmc.org/threads/rentit-shop-and-hotel-renting.495468/
 
-If you like this plugin, please consider to rate it on Spigot. And if you like to [donate](paypal.me/truemb).<br />
+If you like this plugin, please consider to rate it on Spigot. And if you like to [donate](https://paypal.me/truemb).<br />
 New Bugs will be shortly fixed!
 
