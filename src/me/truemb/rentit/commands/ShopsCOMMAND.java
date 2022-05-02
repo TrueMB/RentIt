@@ -1,6 +1,7 @@
 package me.truemb.rentit.commands;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
@@ -38,6 +39,12 @@ public class ShopsCOMMAND extends BukkitCommand{
 		UUID uuid = p.getUniqueId();
 		p.openInventory(UserListGUI.getListGUI(this.instance, RentTypes.SHOP, uuid, 1));
 		return true;
+	}
+	
+	//Prevents the Player Names Completion from the Server
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+		return Collections.emptyList();
 	}
 	
 }
