@@ -14,7 +14,6 @@ It works with a completly customzible GUI. You can change everything in the conf
 
 [![Tutorial](https://img.youtube.com/vi/gcuaus7DY0Q/0.jpg)](https://www.youtube.com/watch?v=gcuaus7DY0Q)
 
-
 # Important to know:
 Since this is a new Shop System and doesnt quite work like others, there is some stuff that you should know.
 
@@ -72,9 +71,9 @@ Since this is a new Shop System and doesnt quite work like others, there is some
 **/shop door open** - Open the doors in your own Shop.<br />
 **/shop door close** - Close the doors in your own Shop.<br />
 **/shop rollback** - Opens a menu with the forgotten items of the Shop.<br />
-**/shop rollback %target%** - Admin Command to get the Targets lost Items or to check them.<br />
-**/shop setAlias %alias%** - Set a different Name for the Shop.<br />
-**/shop setAliasCat %catAlias%** - Set a different Name for the Category of the Shop you are standing in.<br />
+**/shop rollback {target}** - Admin Command to get the Targets lost Items or to check them.<br />
+**/shop setAlias {alias}** - Set a different Name for the Shop.<br />
+**/shop setAliasCat {catAlias}** - Set a different Name for the Category of the Shop you are standing in.<br />
 **/shop resign** - Ends your running Contract.<br />
 
 ## Hotelroom Commands
@@ -101,8 +100,8 @@ Since this is a new Shop System and doesnt quite work like others, there is some
 **/hotel door remove** - Remove a door from a Hotelroom.<br />
 **/hotel door open** - Open the doors in your own Hotelroom.<br />
 **/hotel door close** - Close the doors in your own Hotelroom.<br />
-**/hotel setAlias %alias%** - Set a different Name for the Hotelroom.<br />
-**/hotel setAliasCat %catAlias%** - Set a different Name for the Category of the Hotelroom you are standing in.<br />
+**/hotel setAlias {alias}** - Set a different Name for the Hotelroom.<br />
+**/hotel setAliasCat {catAlias}** - Set a different Name for the Category of the Hotelroom you are standing in.<br />
 **/hotel resign** - Ends your running Contract.<br />
 
 # Permissions:
