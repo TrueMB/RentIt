@@ -46,4 +46,9 @@ public class AdvancedChestsChest extends SupportedChest {
     public boolean hasEmptySlots() {
         return this.chest.getSlotsLeft() > 0;
     }
+
+    @Override
+    public void remove() {
+        this.chest.remove(null, false);
+    }
 }

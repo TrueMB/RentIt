@@ -48,6 +48,11 @@ public abstract class SupportedChest {
         return this.getAllItems().stream().filter(i -> item.isSimilar(i)).collect(Collectors.toList());
     }
 
+    /**
+     * Safely removes the chest from the area
+     */
+    public void remove() {}
+
     protected boolean isEmptySlot(ItemStack item) {
         return item == null || item.getType() == Material.AIR;
     }
