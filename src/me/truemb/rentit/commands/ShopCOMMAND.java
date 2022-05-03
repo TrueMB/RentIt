@@ -1947,6 +1947,8 @@ public class ShopCOMMAND extends BukkitCommand {
 
 		if(ownerUUID != null)
 			this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
+
+		this.instance.getChestsUtils().getShopChests(shopId).stream().forEach(chest -> chest.remove());
 			
 		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
 		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
