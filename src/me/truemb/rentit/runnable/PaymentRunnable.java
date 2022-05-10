@@ -145,6 +145,7 @@ public class PaymentRunnable implements Runnable {
 								World world = instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
 										
 								instance.getBackupManager().paste(RentTypes.SHOP, shopId, min, max, world, false);
+								instance.getAdvancedChestsUtils().pasteChestsInArea(RentTypes.SHOP, shopId);
 								instance.getAreaFileManager().clearMember(RentTypes.SHOP, shopId);
 								instance.getAreaFileManager().setOwner(RentTypes.SHOP, shopId, null);
 								instance.getMethodes().clearPlayersFromRegion(RentTypes.SHOP, shopId, instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId));
@@ -208,6 +209,7 @@ public class PaymentRunnable implements Runnable {
 								World world = instance.getAreaFileManager().getWorldFromArea(RentTypes.HOTEL, hotelId);
 								
 								instance.getBackupManager().paste(RentTypes.HOTEL, hotelId, min, max, world, false);
+								instance.getAdvancedChestsUtils().pasteChestsInArea(RentTypes.HOTEL, hotelId);
 								instance.getAreaFileManager().clearMember(RentTypes.HOTEL, hotelId);
 								instance.getMethodes().clearPlayersFromRegion(RentTypes.HOTEL, hotelId, instance.getAreaFileManager().getWorldFromArea(RentTypes.HOTEL, hotelId));
 

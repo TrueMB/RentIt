@@ -1268,6 +1268,7 @@ public class HotelCOMMAND extends BukkitCommand {
 		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, hotelId);
 		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, hotelId);
 		this.instance.getBackupManager().paste(this.type, hotelId, min, max, p.getWorld(), false);
+		this.instance.getAdvancedChestsUtils().pasteChestsInArea(this.type, hotelId);
 		this.instance.getAreaFileManager().clearMember(this.type, hotelId);
 		
 		rentHandler.reset();
