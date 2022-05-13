@@ -199,6 +199,26 @@ public class UtilMethodes {
 		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() != null && rentType.getNextPayment() != null && rentType.getNextPayment().getTime() <= System.currentTimeMillis()).collect(Collectors.toList());
 	}
 
+	public Collection<RentTypeHandler> getFreeRentTypesOfCategory(RentTypes type, int catId) {
+
+		if(!this.instance.rentTypeHandlers.containsKey(type))
+			return Collections.emptyList();
+
+		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
+		
+		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() == null && rentType.getCatID() == catId).collect(Collectors.toList());
+	}
+	
+	public Collection<RentTypeHandler> getFreeRentTypes(RentTypes type) {
+
+		if(!this.instance.rentTypeHandlers.containsKey(type))
+			return Collections.emptyList();
+
+		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
+
+		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() == null).collect(Collectors.toList());
+	}
+	
 	public CategoryHandler getCategory(RentTypes type, Integer id) {
 
 		if (!this.instance.catHandlers.containsKey(type))

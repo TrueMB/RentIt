@@ -32,6 +32,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import me.truemb.rentit.api.NPCUtils;
 import me.truemb.rentit.api.PermissionsAPI;
+import me.truemb.rentit.api.PlaceholderAPI;
 import me.truemb.rentit.api.WorldGuardUtils;
 import me.truemb.rentit.commands.FreeHotelsCOMMAND;
 import me.truemb.rentit.commands.FreeShopsCOMMAND;
@@ -77,7 +78,6 @@ import me.truemb.rentit.listener.ShopItemsBackupListener;
 import me.truemb.rentit.listener.SignListener;
 import me.truemb.rentit.listener.UserConfirmationListener;
 import me.truemb.rentit.listener.VillagerShopListener;
-import me.truemb.rentit.placeholder.PlaceholderAPI;
 import me.truemb.rentit.runnable.PaymentRunnable;
 import me.truemb.rentit.utils.BackupManager;
 import me.truemb.rentit.utils.ConfigUpdater;
@@ -135,7 +135,7 @@ public class Main extends JavaPlugin {
 	public NamespacedKey idKey = new NamespacedKey(this, "ID");
 	public NamespacedKey siteKey = new NamespacedKey(this, "Site");
 
-	private static final int configVersion = 13;
+	private static final int configVersion = 14;
     private static final String SPIGOT_RESOURCE_ID = "90195";
     private static final int BSTATS_PLUGIN_ID = 12060;
     
