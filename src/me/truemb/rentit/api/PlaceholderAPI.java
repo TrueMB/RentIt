@@ -45,11 +45,6 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 		return this.instance.getDescription().getVersion();
 	}
 	
-	//%player_has<shop/hotel>%
-	//%free<shops/hotels>_<ID>%
-	//%free<shops/hotels>_cat_<ID>%
-	//%free<shops/hotels>%
-
     @Override
     public String onPlaceholderRequest(Player p, String identifier){
 
@@ -59,7 +54,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
         UUID uuid = p.getUniqueId();
         PlayerHandler pHandler = this.instance.getMethodes().getPlayerHandler(uuid);
         
-        if(identifier.equals("currentId")){
+        if(identifier.equalsIgnoreCase("currentId")){
         	
         	int id = -1;
         	for(RentTypes type : RentTypes.values()) {
@@ -69,7 +64,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
         	}
             return this.instance.manageFile().getString("PlaceholderAPI.default.currentId");
             
-        }else if(identifier.equals("currentType")){
+        }else if(identifier.equalsIgnoreCase("currentType")){
 
         	RentTypes type = null;
         	for(RentTypes types : RentTypes.values()) {
@@ -79,7 +74,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
         	}
             return this.instance.manageFile().getString("PlaceholderAPI.default.currentType");
             
-        }else if(identifier.equals("currentOwner")){
+        }else if(identifier.equalsIgnoreCase("currentOwner")){
 
         	for(RentTypes types : RentTypes.values()) {
         		int id = this.instance.getAreaFileManager().getIdFromArea(types, p.getLocation());
@@ -94,12 +89,13 @@ public class PlaceholderAPI extends PlaceholderExpansion{
             if(identifier.equalsIgnoreCase("player_has" + types.toString()))
             	return pHandler != null && pHandler.getOwningList(types).size() > 0 ? "true" : "false";
             	
-            if(identifier.equalsIgnoreCase("player_" + types.toString())) {
+            else if(identifier.equalsIgnoreCase("player_" + types.toString())) {
             	if(pHandler != null && pHandler.getOwningList(types).size() > 0) {
             		RentTypeHandler typeHandler = this.instance.getMethodes().getTypeHandler(types, pHandler.getOwningList(types).get(0));
             		if(typeHandler != null)
             			return typeHandler.getAlias() != null ? typeHandler.getAlias() : String.valueOf(typeHandler.getID());
-            	}
+            	}else
+            		return "-1";
             }
             
             //Check first the category. Otherwise the non category one will be triggert first, since the start is identical.
@@ -109,14 +105,16 @@ public class PlaceholderAPI extends PlaceholderExpansion{
                 	int catId = Integer.parseInt(idString);
                 	Collection<RentTypeHandler> free = this.instance.getMethodes().getFreeRentTypesOfCategory(types, catId);
                		return free != null && free.size() > 0 ? "true" : "false";
-               	}
+               	}else
+            		return "-1";
                	
            } else if(identifier.toLowerCase().startsWith("free" + types.toString().toLowerCase() + "_")){
             	String idString = identifier.replace("free" + types.toString().toLowerCase() + "_", "");
             	if(idString.matches("[0-9]+")){
             		int id = Integer.parseInt(idString);
-            		return this.instance.getMethodes().getTypeHandler(types, id) != null && this.instance.getMethodes().getTypeHandler(types, id).isOwned() ? "true" : "false";
-            	}
+            		return this.instance.getMethodes().getTypeHandler(types, id) != null && !this.instance.getMethodes().getTypeHandler(types, id).isOwned() ? "true" : "false";
+            	}else
+            		return "-1";
            } else if(identifier.toLowerCase().startsWith("free" + types.toString().toLowerCase())){
            		Collection<RentTypeHandler> free = this.instance.getMethodes().getFreeRentTypes(types);
           		return free != null && free.size() > 0 ? "true" : "false";
