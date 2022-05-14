@@ -31,6 +31,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 
 import me.truemb.rentit.data.RollbackInventoryData;
 import me.truemb.rentit.database.AsyncSQL;
+import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;
 import me.truemb.rentit.handler.CategoryHandler;
@@ -140,7 +141,8 @@ public class ShopCOMMAND extends BukkitCommand {
 						return true;
 					}
 					
-		        	boolean allowUsersToMoveNPC = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + ".allowUsersToMoveNPC") ? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + ".allowUsersToMoveNPC") : false;
+		        	boolean allowUsersToMoveNPC = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) 
+		        			? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) : false;
 		        	
 					if((rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) || !allowUsersToMoveNPC) && !this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setnpc")) {
 						p.sendMessage(this.instance.getMessage("perm"));
@@ -937,7 +939,8 @@ public class ShopCOMMAND extends BukkitCommand {
 						return true;
 					}
 					
-					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".disableDoorCommand") && this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".disableDoorCommand")) {
+					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.disableDoorCommand.toString()) 
+							&& this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.disableDoorCommand.toString())) {
 						sender.sendMessage(this.instance.getMessage("doorCommandDisabled"));
 						return true;
 					}
@@ -981,7 +984,8 @@ public class ShopCOMMAND extends BukkitCommand {
 						return true;
 					}
 					
-					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".disableDoorCommand") && this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".disableDoorCommand")) {
+					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.disableDoorCommand.toString()) 
+							&& this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.disableDoorCommand.toString())) {
 						sender.sendMessage(this.instance.getMessage("doorCommandDisabled"));
 						return true;
 					}
@@ -1092,7 +1096,8 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 				
 				int catId = rentHandler.getCatID();
-				if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + ".usePermission") && this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catId + ".usePermission")) {
+				if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.usePermission.toString()) 
+						&& this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.usePermission.toString())) {
 					if(!p.hasPermission(this.instance.manageFile().getString("Permissions.category") + "." + rentHandler.getType().toString().toLowerCase() + "." + catId)) {
 						p.sendMessage(this.instance.getMessage("noPermsForCategory"));
 						return true;
@@ -1120,7 +1125,8 @@ public class ShopCOMMAND extends BukkitCommand {
 
 				this.instance.getAreaFileManager().setOwner(this.type, shopId, uuid);
 				
-	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + ".autoPaymentDefault") : true;
+	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) 
+	        			? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) : true;
 	        	rentHandler.setAutoPayment(autoPaymentDefault);
 				this.instance.getShopsSQL().setOwner(shopId, uuid, p.getName(), autoPaymentDefault);
 				
@@ -1963,7 +1969,8 @@ public class ShopCOMMAND extends BukkitCommand {
 
 		rentHandler.reset();
 		
-    	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
+    	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) 
+    			? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) : true;
     	rentHandler.setAutoPayment(autoPaymentDefault);
 		this.instance.getShopsSQL().reset(shopId, autoPaymentDefault);
 		this.instance.getAreaFileManager().setOwner(this.type, shopId, null);

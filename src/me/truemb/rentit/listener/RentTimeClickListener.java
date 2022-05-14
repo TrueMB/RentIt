@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 
+import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.UserListGUI;
 import me.truemb.rentit.gui.UserRentGUI;
@@ -55,8 +56,6 @@ public class RentTimeClickListener implements Listener{
 				return;
 						
 			ItemMeta meta = item.getItemMeta();
-			//int shopId = this.instance.openId.get(p.getName());
-			
 			NamespacedKey key = new NamespacedKey(this.instance, "ID");
 			
 			if(!meta.getPersistentDataContainer().has(key, PersistentDataType.INTEGER))
@@ -67,7 +66,7 @@ public class RentTimeClickListener implements Listener{
 			RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
 
 			if (rentHandler == null) {
-				p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+				p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 				return;
 			}
 			
@@ -75,7 +74,8 @@ public class RentTimeClickListener implements Listener{
 			
 			if(this.instance.getMethodes().getGUIItem("shopUser", "schedulerActiveItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
 								
-				if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + ".autoPaymentDisabled") && this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catId + ".autoPaymentDisabled")) {
+				if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.autoPaymentDisabled.toString()) 
+						&& this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.autoPaymentDisabled.toString())) {
 					p.sendMessage(this.instance.getMessage("autoPaymentDisabled"));
 					return;
 				}
@@ -88,7 +88,8 @@ public class RentTimeClickListener implements Listener{
 				
 			}else if(this.instance.getMethodes().getGUIItem("shopUser", "schedulerDeactiveItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
 				
-				if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + ".autoPaymentDisabled") && this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catId + ".autoPaymentDisabled")) {
+				if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.autoPaymentDisabled.toString()) 
+						&& this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.autoPaymentDisabled.toString())) {
 					p.sendMessage(this.instance.getMessage("autoPaymentDisabled"));
 					return;
 				}
@@ -116,7 +117,7 @@ public class RentTimeClickListener implements Listener{
 		    	if(this.instance.getEconomy().has(p, costs)) {
 
 
-					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + ".maxRentExtendAmount")) {
+					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.maxRentExtendAmount.toString())) {
 
 						Timestamp pufTs = rentHandler.getNextPayment(); //Counts the time back
 			    		int countExtendedTimes = 0;
@@ -126,14 +127,14 @@ public class RentTimeClickListener implements Listener{
 			    		}
 			    		countExtendedTimes--; //So that the normal rent doesnt count
 			    		
-			    		if(countExtendedTimes >= this.instance.manageFile().getInt("Options.categorySettings.ShopCategory." + catId + ".maxRentExtendAmount")) {
+			    		if(countExtendedTimes >= this.instance.manageFile().getInt("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.maxRentExtendAmount.toString())) {
 			    			p.sendMessage(this.instance.getMessage("maxExtendedReached"));
 			    			return;
 			    		}
 					}
 		    		
 		    		
-		    		//VERL�NGER SHOP
+		    		//EXTEND SHOP
 					this.instance.getEconomy().withdrawPlayer(p, costs);
 
 					Timestamp oldTs = rentHandler.getNextPayment();
@@ -190,7 +191,8 @@ public class RentTimeClickListener implements Listener{
 			
 			if(this.instance.getMethodes().getGUIItem("shopUser", "schedulerActiveItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
 				
-				if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + ".autoPaymentDisabled") && this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catId + ".autoPaymentDisabled")) {
+				if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.autoPaymentDisabled.toString()) 
+						&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.autoPaymentDisabled.toString())) {
 					p.sendMessage(this.instance.getMessage("autoPaymentDisabled"));
 					return;
 				}
@@ -203,7 +205,8 @@ public class RentTimeClickListener implements Listener{
 				
 			}else if(this.instance.getMethodes().getGUIItem("shopUser", "schedulerDeactiveItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
 				
-				if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + ".autoPaymentDisabled") && this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catId + ".autoPaymentDisabled")) {
+				if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.autoPaymentDisabled.toString()) 
+						&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catId + "."  + CategorySettings.autoPaymentDisabled.toString())) {
 					p.sendMessage(this.instance.getMessage("autoPaymentDisabled"));
 					return;
 				}
@@ -230,7 +233,7 @@ public class RentTimeClickListener implements Listener{
 				
 		    	if(this.instance.getEconomy().has(p, costs)) {
 
-					if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + ".maxRentExtendAmount")) {
+					if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.maxRentExtendAmount.toString())) {
 						
 						Timestamp pufTs = rentHandler.getNextPayment(); //Counts the time back
 			    		int countExtendedTimes = 0;
@@ -240,7 +243,7 @@ public class RentTimeClickListener implements Listener{
 			    		}
 			    		countExtendedTimes--; //So that the normal rent doesnt count
 			    		
-			    		if(countExtendedTimes >= this.instance.manageFile().getInt("Options.categorySettings.HotelCategory." + catId + ".maxRentExtendAmount")) {
+			    		if(countExtendedTimes >= this.instance.manageFile().getInt("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.maxRentExtendAmount.toString())) {
 			    			p.sendMessage(this.instance.getMessage("maxExtendedReached"));
 			    			return;
 			    		}

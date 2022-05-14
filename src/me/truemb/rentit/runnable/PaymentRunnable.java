@@ -12,6 +12,7 @@ import org.bukkit.World;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
+import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
@@ -117,8 +118,8 @@ public class PaymentRunnable implements Runnable {
 					if (!rentHandler.isAutoPayment() || !this.instance.getEconomy().has(p, costs)) {
 						
 						// RESET SHOP
-			        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? 
-			        			this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
+			        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) ? 
+			        			this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) : true;
 			        	
 			        	rentHandler.setAutoPayment(autoPaymentDefault);
 			        	this.instance.getShopsSQL().reset(shopId, autoPaymentDefault);
@@ -191,8 +192,8 @@ public class PaymentRunnable implements Runnable {
 					if (!rentHandler.isAutoPayment() || !this.instance.getEconomy().has(p, costs)) {
 
 						// RESET HOTEL
-			        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? 
-			        			this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
+			        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) ? 
+			        			this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) : true;
 			        	
 			        	rentHandler.setAutoPayment(autoPaymentDefault);
 			        	this.instance.getHotelsSQL().reset(hotelId, autoPaymentDefault); // Resets the Owner and Payment
