@@ -1,6 +1,5 @@
 package me.truemb.rentit.api;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -9,13 +8,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import me.truemb.rentit.enums.RentTypes;
-import me.truemb.rentit.handler.RentTypeHandler;
+import com.denizenscript.denizen.npc.traits.SittingTrait;
+
 import me.truemb.rentit.main.Main;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.DespawnReason;
 import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.api.trait.trait.Spawned;
 
 public class NPCUtils {
 	
@@ -24,99 +22,14 @@ public class NPCUtils {
 	public NPCUtils(Main plugin) {
 		this.instance = plugin;
 	}
-
-	public void checkAllNPCStates() {
-		
-		HashMap<Integer, RentTypeHandler> hash = this.instance.rentTypeHandlers.get(RentTypes.SHOP);
-		
-		if(hash == null)
-			return;
-		
-		//CREATE VILLAGERS 
-		for(int shopId : hash.keySet()) {
-			RentTypeHandler rentHandler = hash.get(shopId);
-			if(!rentHandler.isOwned())
-				this.despawnNPC(shopId);
-		}
-	}
 	
-	public void disableNPCs() {
-		
-		HashMap<Integer, RentTypeHandler> hash = this.instance.rentTypeHandlers.get(RentTypes.SHOP);
-		
-		if(hash == null)
-			return;
-		
-		//CREATE VILLAGERS 
-		for(int shopId : hash.keySet()) {
-			this.despawnNPC(shopId);
-		}
-	}
-
-	public void despawnNPC(int shopId) {
-		UUID npcUUID = this.instance.getNPCFileManager().getNPCIdFromShop(shopId);
-		NPC npc = CitizensAPI.getNPCRegistry().getByUniqueId(npcUUID);
-
-		if(npc == null)
-			return;
-
-        npc.getOrAddTrait(Spawned.class).setSpawned(false);
-        npc.despawn(DespawnReason.PLUGIN);
-		//CitizensAPI.getNPCRegistry().saveToStore();
-	}
-	
-	public void destroyNPC(int shopId) {
-		UUID npcUUID = this.instance.getNPCFileManager().getNPCIdFromShop(shopId);
-		NPC npc = CitizensAPI.getNPCRegistry().getByUniqueId(npcUUID);
-
-		if(npc == null)
-			return;
-
-		npc.destroy();
-		CitizensAPI.getNPCRegistry().saveToStore();
-	}
-
-	public boolean isNPCSpawned(int shopId) {
-
+	private NPC getNPC(int shopId) {
 		UUID npcUUID = this.instance.getNPCFileManager().getNPCIdFromShop(shopId);
 
 		if (npcUUID == null)
-			return false;
+			return null;
 
-		NPC npc = CitizensAPI.getNPCRegistry().getByUniqueId(npcUUID);
-
-		if (npc != null && npc.isSpawned())
-			return true;
-
-		return false;
-	}
-	
-	public boolean existsNPCForShop(int shopId) {
-
-		UUID npcUUID = this.instance.getNPCFileManager().getNPCIdFromShop(shopId);
-
-		if (npcUUID == null)
-			return false;
-
-		NPC npc = CitizensAPI.getNPCRegistry().getByUniqueId(npcUUID);
-
-		if (npc != null)
-			return true;
-		return false;
-	}
-
-	public void moveNPC(int shopId, Location loc) {
-
-		UUID npcUUID = this.instance.getNPCFileManager().getNPCIdFromShop(shopId);
-
-		if (npcUUID == null)
-			return;
-
-		NPC npc = CitizensAPI.getNPCRegistry().getByUniqueId(npcUUID);
-
-		npc.teleport(loc, TeleportCause.PLUGIN);
-		CitizensAPI.getNPCRegistry().saveToStore();
-		
+		return CitizensAPI.getNPCRegistry().getByUniqueId(npcUUID);
 	}
 	
 	public void createNPC(int shopId) {
@@ -125,17 +38,67 @@ public class NPCUtils {
 		
 		this.instance.getNPCFileManager().setNPCinConfig(shopId, npc.getUniqueId());
 	}
+	
+	public void destroyNPC(int shopId) {
+		NPC npc = this.getNPC(shopId);
+		if(npc == null)
+			return;
 
+		npc.destroy();
+		CitizensAPI.getNPCRegistry().saveToStore();
+	}
+	
+	public boolean existsNPCForShop(int shopId) {
+		NPC npc = this.getNPC(shopId);
+		return npc != null;
+	}
+
+	public void despawnNPC(int shopId) {
+		NPC npc = this.getNPC(shopId);
+
+		if(npc == null)
+			return;
+
+        npc.despawn(DespawnReason.PLUGIN);
+	}
+	
+	public boolean isNPCSpawned(int shopId) {
+		NPC npc = this.getNPC(shopId);
+		return npc != null && npc.isSpawned();
+	}
+
+	public void moveNPC(int shopId, Location loc) {
+		NPC npc = this.getNPC(shopId);
+		if(npc == null)
+			return;
+
+		npc.teleport(loc, TeleportCause.PLUGIN);
+		CitizensAPI.getNPCRegistry().saveToStore();
+		
+	}
+
+	public void sitNPC(int shopId, boolean value) {
+		NPC npc = this.getNPC(shopId);
+		if(npc == null)
+			return;
+
+		SittingTrait trait = npc.getOrAddTrait(SittingTrait.class);
+		if(value) 
+			trait.sit();
+		else
+			trait.stand();
+		
+		CitizensAPI.getNPCRegistry().saveToStore();
+		
+	}
+	
 	public void spawnAndEditNPC(int shopId, String prefix, UUID ownerUUID, String playerName) {
 
 		Location loc = this.instance.getNPCFileManager().getNPCLocForShop(shopId);
 		if (loc == null)
 			return;
-		
-		UUID uuid = this.instance.getNPCFileManager().getNPCIdFromShop(shopId);
-		
-		NPC npc = CitizensAPI.getNPCRegistry().getByUniqueId(uuid);
-		
+
+		NPC npc = this.getNPC(shopId);
 		if(npc == null) {
 			this.instance.getLogger().warning("Please use the command /shop setNPC again for the Shop: " + shopId + ". It seems like there was problem.");
 			return;
@@ -157,8 +120,7 @@ public class NPCUtils {
 		
 		String customName = instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName: ChatColor.translateAlternateColorCodes('&', "&6" + playerName);
 		npc.setName(customName);
-
-        npc.getOrAddTrait(Spawned.class).setSpawned(true);
+		
 		npc.spawn(loc);
 		if(npc.getEntity() != null)
 			npc.getEntity().setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META

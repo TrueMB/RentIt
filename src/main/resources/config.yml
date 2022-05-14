@@ -36,6 +36,8 @@ Options:
       disabledSubCommands: {}
   #Using Citizens NPCs as Shops. Otherwise Villagers
   useNPCs: true
+  #Add a Skin here, if you want to set a custom Skin. If it should be the Owner of the shop, then leave it blank
+  fixedSkin: ''
   #Using also AdvancedChests for shops. Only vanilla if not.
   useAdvancedChests: false
   #Shows above the Shop NPC the Prefix and DisplayName of a Player, if false: Only the Name

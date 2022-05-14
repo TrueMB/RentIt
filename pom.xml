@@ -184,6 +184,14 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- DENIZEN -->
+		<dependency>
+            <groupId>com.denizenscript</groupId>
+            <artifactId>denizen</artifactId>
+            <version>1.2.4-SNAPSHOT</version>
+            <scope>provided</scope>
+		</dependency>
+
 		<!-- ADVANCED CHESTS API -->
 		<dependency>
 			<groupId>com.github.DeadSilenceIV</groupId>
