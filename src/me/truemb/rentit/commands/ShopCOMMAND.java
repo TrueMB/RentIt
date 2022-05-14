@@ -147,21 +147,22 @@ public class ShopCOMMAND extends BukkitCommand {
 						return true;
 					}
 					
+					//SET NPC LOCATION
+					this.instance.getNPCFileManager().setNPCLocForShop(shopId, p.getLocation());
+					
 					if(this.instance.getNpcUtils() != null) {
 						//NPC
-						
 						if(this.instance.getNpcUtils().existsNPCForShop(shopId)) {
 							this.instance.getNpcUtils().moveNPC(shopId, p.getLocation());
 						}else {
 							//CREATE NPC IN CITIZENS DATABASE
 							this.instance.getNpcUtils().createNPC(shopId);
-
-							UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
+							UUID ownerUUID = rentHandler.getOwnerUUID();
 							
 							//SHOP IS OWNED
 							if(ownerUUID != null) {
 								String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
-								String prefix = instance.getPermissionsAPI().getPrefix(ownerUUID);
+								String prefix = this.instance.getPermissionsAPI().getPrefix(ownerUUID);
 								
 								this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerUUID, playerName);
 							}
@@ -169,7 +170,6 @@ public class ShopCOMMAND extends BukkitCommand {
 						
 					}else {
 						//VILLAGER
-						
 						if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
 							this.instance.getVillagerUtils().moveVillager(shopId, p.getLocation());
 						}else {
@@ -187,8 +187,6 @@ public class ShopCOMMAND extends BukkitCommand {
 					
 				    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
 				    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-					
-					this.instance.getNPCFileManager().setNPCLocForShop(shopId, p.getLocation());
 
 					p.sendMessage(this.instance.getMessage("shopCitizenCreated")
 							.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
@@ -317,7 +315,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
