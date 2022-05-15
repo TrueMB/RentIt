@@ -2,18 +2,23 @@ package me.truemb.rentit.api;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.denizenscript.denizen.npc.traits.SittingTrait;
-
+import me.truemb.rentit.enums.CategorySettings;
+import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.main.Main;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.DespawnReason;
 import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.trait.trait.Spawned;
+import net.citizensnpcs.trait.SkinTrait;
+import net.citizensnpcs.util.PlayerAnimation;
 
 public class NPCUtils {
 	
@@ -59,6 +64,7 @@ public class NPCUtils {
 		if(npc == null)
 			return;
 
+        npc.getOrAddTrait(Spawned.class).setSpawned(false);
         npc.despawn(DespawnReason.PLUGIN);
 	}
 	
@@ -73,23 +79,6 @@ public class NPCUtils {
 			return;
 
 		npc.teleport(loc, TeleportCause.PLUGIN);
-		CitizensAPI.getNPCRegistry().saveToStore();
-		
-	}
-
-	public void sitNPC(int shopId, boolean value) {
-		NPC npc = this.getNPC(shopId);
-		if(npc == null)
-			return;
-
-		SittingTrait trait = npc.getOrAddTrait(SittingTrait.class);
-		if(value) 
-			trait.sit();
-		else
-			trait.stand();
-		
-		CitizensAPI.getNPCRegistry().saveToStore();
-		
 	}
 	
 	public void spawnAndEditNPC(int shopId, String prefix, UUID ownerUUID, String playerName) {
@@ -103,27 +92,40 @@ public class NPCUtils {
 			this.instance.getLogger().warning("Please use the command /shop setNPC again for the Shop: " + shopId + ". It seems like there was problem.");
 			return;
 		}
-		 
-		npc.data().remove("player-skin-name");
-		npc.data().remove("player-skin-textures");
-		npc.data().remove("player-skin-signature");
-		npc.data().remove("cached-skin-uuid-name");
-		npc.data().remove("cached-skin-uuid");
-
-		// Set the skin
-		npc.data().set("player-skin-use-latest-skin", true);
-		npc.data().set("cached-skin-uuid-name", playerName);
-		npc.data().set("cached-skin-uuid", ownerUUID);
-		npc.data().setPersistent("player-skin-name", playerName);
-
+		
+		String skinSignature = this.instance.manageFile().getString("Options.fixedSkinSignature");
+		String skinTexture = this.instance.manageFile().getString("Options.fixedSkinTexture");
+		boolean shouldSit = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId) != null 
+				&& this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId).getCatID() + "." + CategorySettings.npcShouldSit.toString()) 
+				? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId).getCatID() + "." + CategorySettings.npcShouldSit.toString()) : false;
+		
+        // Set the skin
+		if(skinTexture != null && !skinTexture.equals("") && skinSignature != null && !skinSignature.equals(""))
+	        npc.getOrAddTrait(SkinTrait.class).setSkinPersistent("RENTIT", skinSignature, skinTexture);
+		else
+	        npc.getOrAddTrait(SkinTrait.class).setSkinName(playerName);
+		
 		npc.setProtected(true);
 		
-		String customName = instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName: ChatColor.translateAlternateColorCodes('&', "&6" + playerName);
+		String customName = this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName: ChatColor.translateAlternateColorCodes('&', "&6" + playerName);
 		npc.setName(customName);
 		
 		npc.spawn(loc);
+		
 		if(npc.getEntity() != null)
 			npc.getEntity().setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META
+
+		if(shouldSit) {
+			Bukkit.getScheduler().runTaskLater(this.instance, new Runnable() {
+				
+				@Override
+				public void run() {
+					npc.teleport(loc, TeleportCause.PLUGIN);
+					PlayerAnimation.SIT.play((Player) npc.getEntity());
+				}
+			}, 10);
+		}
+
 		CitizensAPI.getNPCRegistry().saveToStore();
 	}
 }

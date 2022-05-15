@@ -1952,13 +1952,6 @@ public class ShopCOMMAND extends BukkitCommand {
 		if(ownerUUID != null)
 			this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
 
-		this.instance.getChestsUtils().getShopChests(shopId).stream().forEach(chest -> chest.remove());
-			
-		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
-		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
-		this.instance.getBackupManager().paste(this.type, shopId, min, max, p.getWorld(), false);
-		this.instance.getAreaFileManager().clearMember(this.type, shopId);
-
 		if(this.instance.getNpcUtils() != null) {
 			if (this.instance.getNpcUtils().isNPCSpawned(shopId))
 				this.instance.getNpcUtils().despawnNPC(shopId);
@@ -1966,6 +1959,13 @@ public class ShopCOMMAND extends BukkitCommand {
 			if(this.instance.getVillagerUtils().isVillagerSpawned(shopId))
 				this.instance.getVillagerUtils().destroyVillager(shopId);
 		}
+
+		this.instance.getChestsUtils().getShopChests(shopId).stream().forEach(chest -> chest.remove());
+			
+		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
+		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
+		this.instance.getBackupManager().paste(this.type, shopId, min, max, p.getWorld(), false);
+		this.instance.getAreaFileManager().clearMember(this.type, shopId);
 
 		rentHandler.reset();
 		
