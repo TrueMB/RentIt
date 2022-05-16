@@ -65,7 +65,7 @@ public class CategoryGUIListener implements Listener {
 			
 			int catID = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 			
-			CategoryHandler catHandler = instance.getMethodes().getCategory(RentTypes.SHOP, catID);
+			CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, catID);
 
 			if (catHandler == null) {
 				p.sendMessage(this.instance.getMessage("categoryError"));
@@ -100,7 +100,7 @@ public class CategoryGUIListener implements Listener {
 			
 			int catID = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 			
-			CategoryHandler catHandler = instance.getMethodes().getCategory(RentTypes.SHOP, catID);
+			CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.HOTEL, catID);
 
 			if (catHandler == null) {
 				p.sendMessage(this.instance.getMessage("categoryError"));
@@ -150,7 +150,7 @@ public class CategoryGUIListener implements Listener {
 					return;
 				
 				int id = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
-				RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
 
 				if (rentHandler == null)
 					return;
@@ -222,7 +222,7 @@ public class CategoryGUIListener implements Listener {
 				
 				int id = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 
-				RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(RentTypes.HOTEL, id);
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.HOTEL, id);
 
 				if (rentHandler == null)
 					return;

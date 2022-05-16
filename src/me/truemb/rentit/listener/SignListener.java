@@ -14,6 +14,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.PluginManager;
 
+import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.AdminGUI;
 import me.truemb.rentit.gui.UserConfirmGUI;
@@ -233,7 +234,8 @@ public class SignListener implements Listener{
 				if(uuid == null) {
 					
 					int catId = rentHandler.getCatID();
-					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + ".usePermission") && this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catId + ".usePermission")) {
+					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.usePermission.toString()) 
+							&& this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.usePermission.toString())) {
 						if(!p.hasPermission(this.instance.manageFile().getString("Permissions.category") + "." + rentHandler.getType().toString().toLowerCase() + "." + catId)) {
 							p.sendMessage(this.instance.getMessage("noPermsForCategory"));
 							return;
@@ -266,7 +268,8 @@ public class SignListener implements Listener{
 					if(uuid == null) {
 						
 						int catId = rentHandler.getCatID();
-						if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + ".usePermission") && this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catId + ".usePermission")) {
+						if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.usePermission.toString()) 
+								&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.usePermission.toString())) {
 							if(!p.hasPermission(this.instance.manageFile().getString("Permissions.category") + "." + rentHandler.getType().toString().toLowerCase() + "." + catId)) {
 								p.sendMessage(this.instance.getMessage("noPermsForCategory"));
 								return;

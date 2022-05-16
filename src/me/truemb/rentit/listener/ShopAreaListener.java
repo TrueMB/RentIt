@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
@@ -174,8 +175,8 @@ public class ShopAreaListener implements Listener {
 				
 				//SHOP DOORS CLOSED THROUGH CONFIG SETTINGS
 				if(!p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors"))
-						&& this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".doorsClosedUntilBuy") 
-						&& this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".doorsClosedUntilBuy")) {
+						&& this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.doorsClosedUntilBuy.toString()) 
+						&& this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.doorsClosedUntilBuy.toString())) {
 					
 					e.setCancelled(true);
 					e.setUseInteractedBlock(Result.DENY);
@@ -193,8 +194,8 @@ public class ShopAreaListener implements Listener {
 			}
 			if(this.instance.getAreaFileManager().isDoorClosed(this.type, shopId)) {
 				if(p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) || (
-						(!this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".ownerBypassLock") 
-						|| this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + ".ownerBypassLock")) 
+						(!this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.ownerBypassLock.toString()) 
+						|| this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.ownerBypassLock.toString())) 
 						&& (this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Door")) || 
 						this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))))) {
 					
