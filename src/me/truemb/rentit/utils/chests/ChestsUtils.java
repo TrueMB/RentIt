@@ -3,7 +3,6 @@ package me.truemb.rentit.utils.chests;
 import com.sk89q.worldedit.math.BlockVector3;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.main.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
@@ -140,10 +139,8 @@ public class ChestsUtils {
      * Gets the supported chest for a given location, if any.
      */
     private Optional<SupportedChest> getChestInLocation(Location location) {
-        if (this.instance.manageFile().getBoolean("Options.useAdvancedChests")
-                && Bukkit.getServer().getPluginManager().isPluginEnabled("AdvancedChests")
-        ) {
-            /**
+        if (this.instance.getAdvancedChestsUtils().isEnabled()) {
+            /*
              * Advanced chests are implemented as a CHEST item.
              * If we don't early cut the lookup, we end up loading 1 adv chest + 1 vanilla chest
              * for the same location.
