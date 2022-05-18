@@ -1965,6 +1965,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
 		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
 		this.instance.getBackupManager().paste(this.type, shopId, min, max, p.getWorld(), false);
+		this.instance.getAdvancedChestsUtils().pasteChestsInArea(this.type, shopId);
 		this.instance.getAreaFileManager().clearMember(this.type, shopId);
 
 		rentHandler.reset();

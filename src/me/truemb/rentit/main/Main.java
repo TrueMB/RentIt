@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.truemb.rentit.api.AdvancedChestsUtils;
 import me.truemb.rentit.utils.chests.ChestsUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -98,6 +99,8 @@ public class Main extends JavaPlugin {
 	
 	private PermissionsAPI permsAPI;
 
+	private AdvancedChestsUtils advancedChestsUtils;
+
 	private AsyncSQL sql;
 	private HotelsSQL hotelsSQL;
 	private ShopsSQL shopsSQL;
@@ -164,6 +167,7 @@ public class Main extends JavaPlugin {
 			}
 		}, 20);
 
+		this.advancedChestsUtils = new AdvancedChestsUtils(this);
 		this.chestsUtils = new ChestsUtils(this);
 		this.backupMGR = new BackupManager(this);
 		this.shopItemMGR = new ShopItemManager();
@@ -377,6 +381,7 @@ public class Main extends JavaPlugin {
 				}
 				
 				//START MANAGERS
+				advancedChestsUtils = new AdvancedChestsUtils(plugin);
 				shopMeth = new UtilMethodes(plugin);
 				chestsUtils = new ChestsUtils(plugin);
 				backupMGR = new BackupManager(plugin);
@@ -611,6 +616,11 @@ public class Main extends JavaPlugin {
 	//PERMISSIONS
 	public PermissionsAPI getPermissionsAPI() {
 		return this.permsAPI;
+	}
+
+	//ADVANCED CHESTS PLUGIN INTEGRATION
+	public AdvancedChestsUtils getAdvancedChestsUtils() {
+		return this.advancedChestsUtils;
 	}
 
 	//CHAT

@@ -3,8 +3,12 @@ package me.truemb.rentit.filemanager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -53,7 +57,10 @@ public class AreaFileManager {
 		cfg.set(path + ".Spawn.Z", loc.getZ());
 		cfg.set(path + ".Spawn.Yaw", loc.getYaw());
 		cfg.set(path + ".Spawn.Pitch", loc.getPitch());
-		
+
+		this.instance.getAdvancedChestsUtils().getChestsInArea(min, max, loc.getWorld())
+				.forEach((chest, locations) -> cfg.set(path + ".AdvancedChests." + chest, locations));
+
 		try {
 			cfg.save(this.file);
 		} catch (IOException ex) {
@@ -251,5 +258,19 @@ public class AreaFileManager {
 		
 		return cfg.getBoolean(path + ".Doors");
 	}
-	
+
+	public Map<String, List<String>> getAdvancedChests(RentTypes type, int id) {
+		YamlConfiguration cfg = this.config;
+		String path = type.toString().toUpperCase() + "." + id + ".AdvancedChests";
+
+		Set<String> keys = cfg.getConfigurationSection(path) != null
+				? cfg.getConfigurationSection(path).getKeys(false)
+				: Collections.emptySet();
+
+		return keys.stream()
+				.collect(Collectors.toMap(
+						e -> e,
+						e -> cfg.getStringList(path + "." + e))
+				);
+	}
 }
