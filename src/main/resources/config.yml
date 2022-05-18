@@ -69,7 +69,7 @@ Options:
   #doorsClosedAfterBuy -> the default status, after a player bought a Shop
   #allowUsersToMoveNPC -> Should a user without permission be able to move the npc with /shop setnpc
   #reminderRentRunningOut -> If the player goes/is online %time% before the rent is running out, then a notification will be send.
-  #npcShouldSit -> Should the Shop NPC (Only Citizens) be sitting? Needs the Plugin DENIZEN!
+  #npcShouldSit -> Should the Shop NPC (Only Citizens) be sitting?
   categorySettings:
     ShopCategory:
       99:
