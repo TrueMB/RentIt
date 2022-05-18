@@ -10,6 +10,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.main.Main;
@@ -170,8 +171,8 @@ public class RentTypeHandler {
 	 */
 	public void calculateReminderTimestamp() {
 		
-		String timeS = this.instance.manageFile().isSet("Options.categorySettings." + StringUtils.capitalize(this.getType().toString().toLowerCase()) + "Category." + this.getCatID() + ".reminderRentRunningOut") ? 
-				this.instance.manageFile().getString("Options.categorySettings." + StringUtils.capitalize(this.getType().toString().toLowerCase()) + "Category." + this.getCatID() + ".reminderRentRunningOut") : null;
+		String timeS = this.instance.manageFile().isSet("Options.categorySettings." + StringUtils.capitalize(this.getType().toString().toLowerCase()) + "Category." + this.getCatID() + "." + CategorySettings.reminderRentRunningOut.toString()) ? 
+				this.instance.manageFile().getString("Options.categorySettings." + StringUtils.capitalize(this.getType().toString().toLowerCase()) + "Category." + this.getCatID() + "." + CategorySettings.reminderRentRunningOut.toString()) : null;
 		
 		if(timeS == null) return; //NO REMINDER SET
 		

@@ -4,7 +4,7 @@
   <groupId>RentIt</groupId>
   <artifactId>RentIt</artifactId>
   <name>RentIt</name>
-  <version>2.6.0</version>
+  <version>2.6.1</version>
   <description>Player Shop and Hotel Rent System</description>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -124,7 +124,7 @@
     </dependency>
     <dependency>
       <groupId>net.citizensnpcs</groupId>
-      <artifactId>citizensapi</artifactId>
+      <artifactId>citizens-main</artifactId>
       <version>2.0.29-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>

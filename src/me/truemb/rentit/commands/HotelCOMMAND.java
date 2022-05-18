@@ -28,6 +28,7 @@ import org.bukkit.inventory.meta.BookMeta;
 import com.sk89q.worldedit.math.BlockVector3;
 
 import me.truemb.rentit.database.AsyncSQL;
+import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PermissionsHandler;
@@ -756,7 +757,8 @@ public class HotelCOMMAND extends BukkitCommand {
 				}
 				
 				int catId = rentHandler.getCatID();
-				if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + ".usePermission") && this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catId + ".usePermission")) {
+				if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.usePermission.toString()) 
+						&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.usePermission.toString())) {
 					if(!p.hasPermission(this.instance.manageFile().getString("Permissions.category") + "." + rentHandler.getType().toString().toLowerCase() + "." + catId)) {
 						p.sendMessage(this.instance.getMessage("noPermsForCategory"));
 						return true;
@@ -778,7 +780,8 @@ public class HotelCOMMAND extends BukkitCommand {
 
 				this.instance.getAreaFileManager().setOwner(this.type, hotelId, ownerUUID);
 				
-	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catHandler.getCatID() + ".autoPaymentDefault") : true;
+	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) 
+	        			? this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) : true;
 	        	rentHandler.setAutoPayment(autoPaymentDefault);
 				this.instance.getHotelsSQL().setOwner(hotelId, uuid, p.getName(), autoPaymentDefault);
 				
@@ -898,7 +901,8 @@ public class HotelCOMMAND extends BukkitCommand {
 						return true;
 					}
 					
-					if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".disableDoorCommand") && this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".disableDoorCommand")) {
+					if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.disableDoorCommand.toString()) 
+							&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.disableDoorCommand.toString())) {
 						sender.sendMessage(this.instance.getMessage("doorCommandDisabled"));
 						return true;
 					}
@@ -942,7 +946,8 @@ public class HotelCOMMAND extends BukkitCommand {
 						return true;
 					}
 					
-					if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".disableDoorCommand") && this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".disableDoorCommand")) {
+					if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.disableDoorCommand.toString()) 
+							&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.disableDoorCommand.toString())) {
 						sender.sendMessage(this.instance.getMessage("doorCommandDisabled"));
 						return true;
 					}
@@ -1273,7 +1278,8 @@ public class HotelCOMMAND extends BukkitCommand {
 		
 		rentHandler.reset();
 		
-    	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + ".autoPaymentDefault") : true;
+    	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) 
+    			? this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) : true;
     	rentHandler.setAutoPayment(autoPaymentDefault);
 		this.instance.getHotelsSQL().reset(hotelId, autoPaymentDefault); // Resets the Owner and Payment
 		this.instance.getAreaFileManager().setOwner(this.type, hotelId, null);

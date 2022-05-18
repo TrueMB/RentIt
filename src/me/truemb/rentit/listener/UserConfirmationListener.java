@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.handler.CategoryHandler;
@@ -116,7 +117,8 @@ public class UserConfirmationListener implements Listener {
 	        	
 	        	this.instance.getAreaFileManager().setOwner(RentTypes.SHOP, shopId, uuid);
 	        	
-	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + ".autoPaymentDefault") : true;
+	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) 
+	        			? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) : true;
 	        	rentHandler.setAutoPayment(autoPaymentDefault);
 	        	this.instance.getShopsSQL().setOwner(shopId, uuid, p.getName(), autoPaymentDefault);
 	        	
@@ -232,7 +234,8 @@ public class UserConfirmationListener implements Listener {
 
 	        	this.instance.getAreaFileManager().setOwner(RentTypes.HOTEL, hotelId, uuid);
 	        	
-	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catHandler.getCatID() + ".autoPaymentDefault") ? this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catHandler.getCatID() + ".autoPaymentDefault") : true;
+	        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) 
+	        			? this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + catHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) : true;
 	        	rentHandler.setAutoPayment(autoPaymentDefault);
 	        	this.instance.getHotelsSQL().setOwner(hotelId, uuid, p.getName(), autoPaymentDefault);
 	        	

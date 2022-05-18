@@ -63,7 +63,7 @@ public class ShopBuyOrSellListener implements Listener{
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return;
 				}
 				
@@ -74,7 +74,7 @@ public class ShopBuyOrSellListener implements Listener{
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return;
 				}
 				
