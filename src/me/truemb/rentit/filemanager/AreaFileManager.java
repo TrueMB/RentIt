@@ -3,6 +3,7 @@ package me.truemb.rentit.filemanager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -260,14 +261,16 @@ public class AreaFileManager {
 
 	public Map<String, List<String>> getAdvancedChests(RentTypes type, int id) {
 		YamlConfiguration cfg = this.config;
-		String path = type.toString().toUpperCase() + "." + id;
+		String path = type.toString().toUpperCase() + "." + id + ".AdvancedChests";
 
-		Set<String> keys = cfg.getConfigurationSection(path + ".AdvancedChests").getKeys(false);
+		Set<String> keys = cfg.getConfigurationSection(path) != null
+				? cfg.getConfigurationSection(path).getKeys(false)
+				: Collections.emptySet();
 
 		return keys.stream()
 				.collect(Collectors.toMap(
 						e -> e,
-						e -> (List<String>)cfg.getList(path + ".AdvancedChests." + e))
+						e -> cfg.getStringList(path + "." + e))
 				);
 	}
 }
