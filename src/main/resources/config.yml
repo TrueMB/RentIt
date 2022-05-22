@@ -143,12 +143,18 @@ Options:
         line2: '&f%owner%s'
         line3: '&6&lHotelroom'
         line4: ''
-# Placeholder default Values, if nothing was found
 PlaceholderAPI:
+  # Placeholder Results
+  values:
+    true: 'true'
+    false: 'false'
+  # Placeholder default Values, if nothing was found
   default:
     currentId: '-1'
     currentType: 'unknown'
     currentOwner: 'unknown'
+    noShopFound: '-1'
+    noHotelFound: '-1'
 #Permissions for the Shop/Hotelroom Owner to give a player
 # Fill -> Allows Players to interact with your Shop Chest
 # Buy -> add buy Items - That you want from other players

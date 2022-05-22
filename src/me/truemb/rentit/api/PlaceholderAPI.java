@@ -3,6 +3,7 @@ package me.truemb.rentit.api;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -87,7 +88,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 
         for(RentTypes types : RentTypes.values()) {
             if(identifier.equalsIgnoreCase("player_has" + types.toString()))
-            	return pHandler != null && pHandler.getOwningList(types).size() > 0 ? "true" : "false";
+            	return pHandler != null && pHandler.getOwningList(types).size() > 0 ? this.instance.manageFile().getString("PlaceholderAPI.values.true") : this.instance.manageFile().getString("PlaceholderAPI.values.false");
             	
             else if(identifier.equalsIgnoreCase("player_" + types.toString())) {
             	if(pHandler != null && pHandler.getOwningList(types).size() > 0) {
@@ -95,7 +96,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
             		if(typeHandler != null)
             			return typeHandler.getAlias() != null ? typeHandler.getAlias() : String.valueOf(typeHandler.getID());
             	}else
-            		return "-1";
+            		return this.instance.manageFile().getString("PlaceholderAPI.default.no" + StringUtils.capitalize(types.toString().toLowerCase()) + "Found");
             }
             
             //Check first the category. Otherwise the non category one will be triggert first, since the start is identical.
@@ -104,9 +105,9 @@ public class PlaceholderAPI extends PlaceholderExpansion{
                 if(idString.matches("[0-9]+")){
                 	int catId = Integer.parseInt(idString);
                 	Collection<RentTypeHandler> free = this.instance.getMethodes().getFreeRentTypesOfCategory(types, catId);
-               		return free != null && free.size() > 0 ? "true" : "false";
+               		return free != null && free.size() > 0 ? this.instance.manageFile().getString("PlaceholderAPI.values.true") : this.instance.manageFile().getString("PlaceholderAPI.values.false");
                	}else
-            		return "-1";
+            		return this.instance.manageFile().getString("PlaceholderAPI.default.no" + StringUtils.capitalize(types.toString().toLowerCase()) + "Found");
                	
            } else if(identifier.toLowerCase().startsWith("free" + types.toString().toLowerCase() + "_")){
             	String idString = identifier.replace("free" + types.toString().toLowerCase() + "_", "");
@@ -114,10 +115,10 @@ public class PlaceholderAPI extends PlaceholderExpansion{
             		int id = Integer.parseInt(idString);
             		return this.instance.getMethodes().getTypeHandler(types, id) != null && !this.instance.getMethodes().getTypeHandler(types, id).isOwned() ? "true" : "false";
             	}else
-            		return "-1";
+            		return this.instance.manageFile().getString("PlaceholderAPI.default.no" + StringUtils.capitalize(types.toString().toLowerCase()) + "Found");
            } else if(identifier.toLowerCase().startsWith("free" + types.toString().toLowerCase())){
            		Collection<RentTypeHandler> free = this.instance.getMethodes().getFreeRentTypes(types);
-          		return free != null && free.size() > 0 ? "true" : "false";
+          		return free != null && free.size() > 0 ? this.instance.manageFile().getString("PlaceholderAPI.values.true") : this.instance.manageFile().getString("PlaceholderAPI.values.false");
             }
         }
         
