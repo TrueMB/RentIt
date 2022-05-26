@@ -28,6 +28,9 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.SideEffect.State;
+import com.sk89q.worldedit.util.SideEffectSet;
 
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.main.Main;
@@ -69,7 +72,7 @@ public class BackupManager {
 					ex.printStackTrace();
 				}
 				
-				try (@SuppressWarnings("deprecation") //TO SUPPORT LOWERE WORLDEDIT VERSIONS
+				try (@SuppressWarnings("deprecation") //TO SUPPORT LOWER WORLDEDIT VERSIONS
 				ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
 					writer.write(clipboard);
 				} catch (IOException ex) {
@@ -106,8 +109,13 @@ public class BackupManager {
 		
 		        com.sk89q.worldedit.world.World weWorld = BukkitAdapter.adapt(world);
 		        
-		        
 		        try (EditSession editSession = WorldEdit.getInstance().newEditSession(weWorld)) {
+		        	
+		        	SideEffectSet sideEffects = SideEffectSet.defaults()
+			        	.with(SideEffect.NEIGHBORS, State.OFF);
+		        	
+		        	editSession.setSideEffectApplier(sideEffects);
+		        	
 		            Operation operation = new ClipboardHolder(clipboard)
 		                    .createPaste(editSession)
 		                    .to(min)
@@ -115,6 +123,7 @@ public class BackupManager {
 		                    .copyEntities(true)
 		                    .build();
 		            Operations.complete(operation);
+		        	editSession.close();
 		        }catch (WorldEditException ex) {
 		            ex.printStackTrace();
 			    }
