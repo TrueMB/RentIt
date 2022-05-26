@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -146,7 +147,11 @@ public class SignListener implements Listener{
 			for (BlockFace face : faces) {
 				Block signBlock = b.getRelative(face);
 				if(signBlock.getState() instanceof Sign) {
-					this.checkIfSign(e, p, signBlock);
+					Sign sign = (Sign) signBlock.getState();
+					BlockFace blockFace = ((Directional) sign.getBlockData()).getFacing();
+					if(blockFace == face) {
+						this.checkIfSign(e, p, signBlock);
+					}
 				}
 			}
 		}
