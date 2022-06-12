@@ -335,9 +335,6 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 
 				UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
-				//ItemStack[] contents = rentHandler.getSellInv() != null ? rentHandler.getSellInv().getContents() : null;
-				//if(ownerUUID != null && contents != null)
-				//	this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId, contents);
 				
 				if(ownerUUID != null)
 					instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);

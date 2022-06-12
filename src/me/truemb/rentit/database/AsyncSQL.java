@@ -73,7 +73,19 @@ public class AsyncSQL {
 				}
 			});
 		} else {
-			sql.queryUpdate("ALTER TABLE " + table + " ADD COLUMN IF NOT EXISTS " + name + " " + type + ";");
+			//sql.queryUpdate("ALTER TABLE " + table + " ADD COLUMN IF NOT EXISTS " + name + " " + type + ";");
+			sql.prepareStatement("SHOW COLUMNS FROM `" + table + "` LIKE '" + name + "'", new Consumer<ResultSet>() {
+				
+				@Override
+				public void accept(ResultSet rs) {
+					try {
+						if(!rs.next()) //COLUMN DOESNT EXISTS
+							sql.queryUpdate("ALTER TABLE " + table + " ADD COLUMN " + name + " " + type + ";");
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 	}
 	
