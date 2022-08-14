@@ -148,9 +148,11 @@ public class SignListener implements Listener{
 				Block signBlock = b.getRelative(face);
 				if(signBlock.getState() instanceof Sign) {
 					Sign sign = (Sign) signBlock.getState();
-					BlockFace blockFace = ((Directional) sign.getBlockData()).getFacing();
-					if(blockFace == face) {
-						this.checkIfSign(e, p, signBlock);
+					if(sign.getBlockData() instanceof Directional) {
+						BlockFace blockFace = ((Directional) sign.getBlockData()).getFacing();
+						if(blockFace == face) {
+							this.checkIfSign(e, p, signBlock);
+						}
 					}
 				}
 			}
