@@ -22,7 +22,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -123,8 +123,9 @@ public class HotelAreaListener implements Listener {
 			e.setCancelled(canceled);
     }
 	
+
 	@EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityInteraction(PlayerInteractEntityEvent e) {
+    public void onEntityInteraction(PlayerInteractAtEntityEvent e) {
 		
 		if(e.getHand() != EquipmentSlot.HAND)
 			return;
