@@ -287,10 +287,6 @@ public class Main extends JavaPlugin {
 		
 		if(this.getVillagerUtils() != null)
 			this.getVillagerUtils().disableVillagers();
-		else if(this.getNpcUtils() != null) {
-			//TODO NO NEED, SINCE THEY WONT AUTOMATICLY SPAWN
-			//this.getNpcUtils().disableNPCs();
-		}
 
 		Bukkit.getScheduler().cancelTask(this.runnId);
 		
@@ -312,21 +308,14 @@ public class Main extends JavaPlugin {
 			public void run() {
 		
 				//DISABLING VILLAGERS
-				if(getVillagerUtils() != null)
-					getVillagerUtils().disableVillagers();
-				
-				//OR NPCS
-				else if(getNpcUtils() != null) {
-					//TODO NO NEED, SINCE THEY WONT AUTOMATICLY SPAWN
-					/*
+				if(getVillagerUtils() != null) {
 					Bukkit.getScheduler().runTask(plugin, new Runnable() {
 						
 						@Override
 						public void run() {
-							getNpcUtils().disableNPCs();
+							getVillagerUtils().disableVillagers();
 						}
 					});
-					*/
 				}
 				
 				//DISABLING PAYMENT RUNNABLE
