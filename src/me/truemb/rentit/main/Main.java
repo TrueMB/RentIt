@@ -51,6 +51,9 @@ import me.truemb.rentit.database.PermissionsSQL;
 import me.truemb.rentit.database.PlayerSettingsSQL;
 import me.truemb.rentit.database.ShopInventorySQL;
 import me.truemb.rentit.database.ShopsSQL;
+import me.truemb.rentit.economy.EconomySystem;
+import me.truemb.rentit.economy.PlayerPointsEconomy;
+import me.truemb.rentit.economy.VaultEconomy;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.filemanager.AreaFileManager;
 import me.truemb.rentit.filemanager.DoorFileManager;
@@ -88,16 +91,15 @@ import me.truemb.rentit.utils.UtilMethodes;
 import me.truemb.rentit.utils.VillagerUtils;
 import net.citizensnpcs.api.CitizensPlugin;
 import net.milkbowl.vault.chat.Chat;
-import net.milkbowl.vault.economy.Economy;
 
 public class Main extends JavaPlugin {
 	
-	private Economy econ;
 	private Chat chat;
 	private WorldEditPlugin worldEdit;
 	private WorldGuardPlugin worldGuard;
 	
 	private PermissionsAPI permsAPI;
+	private EconomySystem economySystem;
 
 	private AdvancedChestsUtils advancedChestsUtils;
 
@@ -177,8 +179,8 @@ public class Main extends JavaPlugin {
 		this.areaFM = new AreaFileManager(this);
 		this.doorFM = new DoorFileManager(this);
 		
-		this.setupEconomy();
 		this.permsAPI = new PermissionsAPI(this);
+		this.economySystem = this.manageFile().getBoolean("Options.usePlayerPoints") ? new PlayerPointsEconomy(this) : new VaultEconomy(this);
 		this.setupWorldEdit();
 		this.setupWorldGuard();
 		
@@ -493,22 +495,6 @@ public class Main extends JavaPlugin {
                 .checkNow(); // And check right now
         
 	}
-	
-	//MONEY
-	private boolean setupEconomy() {
-		if (this.getServer().getPluginManager().getPlugin("Vault") == null) {
-			this.getLogger().warning("Vault is missing!");
-			return false;
-	    }
-	    RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-	    if (rsp == null || rsp.getProvider() == null) {
-	    	this.getLogger().warning("An Economy Plugin is missing!");
-	    	return false;
-	    }
-	    this.getLogger().info(rsp.getPlugin().getName() + " Economy System was found.");
-	    econ = rsp.getProvider();
-	    return econ != null;
-	}
 
 	//CHAT
 	public boolean setupChat() {
@@ -609,8 +595,14 @@ public class Main extends JavaPlugin {
 	}
 
 	//ECONOMY
+	/*
 	public Economy getEconomy() {
 		return this.econ;
+	}
+*/
+
+	public EconomySystem getEconomySystem() {
+		return this.economySystem;
 	}
 
 	//PERMISSIONS

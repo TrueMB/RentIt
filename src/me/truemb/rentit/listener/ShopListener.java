@@ -99,16 +99,16 @@ public class ShopListener implements Listener {
 
 				}
 
-				if (!this.instance.getEconomy().has(p, price)) {
+				if (!this.instance.getEconomySystem().has(p, price)) {
 					p.sendMessage(instance.getMessage("notEnoughtMoney")
-							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(formatter.format(price - this.instance.getEconomy().getBalance(p)))));
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(formatter.format(price - this.instance.getEconomySystem().getBalance(p)))));
 					return;
 				}
 
 				copyItem.setAmount(amount); // SETS HOW MUCH THE PLAYER BOUGHT
 
-				this.instance.getEconomy().withdrawPlayer(p, price); // REMVOES THE MONEY FROM THE BUYER
-				this.instance.getEconomy().depositPlayer(owner, price); // GIVE SHOPOWNER THE MONEY
+				this.instance.getEconomySystem().withdraw(p, price); // REMVOES THE MONEY FROM THE BUYER
+				this.instance.getEconomySystem().deposit(owner, price); // GIVE SHOPOWNER THE MONEY
 
 				p.getInventory().addItem(copyItem); // GIVES BUYER THE ITEM
 				Bukkit.getPluginManager().callEvent(new ItemSellEvent(p, rentHandler, copyItem, price));
@@ -230,7 +230,7 @@ public class ShopListener implements Listener {
 				}
 
 
-				if (!this.instance.getEconomy().has(owner, price)) {
+				if (!this.instance.getEconomySystem().has(owner, price)) {
 					p.sendMessage(this.instance.getMessage("notEnoughtMoneyOwner"));
 					return;
 				}
@@ -243,8 +243,8 @@ public class ShopListener implements Listener {
 					this.instance.getChestsUtils().addItemToChestsInArea(shopId, copyItem);
 					this.instance.getMethodes().removeItemFromPlayer(p, copyItem);
 
-					this.instance.getEconomy().depositPlayer(p, price); // REMVOES THE MONEY FROM THE BUYER
-					this.instance.getEconomy().withdrawPlayer(owner, price); // GIVE SHOPOWNER THE MONEY
+					this.instance.getEconomySystem().deposit(p, price); // REMVOES THE MONEY FROM THE BUYER
+					this.instance.getEconomySystem().withdraw(owner, price); // GIVE SHOPOWNER THE MONEY
 
 					Bukkit.getPluginManager().callEvent(new ItemBuyEvent(p, rentHandler, copyItem, price));
 

@@ -3,5 +3,5 @@ author: TrueMB
 version: ${project.version}
 api-version: 1.16
 main: me.truemb.rentit.main.Main
-depend: [WorldEdit, Vault]
-softdepend: [WorldGuard, Citizens, Denizen, PlaceholderAPI, AdvancedChests]
+depend: [WorldEdit]
+softdepend: [WorldGuard, Citizens, Denizen, PlaceholderAPI, AdvancedChests, PlayerPoints, Vault]

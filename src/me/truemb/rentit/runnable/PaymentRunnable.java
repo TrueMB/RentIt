@@ -115,7 +115,7 @@ public class PaymentRunnable implements Runnable {
 				while (ts != null && ts.before(now)) {
 	
 					// ONLY IF USER WANTS MONTHLY AUTO PAY OTHERWISE RESET
-					if (!rentHandler.isAutoPayment() || !this.instance.getEconomy().has(p, costs)) {
+					if (!rentHandler.isAutoPayment() || !this.instance.getEconomySystem().has(p, costs)) {
 						
 						// RESET SHOP
 			        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) ? 
@@ -164,7 +164,7 @@ public class PaymentRunnable implements Runnable {
 						break; //NO PAYMENT WILL BE DONE, SHOP RESETED
 					}
 					
-					this.instance.getEconomy().withdrawPlayer(p, costs);
+					this.instance.getEconomySystem().withdraw(p, costs);
 					ts = UtilitiesAPI.addTimeToTimestamp(ts, time);
 				}
 				this.instance.getShopsSQL().setNextPayment(shopId, ts);
@@ -190,7 +190,7 @@ public class PaymentRunnable implements Runnable {
 				while (ts != null && ts.before(now)) {
 
 					// ONLY IF USER WANTS MONTHLY AUTO PAY OTHERWISE RESET
-					if (!rentHandler.isAutoPayment() || !this.instance.getEconomy().has(p, costs)) {
+					if (!rentHandler.isAutoPayment() || !this.instance.getEconomySystem().has(p, costs)) {
 
 						// RESET HOTEL
 			        	boolean autoPaymentDefault = this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.autoPaymentDefault.toString()) ? 
@@ -225,7 +225,7 @@ public class PaymentRunnable implements Runnable {
 					}
 
 					// EXTEND HOTEL RENT
-					this.instance.getEconomy().withdrawPlayer(p, costs);
+					this.instance.getEconomySystem().withdraw(p, costs);
 					ts = UtilitiesAPI.addTimeToTimestamp(ts, time);
 				}
 				

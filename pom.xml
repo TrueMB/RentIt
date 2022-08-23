@@ -92,6 +92,12 @@
 	        <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		
+		<!-- PlayerPoints -->
+	    <repository>
+	        <id>rosewood-repo</id>
+	        <url>https://repo.rosewooddev.io/repository/public/</url>
+	    </repository>
+			
 		<!-- UPDATE CHECKER -->
 	    <repository>
 	        <id>jeff-media-public</id>
@@ -191,6 +197,14 @@
 			<version>2.4</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- PlayerPoints -->
+	    <dependency>
+	        <groupId>org.black_ixx</groupId>
+	        <artifactId>playerpoints</artifactId>
+	        <version>3.2.4</version>
+		    <scope>provided</scope>
+	    </dependency>
 
 		<!-- PLACEHOLDER API -->
 		<dependency>

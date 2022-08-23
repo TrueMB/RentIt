@@ -1105,9 +1105,9 @@ public class ShopCOMMAND extends BukkitCommand {
 				int size = catHandler.getSize();
 				String time = catHandler.getTime();
 
-				if (!this.instance.getEconomy().has(p, costs)) {
+				if (!this.instance.getEconomySystem().has(p, costs)) {
 					p.sendMessage(this.instance.getMessage("notEnoughtMoney")
-							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomySystem().getBalance(p))));
 					return true;
 				}
 
@@ -1118,7 +1118,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				this.instance.getEconomy().withdrawPlayer(p, costs);
+				this.instance.getEconomySystem().withdraw(p, costs);
 
 				this.instance.getAreaFileManager().setOwner(this.type, shopId, uuid);
 				

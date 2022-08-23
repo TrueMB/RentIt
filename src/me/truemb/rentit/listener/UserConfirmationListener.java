@@ -107,13 +107,13 @@ public class UserConfirmationListener implements Listener {
 				double costs = catHandler.getPrice();
 				String time = catHandler.getTime();
 				
-	        	if(!this.instance.getEconomy().has(p, costs)) {
+	        	if(!this.instance.getEconomySystem().has(p, costs)) {
 	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney")
-	        				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
+	        				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomySystem().getBalance(p))));
 	        		return;
 	        	}
 
-        		this.instance.getEconomy().withdrawPlayer(p, costs);
+        		this.instance.getEconomySystem().withdraw(p, costs);
 	        	
 	        	this.instance.getAreaFileManager().setOwner(RentTypes.SHOP, shopId, uuid);
 	        	
@@ -224,13 +224,13 @@ public class UserConfirmationListener implements Listener {
   	        	double costs = catHandler.getPrice();
 	        	String time = catHandler.getTime();
 	        	
-	        	if(!this.instance.getEconomy().has(p, costs)) {
+	        	if(!this.instance.getEconomySystem().has(p, costs)) {
 	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney")
-	        				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
+	        				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomySystem().getBalance(p))));
 	        		return;
 	        	}
 
-        		this.instance.getEconomy().withdrawPlayer(p, costs);
+        		this.instance.getEconomySystem().withdraw(p, costs);
 
 	        	this.instance.getAreaFileManager().setOwner(RentTypes.HOTEL, hotelId, uuid);
 	        	

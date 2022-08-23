@@ -114,7 +114,7 @@ public class RentTimeClickListener implements Listener{
 				double costs = catHandler.getPrice();
 				String time = catHandler.getTime();
 				
-		    	if(this.instance.getEconomy().has(p, costs)) {
+		    	if(this.instance.getEconomySystem().has(p, costs)) {
 
 
 					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catId + "." + CategorySettings.maxRentExtendAmount.toString())) {
@@ -135,7 +135,7 @@ public class RentTimeClickListener implements Listener{
 		    		
 		    		
 		    		//EXTEND SHOP
-					this.instance.getEconomy().withdrawPlayer(p, costs);
+					this.instance.getEconomySystem().withdraw(p, costs);
 
 					Timestamp oldTs = rentHandler.getNextPayment();
 			    	Timestamp ts = UtilitiesAPI.addTimeToTimestamp(oldTs, time);
@@ -148,7 +148,7 @@ public class RentTimeClickListener implements Listener{
 			    	
 		    	}else {
 	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney")
-							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomySystem().getBalance(p))));
 	        		return;
 		    	}
 				
@@ -231,7 +231,7 @@ public class RentTimeClickListener implements Listener{
 				double costs = catHandler.getPrice();
 				String time = catHandler.getTime();
 				
-		    	if(this.instance.getEconomy().has(p, costs)) {
+		    	if(this.instance.getEconomySystem().has(p, costs)) {
 
 					if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + catId + "." + CategorySettings.maxRentExtendAmount.toString())) {
 						
@@ -250,7 +250,7 @@ public class RentTimeClickListener implements Listener{
 					}
 		    		
 		    		//VERL�NGER SHOP
-					this.instance.getEconomy().withdrawPlayer(p, costs);
+					this.instance.getEconomySystem().withdraw(p, costs);
 
 					Timestamp oldTs = rentHandler.getNextPayment();
 			    	Timestamp ts = UtilitiesAPI.addTimeToTimestamp(oldTs, time);
@@ -262,7 +262,7 @@ public class RentTimeClickListener implements Listener{
 	        		return;
 		    	}else {
 	        		p.sendMessage(this.instance.getMessage("notEnoughtMoney")
-	        				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomy().getBalance(p))));
+	        				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(costs - this.instance.getEconomySystem().getBalance(p))));
 	        		return;
 		    	}
 				
