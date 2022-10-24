@@ -527,7 +527,7 @@ Messages:
   reloadedError: '&4ERROR. &cRentIt was reloaded. But there was an error. Please look into the console.'
   reloaded: '&a&lRentIt was reloaded. But better use a Server Restart next time.'
   commandDisabled: '&cThis command was disabled in the config!'
-  rentitHelp: '&cPlease use &f/rentit reload&c.'
+  rentitHelp: '&cPlease use &f/rentit reload&c, &f/hotel &cor &f/shop&c.'
   playerDoesntExists: '&4ERROR. &cThis Player doesnt exists.'
   notANumber: '&4ERROR. &cThe Input is not a number.'
   notABoolean: '&4ERROR. &cPlease use as a value &fTrue/False&c.'
