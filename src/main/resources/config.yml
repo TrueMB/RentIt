@@ -18,21 +18,32 @@ Options:
   commands:
     freehotels:
       disabled: false
+      aliases:
+        - 'fh'
     freeshops:
       disabled: false
+      aliases:
+        - 'fs'
     hotel:
       disabled: false
+      aliases:
+        - 'h'
       disabledSubCommands:
         - ''
     shop:
       disabled: false
+      aliases:
+        - 's'
       disabledSubCommands: {}
     hotels:
       disabled: false
+      aliases: {}
     shops:
       disabled: false
+      aliases: {}
     rentit:
       disabled: false
+      aliases: {}
       disabledSubCommands: {}
   #Using Citizens NPCs as Shops. Otherwise Villagers
   useNPCs: true

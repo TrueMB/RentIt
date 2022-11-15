@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -48,7 +47,7 @@ public class HotelCOMMAND extends BukkitCommand {
 	private RentTypes type = RentTypes.HOTEL;
 
 	public HotelCOMMAND(Main plugin) {
-		super("hotel", "Hotel Main Command", null, Arrays.asList("h"));
+		super("hotel", "Hotel Main Command", null, plugin.manageFile().getStringList("Options.commands.hotel.aliases"));
 		this.instance = plugin;
 
 		subCommands.add("users");

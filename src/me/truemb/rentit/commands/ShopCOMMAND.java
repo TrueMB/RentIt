@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -53,7 +52,7 @@ public class ShopCOMMAND extends BukkitCommand {
 	private RentTypes type = RentTypes.SHOP;
 
 	public ShopCOMMAND(Main plugin) {
-		super("shop", "Shop Main Command", null, Arrays.asList("s"));
+		super("shop", "Shop Main Command", null, plugin.manageFile().getStringList("Options.commands.shop.aliases"));
 		this.instance = plugin;
 
 		subCommands.add("noinfo");
