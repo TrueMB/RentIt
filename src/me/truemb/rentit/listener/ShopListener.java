@@ -65,7 +65,7 @@ public class ShopListener implements Listener {
 
 			int shopId = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 
-			RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
+			RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
 
 			if (rentHandler == null)
 				return;
@@ -100,7 +100,7 @@ public class ShopListener implements Listener {
 				}
 
 				if (!this.instance.getEconomySystem().has(p, price)) {
-					p.sendMessage(instance.getMessage("notEnoughtMoney")
+					p.sendMessage(this.instance.getMessage("notEnoughtMoney")
 							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(formatter.format(price - this.instance.getEconomySystem().getBalance(p)))));
 					return;
 				}
@@ -177,7 +177,7 @@ public class ShopListener implements Listener {
 
 			int shopId = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 
-			RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
+			RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
 
 			if (rentHandler == null)
 				return;

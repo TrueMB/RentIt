@@ -233,7 +233,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
@@ -336,7 +336,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
 				
 				if(ownerUUID != null)
-					instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
+					this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
 
 				BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
 				BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
@@ -976,7 +976,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 					if (rentHandler == null) {
-						p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+						p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 						return true;
 					}
 					
@@ -1074,13 +1074,13 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				UUID ownerUUID = rentHandler.getOwnerUUID();
 				if (ownerUUID != null) {
-					p.sendMessage(instance.getMessage("shopAlreadyBought"));
+					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
 					return true;
 				}
 
@@ -1285,14 +1285,14 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 				this.instance.getMethodes().setSize(p, shopId, rentHandler.getCatID(), args[1]);
@@ -1328,7 +1328,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 
@@ -1378,15 +1378,24 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
+				}
+				
+				//Check if Item Blacklisted
+				List<String> blacklistedItems = this.instance.manageFile().getStringList("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".blacklistedItems");
+				for(String blacklistedMaterial : blacklistedItems) {
+					if(item.getType().toString().equalsIgnoreCase(blacklistedMaterial)) {
+						p.sendMessage(this.instance.getMessage("shopItemBlacklisted"));
+						return true;
+					}
 				}
 
 				item = ShopItemManager.createShopItem(this.instance, item, shopId, price); // UPDATED ITEM WITH PRICE IN IT
@@ -1451,14 +1460,14 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 
@@ -1517,14 +1526,14 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 
@@ -1733,14 +1742,14 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 

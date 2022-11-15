@@ -12,6 +12,7 @@ public enum CategorySettings {
 	doorsClosedAfterBuy,
 	allowUsersToMoveNPC,
 	reminderRentRunningOut,
-	npcShouldSit;
+	npcShouldSit,
+	blacklistedItems;
 	
 }

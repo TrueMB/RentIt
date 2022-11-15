@@ -83,6 +83,7 @@ Options:
   #allowUsersToMoveNPC -> Should a user without permission be able to move the npc with /shop setnpc
   #reminderRentRunningOut -> If the player goes/is online %time% before the rent is running out, then a notification will be send.
   #npcShouldSit -> Should the Shop NPC (Only Citizens) be sitting?
+  #blacklistedItems -> Items that should not be allowed to add to the category
   categorySettings:
     ShopCategory:
       99:
@@ -106,6 +107,9 @@ Options:
         ownerBypassLock: true
         doorsClosedUntilBuy: false
         doorsClosedAfterBuy: false
+        blacklistedItems:
+          - 'AIR'
+          - 'DIAMOND'
     HotelCategory:
       99:
         usePermission: false
@@ -620,6 +624,7 @@ Messages:
   shopRollbackIsAlreadyOpen: '&cSomebody is already in the Rollback Menu. Please try again later.'
   shopRollbackNoItems: '&cThere are no Items saved.'
   shopResignContract: '&6You resigned of the rent contract.'
+  shopItemBlacklisted: '&6You are not allowed to add that item to the Shop.'
   shopUserHelp:
     - '&6&m                  &6[ &f&lSHOP &6]&6&m                  '
     - '&f/shops &7- &6Shows all your owned Shops.'
@@ -806,4 +811,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 15
+ConfigVersion: 16
