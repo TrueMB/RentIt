@@ -535,6 +535,29 @@ GUI:
         displayName: '&cReturn'
         type: BARRIER
         lore: {}
+  searchInventory:
+    displayName: '&f&lSearch Result'
+    items:
+      shopItem:
+        displayName: '&6&lShop &f%alias%'
+        type: CHEST
+        lore:
+          - '&6Found your Item'
+          - ''
+          - '&fLeftclick for Teleport'
+          - '&fRightclick to open Shop'
+      nextSiteItem:
+        displayName: '&5Next Page'
+        type: PAPER
+        lore: {}
+      beforeSiteItem:
+        displayName: '&5Previous Page'
+        type: PAPER
+        lore: {}
+      returnItem:
+        displayName: '&cReturn'
+        type: BARRIER
+        lore: {}
 Messages:
   prefix: '&7[&6&lRent&fIt&7]'
   perm: '&cYou dont have enough Permissions!'
@@ -625,6 +648,7 @@ Messages:
   shopRollbackNoItems: '&cThere are no Items saved.'
   shopResignContract: '&6You resigned of the rent contract.'
   shopItemBlacklisted: '&6You are not allowed to add that item to the Shop.'
+  shopSearchNothingFound: '&cI couldn''t find a shop with such an item.'
   shopUserHelp:
     - '&6&m                  &6[ &f&lSHOP &6]&6&m                  '
     - '&f/shops &7- &6Shows all your owned Shops.'

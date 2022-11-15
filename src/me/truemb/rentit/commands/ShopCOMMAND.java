@@ -63,6 +63,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		subCommands.add("sellItem");
 		subCommands.add("buyItem");
 		subCommands.add("resign");
+		subCommands.add("search");
 		subCommands.add("help");
 
 		adminSubCommands.add("createCat");
@@ -1499,6 +1500,48 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 
 				this.setBuyItem(p, rentHandler, catHandler, item, price);
+				return true;
+
+			} else if (args[0].equalsIgnoreCase("search")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "search")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "search")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+				
+				Material m = null;
+				try {
+					m = Material.matchMaterial(args[1]);
+				} catch (NumberFormatException ex) {
+					p.sendMessage(this.instance.getMessage("notAMaterial"));
+					return true;
+				}
+
+				if (!this.instance.rentTypeHandlers.containsKey(this.type)) {
+					p.sendMessage(this.instance.getMessage("shopSearchNothingFound"));
+					return true;
+				}
+				HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
+				
+				List<Integer> foundShopIds = new ArrayList<>();
+				for(int shopId : typeHash.keySet()) {
+					RentTypeHandler handler = typeHash.get((Integer) shopId);
+					if(handler == null)
+						continue;
+					
+					int foundAmount = handler.getSellInv().all(m).size();
+					if(foundAmount > 0)
+						foundShopIds.add(handler.getID());
+				}
+
+				//TODO open Menu with all Shops
+				//foundShopIds
+				
 				return true;
 
 			}

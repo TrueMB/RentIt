@@ -68,7 +68,7 @@ import me.truemb.rentit.listener.AdminShopListener;
 import me.truemb.rentit.listener.CategoryGUIListener;
 import me.truemb.rentit.listener.HotelAreaListener;
 import me.truemb.rentit.listener.ItemBoughtListener;
-import me.truemb.rentit.listener.ItemSelledListener;
+import me.truemb.rentit.listener.ItemSoldListener;
 import me.truemb.rentit.listener.NPCShopListener;
 import me.truemb.rentit.listener.OwningListListener;
 import me.truemb.rentit.listener.PlayerCommandSendListener;
@@ -207,7 +207,7 @@ public class Main extends JavaPlugin {
 		new PlayerJoinListener(this);
 		new PlayerQuitListener(this);
 		new ItemBoughtListener(this);
-		new ItemSelledListener(this);
+		new ItemSoldListener(this);
 		new ShopAreaListener(this);
 		new HotelAreaListener(this);
 		new CategoryGUIListener(this);
