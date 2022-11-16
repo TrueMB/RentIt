@@ -33,6 +33,7 @@ import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;
+import me.truemb.rentit.gui.SearchResultGUI;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PermissionsHandler;
 import me.truemb.rentit.handler.PlayerHandler;
@@ -1539,9 +1540,8 @@ public class ShopCOMMAND extends BukkitCommand {
 						foundShopIds.add(handler.getID());
 				}
 
-				//TODO open Menu with all Shops
-				//foundShopIds
-				
+				this.instance.search.put(uuid, m);
+				p.openInventory(SearchResultGUI.getGUI(this.instance, uuid, 1, foundShopIds));
 				return true;
 
 			}
