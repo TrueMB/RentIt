@@ -12,17 +12,17 @@ import me.truemb.rentit.events.ItemSellEvent;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
 
-public class ItemSelledListener implements Listener {
+public class ItemSoldListener implements Listener {
 
 	private Main instance;
 
-	public ItemSelledListener(Main plugin) {
+	public ItemSoldListener(Main plugin) {
 		this.instance = plugin;
 		this.instance.getServer().getPluginManager().registerEvents(this, this.instance);
 	}
 
 	@EventHandler
-	public void onItemSelled(ItemSellEvent e) {
+	public void onItemSold(ItemSellEvent e) {
 
 		Player seller = e.getSeller();
 		RentTypeHandler rentHandler = e.getRentTypeHandler();

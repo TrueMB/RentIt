@@ -18,21 +18,32 @@ Options:
   commands:
     freehotels:
       disabled: false
+      aliases:
+        - 'fh'
     freeshops:
       disabled: false
+      aliases:
+        - 'fs'
     hotel:
       disabled: false
+      aliases:
+        - 'h'
       disabledSubCommands:
         - ''
     shop:
       disabled: false
+      aliases:
+        - 's'
       disabledSubCommands: {}
     hotels:
       disabled: false
+      aliases: {}
     shops:
       disabled: false
+      aliases: {}
     rentit:
       disabled: false
+      aliases: {}
       disabledSubCommands: {}
   #Using Citizens NPCs as Shops. Otherwise Villagers
   useNPCs: true
@@ -72,6 +83,7 @@ Options:
   #allowUsersToMoveNPC -> Should a user without permission be able to move the npc with /shop setnpc
   #reminderRentRunningOut -> If the player goes/is online %time% before the rent is running out, then a notification will be send.
   #npcShouldSit -> Should the Shop NPC (Only Citizens) be sitting?
+  #blacklistedItems -> Items that should not be allowed to add to the category
   categorySettings:
     ShopCategory:
       99:
@@ -95,6 +107,9 @@ Options:
         ownerBypassLock: true
         doorsClosedUntilBuy: false
         doorsClosedAfterBuy: false
+        blacklistedItems:
+          - 'AIR'
+          - 'DIAMOND'
     HotelCategory:
       99:
         usePermission: false
@@ -520,6 +535,29 @@ GUI:
         displayName: '&cReturn'
         type: BARRIER
         lore: {}
+  searchInventory:
+    displayName: '&f&lSearch Result'
+    items:
+      shopItem:
+        displayName: '&6&lShop &f%alias%'
+        type: CHEST
+        lore:
+          - '&6Found your Item'
+          - ''
+          - '&fLeftclick for Teleport'
+          - '&fRightclick to open Shop'
+      nextSiteItem:
+        displayName: '&5Next Page'
+        type: PAPER
+        lore: {}
+      beforeSiteItem:
+        displayName: '&5Previous Page'
+        type: PAPER
+        lore: {}
+      returnItem:
+        displayName: '&cReturn'
+        type: BARRIER
+        lore: {}
 Messages:
   prefix: '&7[&6&lRent&fIt&7]'
   perm: '&cYou dont have enough Permissions!'
@@ -527,7 +565,7 @@ Messages:
   reloadedError: '&4ERROR. &cRentIt was reloaded. But there was an error. Please look into the console.'
   reloaded: '&a&lRentIt was reloaded. But better use a Server Restart next time.'
   commandDisabled: '&cThis command was disabled in the config!'
-  rentitHelp: '&cPlease use &f/rentit reload&c.'
+  rentitHelp: '&cPlease use &f/rentit reload&c, &f/hotel &cor &f/shop&c.'
   playerDoesntExists: '&4ERROR. &cThis Player doesnt exists.'
   notANumber: '&4ERROR. &cThe Input is not a number.'
   notABoolean: '&4ERROR. &cPlease use as a value &fTrue/False&c.'
@@ -571,7 +609,7 @@ Messages:
   shopReseted: '&aThe ShopID &f%alias% &awas reseted.'
   shopDeleted: '&aThe ShopID &f%alias% &awas deleted.'
   shopItemBought: '&6You bought &f%amount%x %type% &6for &f%price%$&6.'
-  shopItemSelled: '&6You selled &f%amount%x %type% &6for &f%price%$&6.'
+  shopItemSold: '&6You sold &f%amount%x %type% &6for &f%price%$&6.'
   shopSignCreated: '&aThe Sign for the ShopID &f%alias% &awas created.'
   shopSignDeleted: '&aThe Sign for the ShopID &f%alias% &awas deleted.'
   shopCategoryUpdated: '&aYou updated the category &f%catAlias%&a.'
@@ -595,7 +633,7 @@ Messages:
   shopMessageNoInfoON: '&6You set the Transactions Informations to &aactive&6.'
   shopMessageNoInfoOFF: '&6You set the Transactions Informations to &cdeactive&6.'
   shopSellMessage: '&6The Player &f%player% &6has bought the Item &f%type% &6in your Shop.'
-  shopBuyMessage: '&6The Player &f%player% &6has selled the Item &f%type% &6to your Shop.'
+  shopBuyMessage: '&6The Player &f%player% &6has sold the Item &f%type% &6to your Shop.'
   shopDoorAdded: '&6The Door was added to the Shop: %alias%.'
   shopDoorRemoved: '&6The Door was removed from a Shop.'
   shopDoorNotFound: '&6The Door is not linked with a Shop.'
@@ -609,6 +647,8 @@ Messages:
   shopRollbackIsAlreadyOpen: '&cSomebody is already in the Rollback Menu. Please try again later.'
   shopRollbackNoItems: '&cThere are no Items saved.'
   shopResignContract: '&6You resigned of the rent contract.'
+  shopItemBlacklisted: '&6You are not allowed to add that item to the Shop.'
+  shopSearchNothingFound: '&cI couldn''t find a shop with such an item.'
   shopUserHelp:
     - '&6&m                  &6[ &f&lSHOP &6]&6&m                  '
     - '&f/shops &7- &6Shows all your owned Shops.'
@@ -795,4 +835,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 14
+ConfigVersion: 16

@@ -17,7 +17,7 @@ public class ShopsCOMMAND extends BukkitCommand{
 	private Main instance;
 	
 	public ShopsCOMMAND(Main plugin) {
-		super("shops", "Lists all Shops", null, Collections.emptyList());
+		super("shops", "Lists all Shops", null, plugin.manageFile().getStringList("Options.commands.shops.aliases"));
 		this.instance = plugin;
 	}
 

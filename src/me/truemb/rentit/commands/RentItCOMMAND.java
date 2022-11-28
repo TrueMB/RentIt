@@ -1,7 +1,6 @@
 package me.truemb.rentit.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
@@ -15,7 +14,7 @@ public class RentItCOMMAND extends BukkitCommand {
 	private List<String> adminSubCommands = new ArrayList<>();
 	
 	public RentItCOMMAND(Main plugin) {
-		super("rentit", "For all important commands", null, Collections.emptyList());
+		super("rentit", "For all important commands", null, plugin.manageFile().getStringList("Options.commands.rentit.aliases"));
 		this.instance = plugin;
 
 		this.adminSubCommands.add("reload");

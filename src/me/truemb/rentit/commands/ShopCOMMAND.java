@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +33,7 @@ import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;
+import me.truemb.rentit.gui.SearchResultGUI;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PermissionsHandler;
 import me.truemb.rentit.handler.PlayerHandler;
@@ -53,7 +53,7 @@ public class ShopCOMMAND extends BukkitCommand {
 	private RentTypes type = RentTypes.SHOP;
 
 	public ShopCOMMAND(Main plugin) {
-		super("shop", "Shop Main Command", null, Arrays.asList("s"));
+		super("shop", "Shop Main Command", null, plugin.manageFile().getStringList("Options.commands.shop.aliases"));
 		this.instance = plugin;
 
 		subCommands.add("noinfo");
@@ -64,6 +64,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		subCommands.add("sellItem");
 		subCommands.add("buyItem");
 		subCommands.add("resign");
+		subCommands.add("search");
 		subCommands.add("help");
 
 		adminSubCommands.add("createCat");
@@ -234,7 +235,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
@@ -337,7 +338,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
 				
 				if(ownerUUID != null)
-					instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
+					this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
 
 				BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
 				BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
@@ -977,7 +978,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 					if (rentHandler == null) {
-						p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+						p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 						return true;
 					}
 					
@@ -1075,13 +1076,13 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				UUID ownerUUID = rentHandler.getOwnerUUID();
 				if (ownerUUID != null) {
-					p.sendMessage(instance.getMessage("shopAlreadyBought"));
+					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
 					return true;
 				}
 
@@ -1286,14 +1287,14 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 				this.instance.getMethodes().setSize(p, shopId, rentHandler.getCatID(), args[1]);
@@ -1329,7 +1330,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 
@@ -1379,15 +1380,24 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
+				}
+				
+				//Check if Item Blacklisted
+				List<String> blacklistedItems = this.instance.manageFile().getStringList("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".blacklistedItems");
+				for(String blacklistedMaterial : blacklistedItems) {
+					if(item.getType().toString().equalsIgnoreCase(blacklistedMaterial)) {
+						p.sendMessage(this.instance.getMessage("shopItemBlacklisted"));
+						return true;
+					}
 				}
 
 				item = ShopItemManager.createShopItem(this.instance, item, shopId, price); // UPDATED ITEM WITH PRICE IN IT
@@ -1452,14 +1462,14 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 
@@ -1493,6 +1503,47 @@ public class ShopCOMMAND extends BukkitCommand {
 				this.setBuyItem(p, rentHandler, catHandler, item, price);
 				return true;
 
+			} else if (args[0].equalsIgnoreCase("search")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "search")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "search")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+				
+				Material m = null;
+				try {
+					m = Material.matchMaterial(args[1]);
+				} catch (NumberFormatException ex) {
+					p.sendMessage(this.instance.getMessage("notAMaterial"));
+					return true;
+				}
+
+				if (!this.instance.rentTypeHandlers.containsKey(this.type)) {
+					p.sendMessage(this.instance.getMessage("shopSearchNothingFound"));
+					return true;
+				}
+				HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
+				
+				List<Integer> foundShopIds = new ArrayList<>();
+				for(int shopId : typeHash.keySet()) {
+					RentTypeHandler handler = typeHash.get((Integer) shopId);
+					if(handler == null)
+						continue;
+					
+					int foundAmount = handler.getSellInv().all(m).size();
+					if(foundAmount > 0)
+						foundShopIds.add(handler.getID());
+				}
+
+				this.instance.search.put(uuid, m);
+				p.openInventory(SearchResultGUI.getGUI(this.instance, uuid, 1, foundShopIds));
+				return true;
+
 			}
 		} else if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("buyitem")) {
@@ -1518,14 +1569,14 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 
@@ -1734,14 +1785,14 @@ public class ShopCOMMAND extends BukkitCommand {
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
-					p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
-					p.sendMessage(instance.getMessage("categoryError"));
+					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
 

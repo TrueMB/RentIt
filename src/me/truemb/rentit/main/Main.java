@@ -15,6 +15,7 @@ import me.truemb.rentit.utils.chests.ChestsUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -68,13 +69,14 @@ import me.truemb.rentit.listener.AdminShopListener;
 import me.truemb.rentit.listener.CategoryGUIListener;
 import me.truemb.rentit.listener.HotelAreaListener;
 import me.truemb.rentit.listener.ItemBoughtListener;
-import me.truemb.rentit.listener.ItemSelledListener;
+import me.truemb.rentit.listener.ItemSoldListener;
 import me.truemb.rentit.listener.NPCShopListener;
 import me.truemb.rentit.listener.OwningListListener;
 import me.truemb.rentit.listener.PlayerCommandSendListener;
 import me.truemb.rentit.listener.PlayerJoinListener;
 import me.truemb.rentit.listener.PlayerQuitListener;
 import me.truemb.rentit.listener.RentTimeClickListener;
+import me.truemb.rentit.listener.SearchResultGUIListener;
 import me.truemb.rentit.listener.ShopAreaListener;
 import me.truemb.rentit.listener.ShopBuyOrSellListener;
 import me.truemb.rentit.listener.ShopListener;
@@ -134,13 +136,15 @@ public class Main extends JavaPlugin {
 	public HashMap<UUID, PlayerHandler> playerHandlers = new HashMap<>(); // UUID = playerUUID - SettingsHandler
 	public HashMap<RentTypes, HashMap<Integer, CategoryHandler>> catHandlers = new HashMap<>(); // RentType = hotel/shop - int = catID -  CategoryHandler
 	public HashMap<RentTypes, HashMap<Integer, RentTypeHandler>> rentTypeHandlers = new HashMap<>(); // RentType = hotel/shop - int = shop/hotel ID - RentTypeHandler
+
+	public HashMap<UUID, Material> search = new HashMap<>(); 
 	
 	//NAMESPACES
 	public NamespacedKey guiItem = new NamespacedKey(this, "guiItem");
 	public NamespacedKey idKey = new NamespacedKey(this, "ID");
 	public NamespacedKey siteKey = new NamespacedKey(this, "Site");
 
-	private static final int configVersion = 14;
+	private static final int configVersion = 16;
     private static final String SPIGOT_RESOURCE_ID = "90195";
     private static final int BSTATS_PLUGIN_ID = 12060;
     
@@ -202,12 +206,13 @@ public class Main extends JavaPlugin {
 		new SignListener(this);
 		new UserConfirmationListener(this);
 		new RentTimeClickListener(this);
+		new SearchResultGUIListener(this);
 		new OwningListListener(this);
 		new PlayerCommandSendListener(this);
 		new PlayerJoinListener(this);
 		new PlayerQuitListener(this);
 		new ItemBoughtListener(this);
-		new ItemSelledListener(this);
+		new ItemSoldListener(this);
 		new ShopAreaListener(this);
 		new HotelAreaListener(this);
 		new CategoryGUIListener(this);

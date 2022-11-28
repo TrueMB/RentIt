@@ -1,7 +1,5 @@
 package me.truemb.rentit.commands;
 
-import java.util.Collections;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
@@ -15,7 +13,7 @@ public class FreeShopsCOMMAND extends BukkitCommand{
 	private Main instance;
 	
 	public FreeShopsCOMMAND(Main plugin) {
-		super("freeshops", "Lists all free Shops", null, Collections.emptyList());
+		super("freeshops", "Lists all free Shops", null, plugin.manageFile().getStringList("Options.commands.freeshops.aliases"));
 		this.instance = plugin;
 	}
 
