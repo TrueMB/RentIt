@@ -1979,6 +1979,9 @@ public class ShopCOMMAND extends BukkitCommand {
 		this.instance.getDoorFileManager().closeDoors(this.type, shopId);
 		this.instance.getAreaFileManager().unsetDoorClosed(this.type, shopId);
 		this.instance.getMethodes().updateSign(this.type, shopId);
+		
+		this.instance.getShopsInvSQL().updateSellInv(shopId, null);
+		this.instance.getShopsInvSQL().updateBuyInv(shopId, null);
 
 	}
 	
