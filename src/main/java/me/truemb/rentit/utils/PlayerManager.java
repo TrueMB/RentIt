@@ -58,7 +58,6 @@ public class PlayerManager {
 		    // Convert to a JSON object to print data
 		    JsonElement root = JsonParser.parseReader(new InputStreamReader((InputStream) request.getContent())); //Convert the input stream to a json element
 		    JsonObject rootobj = root.getAsJsonObject(); //May be an array, may be an object. 
-		    //String zipcode = rootobj.get("zip_code").getAsString(); //just grab the zipcode
 			return rootobj;
 	}
 	
@@ -72,7 +71,6 @@ public class PlayerManager {
 	    // Convert to a JSON object to print data
 	    JsonElement root = JsonParser.parseReader(new InputStreamReader((InputStream) request.getContent())); //Convert the input stream to a json element
 	    JsonArray rootobj = root.getAsJsonArray(); //May be an array, may be an object. 
-	    //String zipcode = rootobj.get("zip_code").getAsString(); //just grab the zipcode
 		return rootobj;
 }
 	
