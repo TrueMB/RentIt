@@ -1072,7 +1072,7 @@ public class HotelCOMMAND extends BukkitCommand {
 
 				if (hotelId < 0) {
 					// PLAYER NOT IN SHOP AREA, CANT FIND ID
-					p.sendMessage(this.instance.getMessage("notInShop"));
+					p.sendMessage(this.instance.getMessage("notInHotel"));
 					return true;
 				}
 
