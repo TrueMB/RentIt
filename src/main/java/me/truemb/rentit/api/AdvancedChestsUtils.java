@@ -6,15 +6,14 @@ import me.truemb.rentit.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Directional;
 import us.lynuxcraft.deadsilenceiv.advancedchests.AdvancedChestsAPI;
 import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
-import us.lynuxcraft.deadsilenceiv.advancedchests.chest.ChestBuilder;
+import us.lynuxcraft.deadsilenceiv.advancedchests.chest.ChestType;
 import us.lynuxcraft.deadsilenceiv.advancedchests.utils.LocationUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -47,19 +46,12 @@ public class AdvancedChestsUtils {
                     AdvancedChest chest = AdvancedChestsAPI.getChestManager().getAdvancedChest(location);
 
                     if (chest != null) {
-                        /*
-                         * If there is an advanced chest in the given location, we recover the location
-                         * directional, so we can decorate our serialized data with the chest facing.
-                         */
-                        Directional d = (Directional) location.getBlock().getBlockData();
-                        String loc = LocationUtils.serializeLoc(location) + ":@f;" + d.getFacing().name();
-
-                        String type = chest.getType();
+                        String type = chest.getConfigType();
                         if (!chests.containsKey(type)) {
                             chests.put(type, new ArrayList<>());
                         }
 
-                        chests.get(type).add(loc);
+                        chests.get(type).add(LocationUtils.serializeLoc(location));
                     }
                 }
 
@@ -73,17 +65,11 @@ public class AdvancedChestsUtils {
 
         this.instance.getAreaFileManager().getAdvancedChests(type, id)
                 .forEach((chest, locations) -> {
+                    ChestType chestType = AdvancedChestsAPI.getDataManager().getChestType(chest);
                     int size = AdvancedChestsAPI.getDataManager().getChestSize(chest);
 
                     locations.forEach(location -> {
-                        /*
-                         * Split the serialized location to recover the facing data
-                         */
-                        String[] loc = location.split(":@f;");
-                        AdvancedChest adv = new ChestBuilder(size, chest, loc[0]).build();
-                        Directional d = (Directional) adv.getLocation().getBlock().getBlockData();
-                        d.setFacing(BlockFace.valueOf(loc[1]));
-                        adv.getLocation().getBlock().setBlockData(d);
+                        chestType.newBuilder(size, chest, location, new HashSet<>()).build();
                     });
                 });
     }
