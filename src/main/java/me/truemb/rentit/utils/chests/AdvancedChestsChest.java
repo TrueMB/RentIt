@@ -5,8 +5,10 @@ import org.bukkit.inventory.ItemStack;
 import us.lynuxcraft.deadsilenceiv.advancedchests.AdvancedChestsAPI;
 import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AdvancedChestsChest extends SupportedChest {
     private final AdvancedChest chest;
@@ -27,7 +29,7 @@ public class AdvancedChestsChest extends SupportedChest {
 
     @Override
     public void add(ItemStack item) {
-        AdvancedChestsAPI.addItemToChest(this.chest, item);
+        this.chest.getChestType().getDispenserService().dispenseItemToChest(this.chest, item);
     }
 
     @Override
@@ -39,7 +41,11 @@ public class AdvancedChestsChest extends SupportedChest {
 
     @Override
     public List<ItemStack> getAllItems() {
-        return this.chest.getAllItems();
+        return Arrays.stream(this.chest.getOrderedPages())
+                        .flatMap((chestPage) -> Arrays.stream(chestPage.getItems())
+                                .filter(item -> item instanceof ItemStack)
+                                .map(o -> (ItemStack) o))
+                        .toList();
     }
 
     @Override
@@ -49,6 +55,6 @@ public class AdvancedChestsChest extends SupportedChest {
 
     @Override
     public void remove() {
-        this.chest.remove(null, false);
+        this.chest.remove(null, null, false);
     }
 }
