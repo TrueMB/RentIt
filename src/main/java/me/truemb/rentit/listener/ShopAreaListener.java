@@ -269,7 +269,7 @@ public class ShopAreaListener implements Listener {
 
 	    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(this.type, shopId);
 
-		if (rentHandler == null)
+		if (rentHandler == null || rentHandler.getOwnerUUID() == null)
 			return false;
 
 		if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.shop.build")) {
@@ -277,7 +277,7 @@ public class ShopAreaListener implements Listener {
 				p.sendMessage(this.instance.getMessage("featureDisabled"));
 			return true;
 		}
-
+		
 		if(this.instance.getWorldGuard() != null) {
 			if(!this.instance.getMethodes().isMemberFromRegion(this.type, shopId, p.getWorld(), uuid)) {
 				if(withMessages)
@@ -287,7 +287,7 @@ public class ShopAreaListener implements Listener {
 			return false;
 		}
 
-		if(!this.instance.getAreaFileManager().isOwner(this.type, shopId, uuid) && !this.instance.getAreaFileManager().isMember(this.type, shopId, uuid)) {
+		if(!rentHandler.getOwnerUUID().equals(uuid) && !this.instance.getAreaFileManager().isMember(this.type, shopId, uuid)) {
 			if(withMessages)
 				p.sendMessage(this.instance.getMessage("notShopOwner"));
 			return true;
