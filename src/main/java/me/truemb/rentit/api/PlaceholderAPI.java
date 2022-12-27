@@ -1,5 +1,8 @@
 package me.truemb.rentit.api;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -7,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
@@ -85,14 +89,55 @@ public class PlaceholderAPI extends PlaceholderExpansion{
         }
 
         for(RentTypes types : RentTypes.values()) {
+        	
+        	//Does Player have a shop/hotel?
             if(identifier.equalsIgnoreCase("player_has" + types.toString()))
             	return pHandler != null && pHandler.getOwningList(types).size() > 0 ? this.instance.manageFile().getString("PlaceholderAPI.values.true") : this.instance.manageFile().getString("PlaceholderAPI.values.false");
+
+            else if(identifier.toLowerCase().startsWith("player_" + types.toString().toLowerCase())) {
+            	String option = identifier.toLowerCase().replace("player_" + types.toString().toLowerCase(), "");
             	
-            else if(identifier.equalsIgnoreCase("player_" + types.toString())) {
             	if(pHandler != null && pHandler.getOwningList(types).size() > 0) {
             		RentTypeHandler typeHandler = this.instance.getMethodes().getTypeHandler(types, pHandler.getOwningList(types).get(0));
-            		if(typeHandler != null)
-            			return typeHandler.getAlias() != null ? typeHandler.getAlias() : String.valueOf(typeHandler.getID());
+            		if(typeHandler != null) {
+            			
+                        //Gets the first Alias/Id, if the player owns at least one shop/hotel
+            			if(option == null || option.equals(""))
+            				return typeHandler.getAlias() != null ? typeHandler.getAlias() : String.valueOf(typeHandler.getID());
+            			
+            			option = option.substring(1);
+            			
+            			int catId = typeHandler.getCatID();
+            			CategoryHandler catHandler = this.instance.getMethodes().getCategory(types, catId);
+
+						DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+            			Timestamp nextPayment = typeHandler.getNextPayment();
+            			
+        			    double price = catHandler.getPrice();
+        			    int size = catHandler.getSize();
+        			    String timeS = catHandler.getTime();
+        			    
+        			    //Gets the Category Id of the shop/hotel
+        			    if(option.equalsIgnoreCase("category")) {
+            				return String.valueOf(catId);
+
+            			//Gets the Category Id of the shop/hotel
+            			}else if(option.equalsIgnoreCase("expiration")) {
+            				return df.format(nextPayment);
+            				
+            			//Gets the Price
+            			}else if(option.equalsIgnoreCase("price")) {
+            				return String.valueOf(price);
+            				
+            			//Gets the Size
+            			}else if(option.equalsIgnoreCase("size")) {
+            				return String.valueOf(size);
+            			
+            			//Gets the rent duration
+            			}else if(option.equalsIgnoreCase("duration")) {
+            				return timeS;
+            			}
+            		}
             	}else
             		return this.instance.manageFile().getString("PlaceholderAPI.default.no" + StringUtils.capitalize(types.toString().toLowerCase()) + "Found");
             }
@@ -106,7 +151,8 @@ public class PlaceholderAPI extends PlaceholderExpansion{
                		return free != null && free.size() > 0 ? this.instance.manageFile().getString("PlaceholderAPI.values.true") : this.instance.manageFile().getString("PlaceholderAPI.values.false");
                	}else
             		return this.instance.manageFile().getString("PlaceholderAPI.default.no" + StringUtils.capitalize(types.toString().toLowerCase()) + "Found");
-               	
+           
+           //Is the specific shop/hotel free?
            } else if(identifier.toLowerCase().startsWith("free" + types.toString().toLowerCase() + "_")){
             	String idString = identifier.replace("free" + types.toString().toLowerCase() + "_", "");
             	if(idString.matches("[0-9]+")){
@@ -114,9 +160,19 @@ public class PlaceholderAPI extends PlaceholderExpansion{
             		return this.instance.getMethodes().getTypeHandler(types, id) != null && !this.instance.getMethodes().getTypeHandler(types, id).isOwned() ? "true" : "false";
             	}else
             		return this.instance.manageFile().getString("PlaceholderAPI.default.no" + StringUtils.capitalize(types.toString().toLowerCase()) + "Found");
+            	
+           //Are there still free shops/hotels?
            } else if(identifier.toLowerCase().startsWith("free" + types.toString().toLowerCase())){
            		Collection<RentTypeHandler> free = this.instance.getMethodes().getFreeRentTypes(types);
-          		return free != null && free.size() > 0 ? this.instance.manageFile().getString("PlaceholderAPI.values.true") : this.instance.manageFile().getString("PlaceholderAPI.values.false");
+           		int amount = free != null ? free.size() : 0;
+           		
+           		//Returns the number, how many are free
+           		if(identifier.equalsIgnoreCase("free" + types.toString() + "_amount")) {
+           			return String.valueOf(amount);
+           		}
+           		
+           		//Boolean if at least one is free
+          		return amount > 0 ? this.instance.manageFile().getString("PlaceholderAPI.values.true") : this.instance.manageFile().getString("PlaceholderAPI.values.false");
             }
         }
         

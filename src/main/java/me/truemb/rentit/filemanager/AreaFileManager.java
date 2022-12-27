@@ -87,6 +87,7 @@ public class AreaFileManager {
 		return this.config.getString(path + ".OwnerUUID") != null ? UUID.fromString(this.config.getString(path + ".OwnerUUID")) : null;
 	}
 	
+	@Deprecated //The loaded rentType Handler should be used
 	public boolean isOwner(RentTypes type, int id, UUID ownerUUID) {
 		YamlConfiguration cfg = this.config;
 		String path = type.toString().toUpperCase() + "." + id;
@@ -111,6 +112,17 @@ public class AreaFileManager {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public List<String> getMembers(RentTypes type, int id) {
+		YamlConfiguration cfg = this.config;
+		String path = type.toString().toUpperCase() + "." + id;
+		
+		List<String> memberList = new ArrayList<>();
+		if(cfg.isSet(path + ".MemberUUIDs"))
+			memberList = cfg.getStringList(path + ".MemberUUIDs");
+		
+		return memberList;
 	}
 	
 	public void addMember(RentTypes type, int id, UUID memberUUID) {
