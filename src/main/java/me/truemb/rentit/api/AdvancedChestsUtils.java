@@ -43,7 +43,7 @@ public class AdvancedChestsUtils {
             for(int y = min.getBlockY(); y <= max.getBlockY(); y++)
                 for(int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     Location location = new Location(world, x, y, z);
-                    AdvancedChest chest = AdvancedChestsAPI.getChestManager().getAdvancedChest(location);
+                    AdvancedChest<?, ?> chest = AdvancedChestsAPI.getChestManager().getAdvancedChest(location);
 
                     if (chest != null) {
                         String type = chest.getConfigType();

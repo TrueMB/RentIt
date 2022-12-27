@@ -554,8 +554,8 @@ GUI:
         displayName: '&5Previous Page'
         type: PAPER
         lore: {}
-      returnItem:
-        displayName: '&cReturn'
+      backItem:
+        displayName: '&4&lBACK'
         type: BARRIER
         lore: {}
 Messages:

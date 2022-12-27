@@ -1532,7 +1532,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				List<Integer> foundShopIds = new ArrayList<>();
 				for(int shopId : typeHash.keySet()) {
 					RentTypeHandler handler = typeHash.get((Integer) shopId);
-					if(handler == null)
+					if(handler == null || handler.getSellInv() == null)
 						continue;
 					
 					int foundAmount = handler.getSellInv().all(m).size();
@@ -2062,7 +2062,12 @@ public class ShopCOMMAND extends BukkitCommand {
 					}
 				}
 			}
-	
+
+		}else if(args.length == 2 && args[0].equalsIgnoreCase("search")) {
+			for(Material m : Material.values())
+				if(m.toString().toLowerCase().startsWith(args[1].toLowerCase()))
+					list.add(m.toString());
+			
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("door")) {
 			
 			if("add".startsWith(args[1]) && this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "door.add")) {

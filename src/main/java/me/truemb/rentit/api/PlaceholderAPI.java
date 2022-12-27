@@ -5,8 +5,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.PlayerHandler;
@@ -32,17 +30,17 @@ public class PlaceholderAPI extends PlaceholderExpansion{
     }
     
 	@Override
-	public @NotNull String getAuthor() {
+	public String getAuthor() {
 		return this.instance.getDescription().getAuthors().get(0);
 	}
 
 	@Override
-	public @NotNull String getIdentifier() {
+	public String getIdentifier() {
 		return this.instance.getDescription().getName();
 	}
 
 	@Override
-	public @NotNull String getVersion() {
+	public String getVersion() {
 		return this.instance.getDescription().getVersion();
 	}
 	

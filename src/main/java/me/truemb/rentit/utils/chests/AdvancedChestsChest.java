@@ -8,17 +8,16 @@ import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class AdvancedChestsChest extends SupportedChest {
-    private final AdvancedChest chest;
+    private final AdvancedChest<?, ?> chest;
 
-    public AdvancedChestsChest(AdvancedChest chest) {
+    public AdvancedChestsChest(AdvancedChest<?, ?> chest) {
         this.chest = chest;
     }
 
     public static Optional<SupportedChest> getChestInLocation(Location location) {
-        AdvancedChest chest = AdvancedChestsAPI.getChestManager().getAdvancedChest(location);
+        AdvancedChest<?, ?> chest = AdvancedChestsAPI.getChestManager().getAdvancedChest(location);
 
         if (chest != null) {
             return Optional.of(new AdvancedChestsChest(chest));

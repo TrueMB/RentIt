@@ -1,6 +1,7 @@
 package me.truemb.rentit.listener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -60,14 +61,14 @@ public class AdminShopListener implements Listener {
 
 		Builder builder = new Builder();
 
-		builder.onComplete((player, text) -> {
-
+		builder.onComplete((completion) -> {
+			String text = completion.getText();
 			if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changePriceItem")) 
 					|| this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeSizeItem"))) {
 				try {
 					Integer.parseInt(text);
 				} catch (NumberFormatException ex) {
-					return AnvilGUI.Response.text(this.instance.getMessage("notANumber"));
+					return Arrays.asList(AnvilGUI.ResponseAction.replaceInputText(this.instance.getMessage("notANumber")));
 				}
 			}
 
@@ -113,7 +114,7 @@ public class AdminShopListener implements Listener {
 						.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
 						.replaceAll("(?i)%" + "catAlias" + "%", text));
 			}
-			return AnvilGUI.Response.close();
+			return Arrays.asList(AnvilGUI.ResponseAction.close());
 
 		}).itemLeft(this.getAcceptItem(meta.getDisplayName())).plugin(this.instance).open(p);
 	}
