@@ -128,10 +128,15 @@ public class ShopListener implements Listener {
 				}
 
 				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents());
+				
+				String type = StringUtils.capitalize(copyItem.getType().toString());
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
+				
 				p.sendMessage(this.instance.getMessage("shopItemBought")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(amount))
 						.replaceAll("(?i)%" + "price" + "%", String.valueOf(formatter.format(price)))
-						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(copyItem.getType().toString())));
+						.replaceAll("(?i)%" + "itemname" + "%", itemName)
+						.replaceAll("(?i)%" + "type" + "%", type));
 				return;
 			} else if (e.isRightClick()) {
 
@@ -146,10 +151,14 @@ public class ShopListener implements Listener {
 
 				p.getInventory().addItem(copyItem);
 				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
-
+				
+				String type = StringUtils.capitalize(copyItem.getType().toString());
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
+				
 				p.sendMessage(this.instance.getMessage("shopItemRemoved")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount()))
-						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(copyItem.getType().toString())));
+						.replaceAll("(?i)%" + "itemname" + "%", itemName)
+						.replaceAll("(?i)%" + "type" + "%", type));
 
 			}
 
@@ -254,10 +263,15 @@ public class ShopListener implements Listener {
 				}
 
 				this.instance.getShopsInvSQL().updateBuyInv(shopId, inv.getContents());
-				p.sendMessage(this.instance.getMessage("shopItemSelled")
+				
+				String type = StringUtils.capitalize(copyItem.getType().toString());
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
+				
+				p.sendMessage(this.instance.getMessage("shopItemSold")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(amount))
 						.replaceAll("(?i)%" + "price" + "%", String.valueOf(formatter.format(price)))
-						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(copyItem.getType().toString())));
+						.replaceAll("(?i)%" + "itemname" + "%", itemName)
+						.replaceAll("(?i)%" + "type" + "%", type));
 				return;
 			} else if (e.isRightClick()) {
 
@@ -270,10 +284,14 @@ public class ShopListener implements Listener {
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
 				e.setCurrentItem(null);
 				this.instance.getShopsInvSQL().updateBuyInv(shopId, inv.getContents());
+				
+				String type = StringUtils.capitalize(copyItem.getType().toString());
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
 
 				p.sendMessage(this.instance.getMessage("shopItemRemoved")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount()))
-						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(copyItem.getType().toString())));
+						.replaceAll("(?i)%" + "itemname" + "%", itemName)
+						.replaceAll("(?i)%" + "type" + "%", type));
 
 			}
 		} else if (e.getView().getTitle().startsWith("BACKUP SHOP ")) {

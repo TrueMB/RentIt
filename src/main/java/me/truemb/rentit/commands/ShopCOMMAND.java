@@ -1428,13 +1428,17 @@ public class ShopCOMMAND extends BukkitCommand {
 
 			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
 			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+				
+				String type = StringUtils.capitalize(item.getType().toString());
+				String itemName = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : type;
 			    
 				p.sendMessage(this.instance.getMessage("shopItemAdded")
 						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
 						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 						.replaceAll("(?i)%" + "alias" + "%", alias)
 						.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
-						.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(item.getType().toString()))
+						.replaceAll("(?i)%" + "itemname" + "%", itemName)
+						.replaceAll("(?i)%" + "type" + "%", type)
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(item.getAmount())));
 
 				return true;
@@ -1515,14 +1519,13 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 				
-				Material m = null;
-				try {
-					m = Material.matchMaterial(args[1]);
-				} catch (NumberFormatException ex) {
+				if (Material.matchMaterial(args[1].toUpperCase()) == null) {
 					p.sendMessage(this.instance.getMessage("notAMaterial"));
 					return true;
 				}
-
+				
+				Material m = Material.matchMaterial(args[1]);
+				
 				if (!this.instance.rentTypeHandlers.containsKey(this.type)) {
 					p.sendMessage(this.instance.getMessage("shopSearchNothingFound"));
 					return true;
@@ -1985,10 +1988,14 @@ public class ShopCOMMAND extends BukkitCommand {
 		inv.addItem(item);
 
 		this.instance.getShopsInvSQL().updateBuyInv(rentHandler.getID(), inv.getContents()); // DATABASE UPDATE
-
+		
+		String type = StringUtils.capitalize(item.getType().toString());
+		String itemName = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : type;
+		
 		p.sendMessage(this.instance.getMessage("shopItemAdded")
 				.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
-				.replaceAll("(?i)%" + "type" + "%", StringUtils.capitalize(item.getType().toString()))
+				.replaceAll("(?i)%" + "itemname" + "%", itemName)
+				.replaceAll("(?i)%" + "type" + "%", type)
 				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(item.getAmount())));
 	}
 	
