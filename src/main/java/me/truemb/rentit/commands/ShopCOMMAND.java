@@ -1711,17 +1711,17 @@ public class ShopCOMMAND extends BukkitCommand {
 					String cfgPerm = this.instance.manageFile().getString("UserPermissions.shop." + permsPath);
 					if (permission.equalsIgnoreCase(cfgPerm)) {
 
-						UUID uuidTarget = null;
+						UUID[] uuidTarget = {null};
 						if (Bukkit.getPlayer(target) != null) {
-							uuidTarget = Bukkit.getPlayer(target).getUniqueId();
+							uuidTarget[0] = Bukkit.getPlayer(target).getUniqueId();
 						} else if (this.instance.manageFile().getBoolean("Options.offlineMode")) {
-							uuidTarget = PlayerManager.generateOfflineUUID(target);
+							uuidTarget[0] = PlayerManager.generateOfflineUUID(target);
 						} else {
-							uuidTarget = PlayerManager.getUUIDOffline(target);
+							uuidTarget[0] = PlayerManager.getUUIDOffline(target);
 						}
 
 						//IF TARGET IS ONLINE
-						PlayerHandler playerHandler = this.instance.getMethodes().getPlayerHandler(uuidTarget);
+						PlayerHandler playerHandler = this.instance.getMethodes().getPlayerHandler(uuidTarget[0]);
 						if (playerHandler != null) {
 							PermissionsHandler permsHandler = playerHandler.getPermsHandler(this.type);
 							if (permsHandler != null) {
@@ -1729,19 +1729,38 @@ public class ShopCOMMAND extends BukkitCommand {
 							}
 						}
 
-						this.instance.getPermissionsSQL().setPermission(uuidTarget, this.type, shopId, permission, value);
+						this.instance.getPermissionsSQL().setPermission(uuidTarget[0], this.type, shopId, permission, value);
 
 						if (this.instance.manageFile().getString("UserPermissions.shop.Admin").equalsIgnoreCase(permission) || this.instance.manageFile().getString("UserPermissions.shop.Build").equalsIgnoreCase(permission)) {
 
 							if (value) {
-								this.instance.getAreaFileManager().addMember(this.type, shopId, uuidTarget);
-								this.instance.getMethodes().addMemberToRegion(this.type, shopId, this.instance.getAreaFileManager().getWorldFromArea(this.type, shopId), uuidTarget);
+								this.instance.getAreaFileManager().addMember(this.type, shopId, uuidTarget[0]);
+								this.instance.getMethodes().addMemberToRegion(this.type, shopId, this.instance.getAreaFileManager().getWorldFromArea(this.type, shopId), uuidTarget[0]);
 
-							}else if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuidTarget, this.instance.manageFile().getString("UserPermissions.shop.Admin"))
-									&& !this.instance.getMethodes().hasPermission(this.type, shopId, uuidTarget, this.instance.manageFile().getString("UserPermissions.shop.Build"))) {
+							}else {
 
-								this.instance.getAreaFileManager().removeMember(this.type, shopId, uuidTarget);
-								this.instance.getMethodes().removeMemberToRegion(this.type, shopId, this.instance.getAreaFileManager().getWorldFromArea(this.type, shopId), uuidTarget);
+								if (playerHandler != null && playerHandler.getPermsHandler(this.type) != null) {
+									String adminPerm = this.instance.manageFile().getString("UserPermissions." + this.type.toString().toLowerCase() + ".Admin");
+									String buildPerm = this.instance.manageFile().getString("UserPermissions." + this.type.toString().toLowerCase() + ".Build");
+									
+									PermissionsHandler permsHandler = playerHandler.getPermsHandler(this.type);
+									
+									if(!permsHandler.hasPermission(shopId, adminPerm) && !permsHandler.hasPermission(shopId, buildPerm)) {
+										this.instance.getAreaFileManager().removeMember(this.type, shopId, uuidTarget[0]);
+										this.instance.getMethodes().removeMemberFromRegion(this.type, shopId, this.instance.getAreaFileManager().getWorldFromArea(this.type, shopId), uuidTarget[0]);
+									}
+								}else {
+									this.instance.getPermissionsSQL().hasBuildPermissions(uuidTarget[0], this.type, shopId, new Consumer<Boolean>() {
+										
+										@Override
+										public void accept(Boolean b) {
+											if(!b) {
+												instance.getAreaFileManager().removeMember(type, shopId, uuidTarget[0]);
+												instance.getMethodes().removeMemberFromRegion(type, shopId, instance.getAreaFileManager().getWorldFromArea(type, shopId), uuidTarget[0]);
+											}
+										}
+									});
+								}
 							}
 						}
 

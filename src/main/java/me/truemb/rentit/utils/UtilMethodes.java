@@ -632,7 +632,7 @@ public class UtilMethodes {
 		this.instance.getWorldGuardUtils().setOwnerFromRegion(world, region, uuid);
 	}
 		
-	public void removeMemberToRegion(RentTypes type, int id, World world, UUID uuid) {
+	public void removeMemberFromRegion(RentTypes type, int id, World world, UUID uuid) {
 		if(uuid == null) return;
 		// WORLDGUARD
 		if (this.instance.getWorldGuard() == null)

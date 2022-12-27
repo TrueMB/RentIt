@@ -61,6 +61,34 @@ public class PermissionsSQL {
 		});
 	}
 	
+	public void hasBuildPermissions(UUID uuid, RentTypes type, int id, Consumer<Boolean> callback) {
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		
+		String adminPerm = this.instance.manageFile().getString("UserPermissions." + type.toString().toLowerCase() + ".Admin");
+		String buildPerm = this.instance.manageFile().getString("UserPermissions." + type.toString().toLowerCase() + ".Build");
+		
+		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE userUUID='" + uuid.toString() + "' AND type='" + type.toString() + "' AND ID='" + String.valueOf(id) + "';", new Consumer<ResultSet>() {
+
+			@Override
+			public void accept(ResultSet rs) {
+				try {
+					while (rs.next()) {
+						String permission = rs.getString("permission");
+						boolean value = rs.getInt("value") == 1 ? true : false;
+						if((permission.equalsIgnoreCase(buildPerm) || permission.equalsIgnoreCase(adminPerm)) && value) {
+							callback.accept(true);
+							return;
+						}
+					}
+					callback.accept(false);
+					return;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
 	public void setupWorldGuardMembers(World world, RentTypes type, int id) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		

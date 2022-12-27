@@ -1101,17 +1101,17 @@ public class HotelCOMMAND extends BukkitCommand {
 					String cfgPerm = this.instance.manageFile().getString("UserPermissions.hotel." + permsPath);
 					if (permission.equalsIgnoreCase(cfgPerm)) {
 						
-						UUID uuidTarget = null;
+						UUID[] uuidTarget = {null};
 						if (Bukkit.getPlayer(target) != null) {
-							uuidTarget = Bukkit.getPlayer(target).getUniqueId();
+							uuidTarget[0] = Bukkit.getPlayer(target).getUniqueId();
 						} else if (this.instance.manageFile().getBoolean("Options.offlineMode")) {
-							uuidTarget = PlayerManager.generateOfflineUUID(target);
+							uuidTarget[0] = PlayerManager.generateOfflineUUID(target);
 						} else {
-							uuidTarget = PlayerManager.getUUIDOffline(target);
+							uuidTarget[0] = PlayerManager.getUUIDOffline(target);
 						}
 
 						//IF TARGET IS ONLINE
-						PlayerHandler playerHandler = this.instance.getMethodes().getPlayerHandler(uuidTarget);
+						PlayerHandler playerHandler = this.instance.getMethodes().getPlayerHandler(uuidTarget[0]);
 						if (playerHandler != null) {
 							PermissionsHandler permsHandler = playerHandler.getPermsHandler(this.type);
 							if (permsHandler != null) {
@@ -1119,26 +1119,45 @@ public class HotelCOMMAND extends BukkitCommand {
 							}
 						}
 						
-						this.instance.getPermissionsSQL().setPermission(uuidTarget, this.type, hotelId, permission, value);
+						this.instance.getPermissionsSQL().setPermission(uuidTarget[0], this.type, hotelId, permission, value);
 
 						if (this.instance.manageFile().getString("UserPermissions.hotel.Admin").equalsIgnoreCase(permission) || this.instance.manageFile().getString("UserPermissions.hotel.Build").equalsIgnoreCase(permission)) {
 
 							if (value) {
-								this.instance.getAreaFileManager().addMember(this.type, hotelId, uuidTarget);
-								this.instance.getMethodes().addMemberToRegion(this.type, hotelId, this.instance.getAreaFileManager().getWorldFromArea(this.type, hotelId), uuidTarget);
-
-							}else if (!this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))
-									&& !this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Build"))) {
-
-								this.instance.getAreaFileManager().removeMember(this.type, hotelId, uuidTarget);
-								this.instance.getMethodes().removeMemberToRegion(this.type, hotelId, this.instance.getAreaFileManager().getWorldFromArea(this.type, hotelId), uuidTarget);
+								this.instance.getAreaFileManager().addMember(this.type, hotelId, uuidTarget[0]);
+								this.instance.getMethodes().addMemberToRegion(this.type, hotelId, this.instance.getAreaFileManager().getWorldFromArea(this.type, hotelId), uuidTarget[0]);
+								
+							}else {
+								if (playerHandler != null && playerHandler.getPermsHandler(this.type) != null) {
+									String adminPerm = this.instance.manageFile().getString("UserPermissions." + this.type.toString().toLowerCase() + ".Admin");
+									String buildPerm = this.instance.manageFile().getString("UserPermissions." + this.type.toString().toLowerCase() + ".Build");
+									
+									PermissionsHandler permsHandler = playerHandler.getPermsHandler(this.type);
+									
+									if(!permsHandler.hasPermission(hotelId, adminPerm) && !permsHandler.hasPermission(hotelId, buildPerm)) {
+										this.instance.getAreaFileManager().removeMember(this.type, hotelId, uuidTarget[0]);
+										this.instance.getMethodes().removeMemberFromRegion(this.type, hotelId, this.instance.getAreaFileManager().getWorldFromArea(this.type, hotelId), uuidTarget[0]);
+									}
+								}else {
+									this.instance.getPermissionsSQL().hasBuildPermissions(uuidTarget[0], this.type, hotelId, new Consumer<Boolean>() {
+		
+										@Override
+										public void accept(Boolean b) {
+											if(!b) {
+												instance.getAreaFileManager().removeMember(type, hotelId, uuidTarget[0]);
+												instance.getMethodes().removeMemberFromRegion(type, hotelId, instance.getAreaFileManager().getWorldFromArea(type, hotelId), uuidTarget[0]);
+											}
+										}
+									});
+								}
 							}
+							
+							p.sendMessage(this.instance.getMessage("permissionSet")
+									.replaceAll("(?i)%" + "permission" + "%", String.valueOf(permission))
+									.replaceAll("(?i)%" + "player" + "%", target)
+									.replaceAll("(?i)%" + "status" + "%", String.valueOf(value)));
 						}
-
-						p.sendMessage(this.instance.getMessage("permissionSet")
-								.replaceAll("(?i)%" + "permission" + "%", String.valueOf(permission))
-								.replaceAll("(?i)%" + "player" + "%", target)
-								.replaceAll("(?i)%" + "status" + "%", String.valueOf(value)));
+						
 						return true;
 					}
 				}
