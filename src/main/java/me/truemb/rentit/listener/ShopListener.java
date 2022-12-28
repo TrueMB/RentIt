@@ -98,9 +98,25 @@ public class ShopListener implements Listener {
 					price = itemPrice;
 
 				}
+				
+				//Player has space in the Inventory?
+				int freeSpace = 0;
+				for (ItemStack items : p.getInventory().getStorageContents()) {
+					if (items == null || items.getType() == Material.AIR) {
+						freeSpace += copyItem.getMaxStackSize();
+					}else if (items.isSimilar(copyItem)) {
+						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0 : copyItem.getMaxStackSize() - items.getAmount();
+					}
+				}
+				
+				if(freeSpace < copyItem.getAmount()) {
+					p.sendMessage(this.instance.getMessage("notEnoughInvSpace")
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount() - freeSpace)));
+					return;
+				}
 
 				if (!this.instance.getEconomySystem().has(p, price)) {
-					p.sendMessage(this.instance.getMessage("notEnoughtMoney")
+					p.sendMessage(this.instance.getMessage("notEnoughMoney")
 							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(formatter.format(price - this.instance.getEconomySystem().getBalance(p)))));
 					return;
 				}
@@ -240,7 +256,7 @@ public class ShopListener implements Listener {
 
 
 				if (!this.instance.getEconomySystem().has(owner, price)) {
-					p.sendMessage(this.instance.getMessage("notEnoughtMoneyOwner"));
+					p.sendMessage(this.instance.getMessage("notEnoughMoneyOwner"));
 					return;
 				}
 
@@ -258,7 +274,7 @@ public class ShopListener implements Listener {
 					Bukkit.getPluginManager().callEvent(new ItemBuyEvent(p, rentHandler, copyItem, price));
 
 				} else {
-					p.sendMessage(instance.getMessage("notEnoughtSpace"));
+					p.sendMessage(instance.getMessage("notEnoughSpace"));
 					return;
 				}
 

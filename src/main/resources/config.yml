@@ -574,9 +574,10 @@ Messages:
   notATime: '&4ERROR. &cPlease use a correct Time format.'
   notAPermission: '&4ERROR. &cThe Permissions doesnt exists.'
   notOwnBackupItems: '&cThis are not your Items. You are not allowed to use that.'
-  notEnoughtSpace: '&cThe Shop cant buy anymore Items right now.'
-  notEnoughtMoney: '&cYou dont have enough Money. You need: &f%amount%$'
-  notEnoughtMoneyOwner: '&cThe Owner doesnt have enough Money.'
+  notEnoughSpace: '&cThe Shop cant buy anymore Items right now.'
+  notEnoughInvSpace: '&cYou dont have enough free Inventory Space.'
+  notEnoughMoney: '&cYou dont have enough Money. You need: &f%amount%$'
+  notEnoughMoneyOwner: '&cThe Owner doesnt have enough Money.'
   wrongDoorArgument: '&cPlease use <open/close>.'
   wrongDoorAdminArgument: '&cPlease use <add/remove>.'
   notEnoughOwningItems: '&cYou dont have enough of this Material! You need %amount%.'
@@ -838,4 +839,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 16
+ConfigVersion: 17
