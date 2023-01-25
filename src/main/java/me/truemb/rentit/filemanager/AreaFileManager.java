@@ -218,6 +218,11 @@ public class AreaFileManager {
 				String path = type.toString().toUpperCase() + "." + idS;
 				String worldname = this.config.getString(path + ".World");
 				
+				if(worldname == null) {
+					this.instance.getLogger().warning("Something went wrong, while reading the worldname for " + type.toString() + " ID: " + idS);
+					continue;
+				}
+				
 				if(!worldname.equalsIgnoreCase(loc.getWorld().getName())) 
 					continue;
 				
