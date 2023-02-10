@@ -263,7 +263,7 @@ public class HotelAreaListener implements Listener {
 
 	    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(this.type, hotelId);
 
-		if (rentHandler == null || rentHandler.getOwnerUUID() == null)
+		if (rentHandler == null)
 			return false;
 
 		if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.hotel.build")) {
@@ -281,7 +281,7 @@ public class HotelAreaListener implements Listener {
 			return false;
 		}
 
-		if(!rentHandler.getOwnerUUID().equals(uuid) && !this.instance.getAreaFileManager().isMember(this.type, hotelId, uuid)) {
+		if(rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) && !this.instance.getAreaFileManager().isMember(this.type, hotelId, uuid)) {
 			if(withMessages)
 				p.sendMessage(this.instance.getMessage("notHotelOwner"));
 			return true;
