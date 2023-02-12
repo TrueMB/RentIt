@@ -4,7 +4,9 @@ import com.sk89q.worldedit.math.BlockVector3;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.main.Main;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -139,18 +141,26 @@ public class ChestsUtils {
      * Gets the supported chest for a given location, if any.
      */
     private Optional<SupportedChest> getChestInLocation(Location location) {
-        if (this.instance.getAdvancedChestsUtils().isEnabled()) {
-            /*
-             * Advanced chests are implemented as a CHEST item.
-             * If we don't early cut the lookup, we end up loading 1 adv chest + 1 vanilla chest
-             * for the same location.
-             */
-            Optional<SupportedChest> adv = AdvancedChestsChest.getChestInLocation(location);
-            if (adv.isPresent()) {
-                return adv;
-            }
-        }
-
-        return VanillaChest.getChestInLocation(location);
+    	Block b = location.getBlock();
+    	if(b == null)
+    		return null;
+    	
+    	if(b.getType() == Material.BARREL) {
+	        return VanillaBarrel.getChestInLocation(location);
+    	}else {
+	        if (this.instance.getAdvancedChestsUtils().isEnabled()) {
+	            /*
+	             * Advanced chests are implemented as a CHEST item.
+	             * If we don't early cut the lookup, we end up loading 1 adv chest + 1 vanilla chest
+	             * for the same location.
+	             */
+	            Optional<SupportedChest> adv = AdvancedChestsChest.getChestInLocation(location);
+	            if (adv.isPresent()) {
+	                return adv;
+	            }
+	        }
+	        
+	        return VanillaChest.getChestInLocation(location);
+    	}
     }
 }

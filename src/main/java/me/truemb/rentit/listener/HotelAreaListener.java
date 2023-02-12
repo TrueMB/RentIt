@@ -265,7 +265,7 @@ public class HotelAreaListener implements Listener {
 			}
 			return;
 			
-		}else if(b.getType() == Material.CHEST) {
+		}else if(b.getType() == Material.CHEST || b.getType() == Material.BARREL) {
 			//CHEST INTERACTION
 			
 			int hotelId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);

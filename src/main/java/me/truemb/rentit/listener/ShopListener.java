@@ -213,7 +213,7 @@ public class ShopListener implements Listener {
 
 			NumberFormat formatter = new DecimalFormat("#0.00");
 
-			// Verkaufen
+			// Player selling to owner
 			if (e.isLeftClick() && !ownerUUID.equals(uuid)) {
 				double itemPrice = ShopItemManager.getPriceFromShopItem(this.instance, item);
 				double price;

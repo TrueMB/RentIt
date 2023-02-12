@@ -274,7 +274,7 @@ public class ShopAreaListener implements Listener {
 			}
 			return;
 			
-		}else if(b.getType() == Material.CHEST) {
+		}else if(b.getType() == Material.CHEST || b.getType() == Material.BARREL) {
 			//CHEST INTERACTION
 			
 			int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
