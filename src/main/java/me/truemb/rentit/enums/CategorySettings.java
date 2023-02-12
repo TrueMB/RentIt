@@ -13,6 +13,10 @@ public enum CategorySettings {
 	allowUsersToMoveNPC,
 	reminderRentRunningOut,
 	npcShouldSit,
-	blacklistedItems;
+	blacklistedItems,
+	
+
+	useBed,
+	useEnderchest;
 	
 }

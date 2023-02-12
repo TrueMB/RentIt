@@ -206,8 +206,63 @@ public class HotelAreaListener implements Listener {
 				}
 			}
 		}else if(b.getType() == Material.ENDER_CHEST) {
+
+			int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
+
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+			if (rentHandler == null)
+				return; //DOES SHOP EXISTS?
 			
 			//ENDER CHEST INTERACTION
+			if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.useEnderchest.toString()) 
+					&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.useEnderchest.toString())) {
+				
+				if(this.instance.getWorldGuard() != null) {
+					if(!this.instance.getMethodes().isMemberFromRegion(this.type, shopId, p.getWorld(), uuid)) {
+						e.setCancelled(true);
+						p.sendMessage(this.instance.getMessage("notShopOwner"));
+						return;
+					}
+					return;
+				}
+
+				if(rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) && !this.instance.getAreaFileManager().isMember(this.type, shopId, uuid)) {
+					e.setCancelled(true);
+					p.sendMessage(this.instance.getMessage("notShopOwner"));
+					return;
+				}
+			}
+			return;
+			
+		}else if(b.getType().toString().contains("_BED")) {
+
+			int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
+
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+			if (rentHandler == null)
+				return; //DOES SHOP EXISTS?
+			
+			//ENDER CHEST INTERACTION
+			if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.useBed.toString()) 
+					&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.useBed.toString())) {
+				
+				if(this.instance.getWorldGuard() != null) {
+					if(!this.instance.getMethodes().isMemberFromRegion(this.type, shopId, p.getWorld(), uuid)) {
+						e.setCancelled(true);
+						p.sendMessage(this.instance.getMessage("notShopOwner"));
+						return;
+					}
+					return;
+				}
+
+				if(rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) && !this.instance.getAreaFileManager().isMember(this.type, shopId, uuid)) {
+					e.setCancelled(true);
+					p.sendMessage(this.instance.getMessage("notShopOwner"));
+					return;
+				}
+			}
 			return;
 			
 		}else if(b.getType() == Material.CHEST) {
