@@ -99,7 +99,12 @@ public class AreaFileManager {
 		YamlConfiguration cfg = this.config;
 		String path = type.toString().toUpperCase() + "." + id;
 		
-		return cfg.getString(path + ".World") != null ? Bukkit.getWorld(cfg.getString(path + ".World")) : null;
+		if(cfg.getString(path + ".World") != null)
+			return Bukkit.getWorld(cfg.getString(path + ".World"));
+		else {
+			this.instance.getLogger().warning("Couldn't find the World for the " + type.toString() + " ID: " + String.valueOf(id));
+			return null;
+		}
 	}
 	
 	public void deleteArea(RentTypes type, int id) {
