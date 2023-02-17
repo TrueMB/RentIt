@@ -163,9 +163,25 @@ public class ShopListener implements Listener {
 				}
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
+				
+				int freeSpace = 0;
+				for (ItemStack items : p.getInventory().getStorageContents()) {
+					if (items == null || items.getType() == Material.AIR) {
+						freeSpace += copyItem.getMaxStackSize();
+					}else if (items.isSimilar(copyItem)) {
+						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0 : copyItem.getMaxStackSize() - items.getAmount();
+					}
+				}
+				
+				if(freeSpace < copyItem.getAmount()) {
+					p.sendMessage(this.instance.getMessage("notEnoughInvSpace")
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount() - freeSpace)));
+					return;
+				}
+				
 				e.setCurrentItem(null);
-
 				p.getInventory().addItem(copyItem);
+				
 				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
 				
 				String type = StringUtils.capitalize(copyItem.getType().toString());
