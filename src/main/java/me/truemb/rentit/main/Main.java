@@ -144,7 +144,7 @@ public class Main extends JavaPlugin {
 	public NamespacedKey idKey = new NamespacedKey(this, "ID");
 	public NamespacedKey siteKey = new NamespacedKey(this, "Site");
 
-	private static final int configVersion = 17;
+	private static final int configVersion = 18;
     private static final String SPIGOT_RESOURCE_ID = "90195";
     private static final int BSTATS_PLUGIN_ID = 12060;
     

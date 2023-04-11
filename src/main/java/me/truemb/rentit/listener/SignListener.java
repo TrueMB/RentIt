@@ -40,7 +40,7 @@ public class SignListener implements Listener{
 		Block b = e.getBlock();
 		Player p = e.getPlayer();
 		
-		if(e.getLine(0).equalsIgnoreCase("[shop]")) {
+		if(e.getLine(0).equalsIgnoreCase(this.instance.manageFile().getString("Options.signPrefix.shop"))) {
 		
 			if(!p.hasPermission(this.instance.manageFile().getString("Permissions.sign")))
 				return;
@@ -86,7 +86,7 @@ public class SignListener implements Listener{
 					.replaceAll("(?i)%" + "alias" + "%", alias)
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 			
-		}else if(e.getLine(0).equalsIgnoreCase("[hotel]")) {
+		}else if(e.getLine(0).equalsIgnoreCase(this.instance.manageFile().getString("Options.signPrefix.hotel"))) {
 		
 			if(!p.hasPermission(this.instance.manageFile().getString("Permissions.sign")))
 				return;

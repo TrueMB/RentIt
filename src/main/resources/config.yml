@@ -59,6 +59,10 @@ Options:
   useDisplayName: false
   #If enabled, every command gets a Permission -> Default: rentit.shop.<subcommand> and rentit.shops / rentit.freeshops -> the same for hotelrooms
   advancedPermissions: false
+  #The Prefix of the sign which is needed to create a sign. Doesn't need to be changed, as long no other plugin uses it.
+  signPrefix:
+    shop: '[shop]'
+    hotel: '[hotel]'
   #Should normal players be allowed to destroy, build, and so on... (Admins are not affected)
   defaultPermissions:
     shop:
@@ -843,4 +847,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 17
+ConfigVersion: 18
