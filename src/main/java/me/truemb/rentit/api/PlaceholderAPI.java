@@ -108,6 +108,8 @@ public class PlaceholderAPI extends PlaceholderExpansion{
             			option = option.substring(1);
             			
             			int catId = typeHandler.getCatID();
+            			boolean autoPayment = typeHandler.isAutoPayment();
+            			
             			CategoryHandler catHandler = this.instance.getMethodes().getCategory(types, catId);
 
 						DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
@@ -132,6 +134,10 @@ public class PlaceholderAPI extends PlaceholderExpansion{
             			//Gets the Size
             			}else if(option.equalsIgnoreCase("size")) {
             				return String.valueOf(size);
+            				
+                		//Gets the Size
+                		}else if(option.equalsIgnoreCase("autopayment")) {
+                			return autoPayment ? this.instance.manageFile().getString("PlaceholderAPI.values.true") : this.instance.manageFile().getString("PlaceholderAPI.values.false");
             			
             			//Gets the rent duration
             			}else if(option.equalsIgnoreCase("duration")) {
