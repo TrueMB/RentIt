@@ -13,7 +13,6 @@ import us.lynuxcraft.deadsilenceiv.advancedchests.utils.LocationUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +68,7 @@ public class AdvancedChestsUtils {
                     int size = AdvancedChestsAPI.getDataManager().getChestSize(chest);
 
                     locations.forEach(location -> {
-                        chestType.newBuilder(size, chest, location, new HashSet<>()).build();
+                        chestType.newBuilder(size, chest, location, new HashMap<>()).build();
                     });
                 });
     }
