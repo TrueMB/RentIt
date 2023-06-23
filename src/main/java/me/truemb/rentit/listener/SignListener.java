@@ -225,6 +225,7 @@ public class SignListener implements Listener{
 		
 		int shopId = this.instance.getSignFileManager().getIdFromSign(b.getLocation(), RentTypes.SHOP);
 		if(shopId > 0) {
+			e.setCancelled(true);
 		
 			if(p.isSneaking() && p.hasPermission(this.instance.manageFile().getString("Permissions.shop"))) {
 				//ADMIN GUI
@@ -260,6 +261,8 @@ public class SignListener implements Listener{
 		}else {
 			int hotelId = this.instance.getSignFileManager().getIdFromSign(b.getLocation(), RentTypes.HOTEL);
 			if(hotelId > 0) {
+				e.setCancelled(true);
+				
 				if(p.isSneaking() && p.hasPermission(this.instance.manageFile().getString("Permissions.hotel"))) {
 					//ADMIN GUI
 					p.openInventory(AdminGUI.getAdminHotelGui(this.instance, hotelId));
