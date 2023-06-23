@@ -61,8 +61,8 @@ public class AdminShopListener implements Listener {
 
 		Builder builder = new Builder();
 
-		builder.onComplete((completion) -> {
-			String text = completion.getText();
+		builder.onClick((slot, state) -> {
+			String text = state.getText();
 			if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changePriceItem")) 
 					|| this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeSizeItem"))) {
 				try {

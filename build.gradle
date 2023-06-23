@@ -52,7 +52,7 @@ repositories {
 }
 
 dependencies {
-    api 'net.wesjd:anvilgui:1.6.3-SNAPSHOT'
+    api 'net.wesjd:anvilgui:1.6.6-SNAPSHOT'
     api 'org.bstats:bstats-bukkit:3.0.0'
     api 'com.jeff_media:SpigotUpdateChecker:3.0.0'
     api 'com.google.code.gson:gson:2.10'
@@ -72,7 +72,7 @@ dependencies {
 }
 
 group = 'RentIt'
-version = '2.7.4'
+version = '2.7.5'
 description = 'RentIt'
 java.sourceCompatibility = JavaVersion.VERSION_17
 
