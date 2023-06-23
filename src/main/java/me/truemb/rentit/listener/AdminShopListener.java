@@ -2,7 +2,9 @@ package me.truemb.rentit.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,6 +19,7 @@ import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
+import me.truemb.rentit.utils.UtilitiesAPI;
 import net.wesjd.anvilgui.AnvilGUI;
 import net.wesjd.anvilgui.AnvilGUI.Builder;
 
@@ -63,6 +66,7 @@ public class AdminShopListener implements Listener {
 
 		builder.onClick((slot, state) -> {
 			String text = state.getText();
+			
 			if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changePriceItem")) 
 					|| this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeSizeItem"))) {
 				try {
@@ -75,17 +79,24 @@ public class AdminShopListener implements Listener {
 			RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
 
 			if (rentHandler == null)
-				return null;
+				return Collections.emptyList();
 
 			int catID = rentHandler.getCatID();
 
 			CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, catID);
 
 			if (catHandler == null)
-				return null;
+				return Collections.emptyList();
 
 			if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeTimeItem"))) {
 				// PLAYER WANTS TO CHANGE RENT TIME
+
+				if(text == null || text.length() < 2)
+					return Collections.emptyList();
+				
+				if(text == null || text.length() < 2 || UtilitiesAPI.getTimeParsed(text) == null)
+					return Arrays.asList(AnvilGUI.ResponseAction.replaceInputText(this.instance.getMessage("notATime")));
+				
 				this.instance.getMethodes().setTime(p, RentTypes.SHOP, catID, text);
 			} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changePriceItem"))) {
 				// PLAYER WANTS TO CHANGE RENT PRICE

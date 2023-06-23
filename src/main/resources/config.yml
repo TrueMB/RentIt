@@ -579,7 +579,7 @@ Messages:
   notABoolean: '&4ERROR. &cPlease use as a value &fTrue/False&c.'
   notAMaterial: '&4ERROR. &cThis Material doesnt exists.'
   notADoor: '&4ERROR. &cThe looked at Block is not a Door.'
-  notATime: '&4ERROR. &cPlease use a correct Time format.'
+  notATime: '&4ERROR. &cPlease use a correct Time format. (f.e. 1D, 1h, 1m)'
   notAPermission: '&4ERROR. &cThe Permissions doesnt exists.'
   notOwnBackupItems: '&cThis are not your Items. You are not allowed to use that.'
   notEnoughSpace: '&cThe Shop cant buy anymore Items right now.'
