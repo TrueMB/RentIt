@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 
+import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.enums.RentTypes;
@@ -107,6 +108,8 @@ public class SearchResultGUIListener implements Listener{
 					return;
 				
 				int id = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				RentTypeHandler typeHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
+				if(typeHandler == null) return;
 				
 				if(e.isRightClick()) {
 					
@@ -114,9 +117,17 @@ public class SearchResultGUIListener implements Listener{
 					p.openInventory(ShopBuyOrSell.getSelectInv(this.instance, id));
 					
 				}else if(e.isLeftClick()) {
-					//TP
-					if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.shop.teleport.ownings") && !p.hasPermission(this.instance.manageFile().getString("Permissions.teleport")))
+					//Teleport to Shop
+					
+					CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, typeHandler.getCatID());
+					if(catHandler == null) return;
+					
+					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".teleport") && 
+							!this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".teleport")) {
+						
+						p.sendMessage(this.instance.getMessage("shopTeleportNotAllowed"));
 						return;
+					}
 					
 					p.teleport(this.instance.getAreaFileManager().getAreaSpawn(RentTypes.SHOP, id));
 				}
