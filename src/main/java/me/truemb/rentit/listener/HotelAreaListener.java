@@ -321,7 +321,8 @@ public class HotelAreaListener implements Listener {
 		if (rentHandler == null)
 			return false;
 
-		if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.hotel.build")) {
+		if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + String.valueOf(rentHandler.getCatID()) + ".build") && 
+				!this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + String.valueOf(rentHandler.getCatID()) + ".build")) {
 			if(withMessages)
 				p.sendMessage(this.instance.getMessage("featureDisabled"));
 			return true;

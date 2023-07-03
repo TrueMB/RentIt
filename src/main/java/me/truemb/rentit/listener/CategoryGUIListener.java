@@ -167,6 +167,9 @@ public class CategoryGUIListener implements Listener {
 				
 				int id = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 				
+				RentTypeHandler typeHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
+				if(typeHandler == null) return;
+				
 				if(e.isRightClick()) {
 					
 					//OPEN BUY MENU
@@ -175,9 +178,17 @@ public class CategoryGUIListener implements Listener {
 					p.openInventory(UserConfirmGUI.getShopConfirmationGUI(this.instance, id));
 					
 				}else if(e.isLeftClick()) {
-					//TP
-					if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.shop.inspection") && !p.hasPermission(this.instance.manageFile().getString("Permissions.teleport")))
+					//Teleport to Shop
+					
+					CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, typeHandler.getCatID());
+					if(catHandler == null) return;
+					
+					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".teleport") &&
+							!this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".teleport")) {
+						
+						p.sendMessage(this.instance.getMessage("shopTeleportNotAllowed"));
 						return;
+					}
 					
 					p.teleport(this.instance.getAreaFileManager().getAreaSpawn(RentTypes.SHOP, id));
 				}
@@ -239,6 +250,9 @@ public class CategoryGUIListener implements Listener {
 				
 				int id = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 				
+				RentTypeHandler typeHandler = this.instance.getMethodes().getTypeHandler(RentTypes.HOTEL, id);
+				if(typeHandler == null) return;
+				
 				if(e.isRightClick()) {
 					
 					//OPEN BUY MENU
@@ -247,9 +261,17 @@ public class CategoryGUIListener implements Listener {
 					p.openInventory(UserConfirmGUI.getHotelConfirmationGUI(this.instance, id));
 					
 				}else if(e.isLeftClick()) {
-					//TP
-					if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.hotel.inspection") && !p.hasPermission(this.instance.manageFile().getString("Permissions.teleport")))
+					//Teleport to Hotelroom
+					
+					CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.HOTEL, typeHandler.getCatID());
+					if(catHandler == null) return;
+					
+					if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + String.valueOf(catHandler.getCatID()) + ".teleport") &&
+							!this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + String.valueOf(catHandler.getCatID()) + ".teleport")) {
+						
+						p.sendMessage(this.instance.getMessage("hotelTeleportNotAllowed"));
 						return;
+					}
 					
 					p.teleport(this.instance.getAreaFileManager().getAreaSpawn(RentTypes.HOTEL, id));
 				}

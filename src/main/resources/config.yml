@@ -63,18 +63,6 @@ Options:
   signPrefix:
     shop: '[shop]'
     hotel: '[hotel]'
-  #Should normal players be allowed to destroy, build, and so on... (Admins are not affected)
-  defaultPermissions:
-    shop:
-      build: true
-      teleport:
-        ownings: true
-        inspection: true
-    hotel:
-      build: true
-      teleport:
-        ownings: true
-        inspection: true
   #Category Settings. Possible to add more or edit the values. It has to be the category ID
   #usePermission -> Are Permissions needed, to buy such a Shop/Hotel
   #autoPaymentDefault -> The Default Status of the auto Payment
@@ -90,6 +78,8 @@ Options:
   #blacklistedItems -> Items that should not be allowed to add to the category
   #useBed -> Allow always using bed
   #useEnderchest -> Allow always using Enderchests
+  #build -> Deny Break/Build in the Shop/Hotelroom even as owner (false = no permission)
+  #teleport -> Should it be possible to teleport to the Shop/Hotelroom
   categorySettings:
     ShopCategory:
       99:
@@ -106,6 +96,8 @@ Options:
         npcShouldSit: false
         useBed: true
         useEnderchest: true
+        build: true
+        teleport: true
       88:
         usePermission: true
         autoPaymentDefault: true
@@ -657,6 +649,7 @@ Messages:
   shopRollbackNoItems: '&cThere are no Items saved.'
   shopResignContract: '&6You resigned of the rent contract.'
   shopItemBlacklisted: '&6You are not allowed to add that item to the Shop.'
+  shopTeleportNotAllowed: '&cYou are not allowed to teleport to the Shop.'
   shopSearchNothingFound: '&cI couldn''t find a shop with such an item.'
   shopUserHelp:
     - '&6&m                  &6[ &f&lSHOP &6]&6&m                  '
@@ -781,6 +774,7 @@ Messages:
   hotelLimitReached: '&cYou cant have more Hotelrooms.'
   hotelBackupUpdated: '&6You updated the Hotel Area Backup.'
   hotelResignContract: '&6You resigned of the rent contract.'
+  hotelTeleportNotAllowed: '&cYou are not allowed to teleport to the Hotel.'
   hotelUserHelp:
     - '&6&m                  &6[ &f&lHOTELROOM &6]&6&m                  '
     - '&f/hotels &7- &6Shows all your owned Hotelrooms.'

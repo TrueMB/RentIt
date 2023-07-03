@@ -16,7 +16,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 
 import me.truemb.rentit.gui.UserRentGUI;
+import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
+import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.gui.UserListGUI;
 import me.truemb.rentit.main.Main;
@@ -83,17 +85,27 @@ public class OwningListListener implements Listener{
 				
 				int id = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 				
+				RentTypeHandler typeHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
+				if(typeHandler == null) return;
+				
 				if(e.isRightClick()) {
 					
 					//OPEN RENT SETTINGS
 					p.closeInventory();
-					//this.instance.openId.put(p.getName(), id);
 					p.openInventory(UserRentGUI.getRentSettings(this.instance, RentTypes.SHOP, id, false));
 					
 				}else if(e.isLeftClick()) {
-					//TP
-					if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.shop.teleport.ownings") && !p.hasPermission(this.instance.manageFile().getString("Permissions.teleport")))
+					//Teleport to Shop
+					
+					CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, typeHandler.getCatID());
+					if(catHandler == null) return;
+					
+					if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".teleport") && 
+							!this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".teleport")) {
+						
+						p.sendMessage(this.instance.getMessage("shopTeleportNotAllowed"));
 						return;
+					}
 					
 					p.teleport(this.instance.getAreaFileManager().getAreaSpawn(RentTypes.SHOP, id));
 				}
@@ -144,6 +156,9 @@ public class OwningListListener implements Listener{
 				
 				int id = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 				
+				RentTypeHandler typeHandler = this.instance.getMethodes().getTypeHandler(RentTypes.HOTEL, id);
+				if(typeHandler == null) return;
+				
 				if(e.isRightClick()) {
 					
 					//OPEN RENT SETTINGS
@@ -152,9 +167,17 @@ public class OwningListListener implements Listener{
 					p.openInventory(UserRentGUI.getRentSettings(this.instance, RentTypes.HOTEL, id, false));
 					
 				}else if(e.isLeftClick()) {
-					//TP
-					if(!this.instance.manageFile().getBoolean("Options.defaultPermissions.hotel.teleport.ownings") && !p.hasPermission(this.instance.manageFile().getString("Permissions.teleport")))
+					//Teleport to Hotelroom
+					
+					CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.HOTEL, typeHandler.getCatID());
+					if(catHandler == null) return;
+					
+					if(this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + String.valueOf(catHandler.getCatID()) + ".teleport") && 
+							!this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + String.valueOf(catHandler.getCatID()) + ".teleport")) {
+						
+						p.sendMessage(this.instance.getMessage("hotelTeleportNotAllowed"));
 						return;
+					}
 					
 					p.teleport(this.instance.getAreaFileManager().getAreaSpawn(RentTypes.HOTEL, id));
 				}
