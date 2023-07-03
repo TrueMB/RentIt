@@ -49,7 +49,7 @@ public class ShopAreaListener implements Listener {
 		Block b = e.getBlock();
 		Location loc = b.getLocation();
 		
-		boolean canceled = this.protectedRegion(p, loc, true);
+		boolean canceled = this.protectedRegion(p, false, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -61,7 +61,7 @@ public class ShopAreaListener implements Listener {
 		Block b = e.getBlockPlaced();
 		Location loc = b.getLocation();
 		
-		boolean canceled = this.protectedRegion(p, loc, true);
+		boolean canceled = this.protectedRegion(p, false, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -80,7 +80,7 @@ public class ShopAreaListener implements Listener {
 		Vehicle target = e.getVehicle();
 		Location loc = target.getLocation();
 
-		boolean canceled = this.protectedRegion(p, loc, true);
+		boolean canceled = this.protectedRegion(p, false, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -99,7 +99,7 @@ public class ShopAreaListener implements Listener {
 		Entity target = e.getEntity();
 		Location loc = target.getLocation();
 
-		boolean canceled = this.protectedRegion(p, loc, true);
+		boolean canceled = this.protectedRegion(p, false, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -118,7 +118,7 @@ public class ShopAreaListener implements Listener {
 		Entity target = e.getEntity();
 		Location loc = target.getLocation();
 
-		boolean canceled = this.protectedRegion(p, loc, true);
+		boolean canceled = this.protectedRegion(p, false, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -136,7 +136,7 @@ public class ShopAreaListener implements Listener {
 		if(target.hasMetadata("NPC"))
 			return;
 		
-		boolean canceled = this.protectedRegion(p, loc, true);
+		boolean canceled = this.protectedRegion(p, true, loc, true);
 		if(canceled)
 			e.setCancelled(canceled);
     }
@@ -166,7 +166,7 @@ public class ShopAreaListener implements Listener {
 			
 			int shopId = this.instance.getDoorFileManager().getIdFromDoor(loc);
 	
-		    RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(this.type, shopId);
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 	
 			if (rentHandler == null)
 				return;
@@ -295,7 +295,7 @@ public class ShopAreaListener implements Listener {
 			}
 		}else {
 			
-			boolean canceled = this.protectedRegion(p, loc, e.getHand() == EquipmentSlot.HAND);
+			boolean canceled = this.protectedRegion(p, true, loc, e.getHand() == EquipmentSlot.HAND);
 			if(canceled)
 				e.setCancelled(canceled);
 			else {
@@ -310,14 +310,14 @@ public class ShopAreaListener implements Listener {
 				if(facingBlock == null)
 					return;
 
-				boolean canceledSpawn = this.protectedRegion(p, facingBlock.getLocation(), e.getHand() == EquipmentSlot.HAND);
+				boolean canceledSpawn = this.protectedRegion(p, true, facingBlock.getLocation(), e.getHand() == EquipmentSlot.HAND);
 				if(canceledSpawn)
 					e.setCancelled(canceledSpawn);
 			}
 		}
     }
 	
-	private boolean protectedRegion(Player p, Location loc, boolean withMessages) {
+	private boolean protectedRegion(Player p, boolean interacting, Location loc, boolean withMessages) {
 		
 		if(p.hasPermission(this.instance.manageFile().getString("Permissions.build")))
 			return false;
@@ -330,11 +330,20 @@ public class ShopAreaListener implements Listener {
 		if (rentHandler == null)
 			return false;
 
-		if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + String.valueOf(rentHandler.getCatID()) + ".build") && 
-				!this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + String.valueOf(rentHandler.getCatID()) + ".build")) {
-			if(withMessages)
-				p.sendMessage(this.instance.getMessage("featureDisabled"));
-			return true;
+		if(interacting) {
+			if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + String.valueOf(rentHandler.getCatID()) + ".interact") && 
+					!this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + String.valueOf(rentHandler.getCatID()) + ".interact")) {
+				if(withMessages)
+					p.sendMessage(this.instance.getMessage("featureDisabled"));
+				return true;
+			}
+		}else {
+			if(this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + String.valueOf(rentHandler.getCatID()) + ".build") && 
+					!this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + String.valueOf(rentHandler.getCatID()) + ".build")) {
+				if(withMessages)
+					p.sendMessage(this.instance.getMessage("featureDisabled"));
+				return true;
+			}
 		}
 		
 		if(this.instance.getWorldGuard() != null) {

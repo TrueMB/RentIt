@@ -80,6 +80,7 @@ Options:
   #useEnderchest -> Allow always using Enderchests
   #build -> Deny Break/Build in the Shop/Hotelroom even as owner (false = no permission)
   #teleport -> Should it be possible to teleport to the Shop/Hotelroom
+  #interact -> Should it be possible to interact in the Shop/Hotelroom even as owner
   categorySettings:
     ShopCategory:
       99:
@@ -98,6 +99,7 @@ Options:
         useEnderchest: true
         build: true
         teleport: true
+        interact: true
       88:
         usePermission: true
         autoPaymentDefault: true
