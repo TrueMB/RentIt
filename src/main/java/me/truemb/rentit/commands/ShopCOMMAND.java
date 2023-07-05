@@ -424,7 +424,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					p.sendMessage(this.instance.getMessage("shopCategoryList")
 							.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
 							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-							.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+							.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))
 							.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
 							.replaceAll("(?i)%" + "time" + "%", time)
 							);

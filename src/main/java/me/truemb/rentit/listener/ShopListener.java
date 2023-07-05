@@ -25,6 +25,7 @@ import me.truemb.rentit.events.ItemSellEvent;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.ShopItemManager;
+import me.truemb.rentit.utils.UtilitiesAPI;
 
 public class ShopListener implements Listener {
 
@@ -117,7 +118,7 @@ public class ShopListener implements Listener {
 
 				if (!this.instance.getEconomySystem().has(p, price)) {
 					p.sendMessage(this.instance.getMessage("notEnoughMoney")
-							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(formatter.format(price - this.instance.getEconomySystem().getBalance(p)))));
+							.replaceAll("(?i)%" + "amount" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price - this.instance.getEconomySystem().getBalance(p))));
 					return;
 				}
 

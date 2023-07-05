@@ -18,6 +18,7 @@ import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
+import me.truemb.rentit.utils.UtilitiesAPI;
 
 public class SearchResultGUI {
 	
@@ -90,7 +91,7 @@ public class SearchResultGUI {
 					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
 					.replaceAll("(?i)%" + "alias" + "%", alias)
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-					.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+					.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))
 					.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
 					.replaceAll("(?i)%" + "time" + "%", timeS));
 		}

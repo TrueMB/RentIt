@@ -16,6 +16,7 @@ import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
+import me.truemb.rentit.utils.UtilitiesAPI;
 
 public class UserConfirmGUI {
 	
@@ -83,7 +84,7 @@ public class UserConfirmGUI {
 					.replace("%hotelId%", String.valueOf(id))
 					.replace("%alias%", alias)
 					.replace("%catAlias%", catAlias)
-					.replace("%price%", String.valueOf(price))
+					.replace("%price%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))
 					.replace("%size%", String.valueOf(size))
 					.replace("%time%", timeS));
 		}

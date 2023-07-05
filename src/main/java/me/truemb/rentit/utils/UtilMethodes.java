@@ -316,7 +316,7 @@ public class UtilMethodes {
 							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.sellShopSign.line" + i)
 									.replaceAll("(?i)%" + "time" + "%", time)
 									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
-									.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))));
+									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))));
 						}
 					} else {
 						// BEREITS VERMIETET
@@ -325,7 +325,7 @@ public class UtilMethodes {
 									.replaceAll("(?i)%" + "time" + "%", time)
 									.replaceAll("(?i)%" + "owner" + "%", owner)
 									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
-									.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))));
+									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))));
 						}
 					}
 				} else if (type.equals(RentTypes.HOTEL)) {
@@ -336,7 +336,7 @@ public class UtilMethodes {
 							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.sellHotelSign.line" + i)
 									.replaceAll("(?i)%" + "time" + "%", time)
 									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
-									.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))));
+									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))));
 						}
 					} else {
 						// BEREITS VERMIETET
@@ -345,7 +345,7 @@ public class UtilMethodes {
 									.replaceAll("(?i)%" + "time" + "%", time)
 									.replaceAll("(?i)%" + "owner" + "%", owner)
 									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
-									.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))));
+									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))));
 						}
 					}
 				}

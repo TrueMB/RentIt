@@ -728,6 +728,6 @@ public class Main extends JavaPlugin {
 	}
 
 	public ChestShopAPI getChestShopApi() {
-		return chestShopApi;
+		return this.chestShopApi;
 	}
 }

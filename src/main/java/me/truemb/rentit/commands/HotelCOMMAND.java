@@ -300,7 +300,7 @@ public class HotelCOMMAND extends BukkitCommand {
 					p.sendMessage(this.instance.getMessage("hotelCategoryList")
 							.replaceAll("(?i)%" + "catid" + "%", String.valueOf(catId))
 							.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-							.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+							.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))
 							.replaceAll("(?i)%" + "time" + "%", time)
 							);
 				}

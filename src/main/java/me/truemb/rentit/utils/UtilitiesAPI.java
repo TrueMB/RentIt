@@ -78,4 +78,25 @@ public class UtilitiesAPI {
 		
 		return ts;
 	}
+	
+	public static String getHumanReadablePriceFromNumber(double number){
+
+	    if(number >= 1000000000){
+	        return String.format("%.2fB", number/ 1000000000.0);
+	    }
+
+	    if(number >= 1000000){
+	        return String.format("%.2fM", number/ 1000000.0);
+	    }
+
+	    if(number >= 100000){
+	        return String.format("%.2fL", number/ 100000.0);
+	    }
+
+	    if(number >=1000){
+	        return String.format("%.2fK", number/ 1000.0);
+	    }
+	    return String.valueOf(number);
+
+	}
 }

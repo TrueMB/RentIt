@@ -70,17 +70,15 @@ public class ShopItemManager {
 		if(!ShopItemManager.isShopItem(plugin, item))
 			return item;
 		
-		NumberFormat formatter = new DecimalFormat("#0.00");
 		
 		ItemMeta meta = item.getItemMeta();
 		List<String> lore = meta.getLore();
-		//List<String> newLore = new ArrayList<>();
 		
 		if(lore == null)
 			lore = new ArrayList<>();
 		
 		lore.set(lore.size() - 1, ChatColor.translateAlternateColorCodes('&', plugin.manageFile().getString("GUI.shopUser.loreSellItemPrice"))
-				.replace("%price%", String.valueOf(formatter.format(price)))); //USER DISPLAY PRICE
+				.replace("%price%", String.valueOf(UtilitiesAPI.getHumanReadablePriceFromNumber(price)))); //USER DISPLAY PRICE
 		
 		NamespacedKey key = new NamespacedKey(plugin, "price");
 		PersistentDataContainer container = meta.getPersistentDataContainer();

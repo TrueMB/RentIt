@@ -19,6 +19,7 @@ import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
+import me.truemb.rentit.utils.UtilitiesAPI;
 
 public class UserRentGUI {
 	
@@ -87,7 +88,7 @@ public class UserRentGUI {
 					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
 					.replaceAll("(?i)%" + "alias" + "%", alias)
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-					.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
+					.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))
 					.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
 					.replaceAll("(?i)%" + "time" + "%", timeS)
 					.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts))

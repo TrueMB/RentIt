@@ -22,6 +22,7 @@ import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
+import me.truemb.rentit.utils.UtilitiesAPI;
 
 public class HotelsSQL {
 	
@@ -126,7 +127,7 @@ public class HotelsSQL {
 									.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
 									.replaceAll("(?i)%" + "alias" + "%", alias)
 									.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-									.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
+									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(costs))
 									.replaceAll("(?i)%" + "time" + "%", time)
 									.replaceAll("(?i)%" + "rentEnd" + "%", df.format(ts)));
 							
