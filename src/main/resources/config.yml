@@ -45,6 +45,8 @@ Options:
       disabled: false
       aliases: {}
       disabledSubCommands: {}
+  #Disable NPC/Villager in general. Was mainly added for ChestShop Support
+  disableNPC: false
   #Using Citizens NPCs as Shops. Otherwise Villagers
   useNPCs: true
   #If set to false, then it uses Vault as default and the linked Economy System. If you want to primary use PlayerPoints for RentIt, set it to true
@@ -843,4 +845,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 18
+ConfigVersion: 19

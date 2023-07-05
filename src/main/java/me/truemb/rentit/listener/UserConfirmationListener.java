@@ -132,10 +132,13 @@ public class UserConfirmationListener implements Listener {
 					
 					@Override
 					public void run() {
-						if(instance.getNpcUtils() != null)
-							instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, rentHandler.getOwnerUUID(), rentHandler.getOwnerName());
-						else
-							instance.getVillagerUtils().spawnVillager(shopId, prefix, rentHandler.getOwnerUUID(), rentHandler.getOwnerName());
+						if(!instance.manageFile().getBoolean("Options.disableNPC")) {
+							if(instance.getNpcUtils() != null) {
+								instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, rentHandler.getOwnerUUID(), rentHandler.getOwnerName());
+							}else {
+								instance.getVillagerUtils().spawnVillager(shopId, prefix, rentHandler.getOwnerUUID(), rentHandler.getOwnerName());
+							}
+						}
 					}
 				}, 20);
 	        	

@@ -152,38 +152,44 @@ public class ShopCOMMAND extends BukkitCommand {
 					
 					//SET NPC LOCATION
 					this.instance.getNPCFileManager().setNPCLocForShop(shopId, p.getLocation());
-					
-					if(this.instance.getNpcUtils() != null) {
-						//NPC
-						if(this.instance.getNpcUtils().existsNPCForShop(shopId)) {
-							this.instance.getNpcUtils().moveNPC(shopId, p.getLocation());
-						}else {
-							//CREATE NPC IN CITIZENS DATABASE
-							this.instance.getNpcUtils().createNPC(shopId);
-							UUID ownerUUID = rentHandler.getOwnerUUID();
-							
-							//SHOP IS OWNED
-							if(ownerUUID != null) {
-								String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
-								String prefix = this.instance.getPermissionsAPI().getPrefix(ownerUUID);
-								
-								this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerUUID, playerName);
-							}
-						}
-						
-					}else {
-						//VILLAGER
-						if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
-							this.instance.getVillagerUtils().moveVillager(shopId, p.getLocation());
-						}else {
-							UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
-							
-							//SHOP IS OWNED
-							if(ownerUUID != null) {
-								String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
-								String prefix = instance.getPermissionsAPI().getPrefix(ownerUUID);
 
-								this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, playerName);
+					if(!instance.manageFile().getBoolean("Options.disableNPC")) {
+						if(instance.manageFile().getBoolean("Options.useNPC")) {
+							//NPC
+							if(this.instance.getNpcUtils().existsNPCForShop(shopId)) {
+								this.instance.getNpcUtils().moveNPC(shopId, p.getLocation());
+							}else {
+								//CREATE NPC IN CITIZENS DATABASE
+								this.instance.getNpcUtils().createNPC(shopId);
+								UUID ownerUUID = rentHandler.getOwnerUUID();
+								
+								//SHOP IS OWNED
+								if(ownerUUID != null) {
+									String ownerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
+									String prefix = this.instance.getPermissionsAPI().getPrefix(ownerUUID);
+									
+									if(instance.getVillagerUtils() != null) {
+										instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, ownerName);
+									}else {
+										instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerUUID, ownerName);
+									}
+								}
+							}
+							
+						}else {
+							//VILLAGER
+							if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
+								this.instance.getVillagerUtils().moveVillager(shopId, p.getLocation());
+							}else {
+								UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
+								
+								//SHOP IS OWNED
+								if(ownerUUID != null) {
+									String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
+									String prefix = instance.getPermissionsAPI().getPrefix(ownerUUID);
+	
+									this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, playerName);
+								}
 							}
 						}
 					}
@@ -322,16 +328,18 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				if(this.instance.getNpcUtils() != null) {
-					if (this.instance.getNpcUtils().isNPCSpawned(shopId)) {
-						// SHOP IS OWNED AND NPC SPAWNED
-						this.instance.getNpcUtils().destroyNPC(shopId);
-						this.instance.getNPCFileManager().removeNPCinConfig(shopId);
-					}
-				}else {
-					if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
-						this.instance.getVillagerUtils().destroyVillager(shopId);
-						this.instance.getNPCFileManager().removeNPCinConfig(shopId);
+				if(!instance.manageFile().getBoolean("Options.disableNPC")) {
+					if(instance.manageFile().getBoolean("Options.useNPC")) {
+						if (this.instance.getNpcUtils().isNPCSpawned(shopId)) {
+							// SHOP IS OWNED AND NPC SPAWNED
+							this.instance.getNpcUtils().destroyNPC(shopId);
+							this.instance.getNPCFileManager().removeNPCinConfig(shopId);
+						}
+					}else {
+						if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
+							this.instance.getVillagerUtils().destroyVillager(shopId);
+							this.instance.getNPCFileManager().removeNPCinConfig(shopId);
+						}
 					}
 				}
 
@@ -1131,11 +1139,13 @@ public class ShopCOMMAND extends BukkitCommand {
 				rentHandler.setOwner(uuid, p.getName());
 				
 				String prefix = instance.getPermissionsAPI().getPrefix(ownerUUID);
-
-				if(this.instance.getNpcUtils() != null)
-					this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, uuidOwner, owner);
-				else
-					this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, owner);
+				if(!instance.manageFile().getBoolean("Options.disableNPC")) {
+					if(instance.manageFile().getBoolean("Options.useNPC")) {
+						instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerUUID, owner);
+					}else {
+						instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, owner);
+					}
+				}
 
 				this.instance.getMethodes().updateSign(this.type, shopId, owner, time, costs, size);
 
@@ -2026,12 +2036,14 @@ public class ShopCOMMAND extends BukkitCommand {
 		if(ownerUUID != null)
 			this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
 
-		if(this.instance.getNpcUtils() != null) {
-			if (this.instance.getNpcUtils().isNPCSpawned(shopId))
-				this.instance.getNpcUtils().despawnNPC(shopId);
-		}else {
-			if(this.instance.getVillagerUtils().isVillagerSpawned(shopId))
-				this.instance.getVillagerUtils().destroyVillager(shopId);
+		if(!instance.manageFile().getBoolean("Options.disableNPC")) {
+			if(instance.manageFile().getBoolean("Options.useNPC")) {
+				if (this.instance.getNpcUtils().isNPCSpawned(shopId))
+					this.instance.getNpcUtils().despawnNPC(shopId);
+			}else {
+				if(this.instance.getVillagerUtils().isVillagerSpawned(shopId))
+					this.instance.getVillagerUtils().destroyVillager(shopId);
+			}
 		}
 
 		this.instance.getChestsUtils().getShopChests(shopId).stream().forEach(chest -> chest.remove());

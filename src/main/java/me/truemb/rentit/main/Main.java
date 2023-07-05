@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.truemb.rentit.api.AdvancedChestsUtils;
+import me.truemb.rentit.api.ChestShopAPI;
 import me.truemb.rentit.utils.chests.ChestsUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -26,6 +27,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.Acrobot.ChestShop.ChestShop;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.jeff_media.updatechecker.UserAgentBuilder;
@@ -122,6 +124,7 @@ public class Main extends JavaPlugin {
 	private WorldGuardUtils wgUtils;
 	private NPCUtils npcUtils;
 	private VillagerUtils vilUtils;
+	private ChestShopAPI chestShopApi;
 	
 	private NPCFileManager npcFM;
 	private SignFileManager signFM;
@@ -187,13 +190,19 @@ public class Main extends JavaPlugin {
 		this.economySystem = this.manageFile().getBoolean("Options.usePlayerPoints") ? new PlayerPointsEconomy(this) : new VaultEconomy(this);
 		this.setupWorldEdit();
 		this.setupWorldGuard();
-		
-		if(this.manageFile().getBoolean("Options.useNPCs"))
-			this.setupCitizens(); //CITIZENS NPC
-		else {
-			this.vilUtils = new VillagerUtils(this); //VILLAGER NPC
-			new VillagerShopListener(this);
+		this.setupChestShop();
+
+		if(!this.manageFile().getBoolean("Options.disableNPC")) {
+			if(this.manageFile().getBoolean("Options.useNPCs")) {
+				this.setupCitizens(); //CITIZENS NPC
+			}else {
+				this.vilUtils = new VillagerUtils(this); //VILLAGER NPC
+				new VillagerShopListener(this);
+			}
 		}
+		
+		//TODO REMOVE/SET IF DisableNPC was changed
+		//Maybe not needed, because Villager/NPC are getting destroyed on server stop.
 		
 		this.rollbackInvManager = new RollbackInventoryManager(this);
 				
@@ -366,15 +375,16 @@ public class Main extends JavaPlugin {
 					}
 				}, 20);
 				
-				//SETUP SHOP NPCS
-				if(manageFile().getBoolean("Options.useNPCs"))
-					setupCitizens();
-				
-				//OR VILLAGER
-				else {
-					vilUtils = new VillagerUtils(plugin);
-					new VillagerShopListener(plugin);
+
+				if(!manageFile().getBoolean("Options.disableNPC")) {
+					if(manageFile().getBoolean("Options.useNPCs")) {
+						setupCitizens(); //CITIZENS NPC
+					}else {
+						vilUtils = new VillagerUtils(plugin); //VILLAGER NPC
+						new VillagerShopListener(plugin);
+					}
 				}
+				
 				
 				//START MANAGERS
 				advancedChestsUtils = new AdvancedChestsUtils(plugin);
@@ -556,6 +566,7 @@ public class Main extends JavaPlugin {
 		
 	}
 	
+	//PLACEHOLDERAPI
 	private void setupPlaceholderAPI() {
 		
 		//PLUGIN WAS FOUND
@@ -566,6 +577,17 @@ public class Main extends JavaPlugin {
 			this.getLogger().info("PlacerHolderAPI was not found. (Is not needed, but supported)");
 	    }
 		
+	}
+	
+	//CHEST SHOP API
+	private void setupChestShop() {
+		Plugin chestShop = this.getServer().getPluginManager().getPlugin("ChestShop");
+		
+		if(chestShop == null || !(chestShop instanceof ChestShop))
+			return;
+
+		this.getLogger().info("ChestShop was found!");
+		this.chestShopApi = new ChestShopAPI();
 	}
 	
 	//MySQL
@@ -703,5 +725,9 @@ public class Main extends JavaPlugin {
 
 	public RollbackInventoryManager getRollbackInventoryManager() {
 		return this.rollbackInvManager;
+	}
+
+	public ChestShopAPI getChestShopApi() {
+		return chestShopApi;
 	}
 }

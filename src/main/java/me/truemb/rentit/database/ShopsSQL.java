@@ -188,10 +188,12 @@ public class ShopsSQL {
 									
 								@Override
 								public void run() {
-									if(instance.getVillagerUtils() != null) {
-										instance.getVillagerUtils().spawnVillager(id, prefix, ownerUUID, ownerName);
-									}else {
-										instance.getNpcUtils().spawnAndEditNPC(id, prefix, ownerUUID, ownerName);
+									if(!instance.manageFile().getBoolean("Options.disableNPC")) {
+										if(instance.getVillagerUtils() != null) {
+											instance.getVillagerUtils().spawnVillager(id, prefix, ownerUUID, ownerName);
+										}else {
+											instance.getNpcUtils().spawnAndEditNPC(id, prefix, ownerUUID, ownerName);
+										}
 									}
 								}
 							});

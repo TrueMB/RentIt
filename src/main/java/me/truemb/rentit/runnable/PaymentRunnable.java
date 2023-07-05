@@ -133,12 +133,14 @@ public class PaymentRunnable implements Runnable {
 								rentHandler.reset();
 				
 								//REMOVE NPC
-								if(instance.getNpcUtils() != null) {
-									if (instance.getNpcUtils().isNPCSpawned(shopId))
-										instance.getNpcUtils().despawnNPC(shopId);
-								}else {
-									if(instance.getVillagerUtils().isVillagerSpawned(shopId))
-										instance.getVillagerUtils().destroyVillager(shopId);
+								if(!instance.manageFile().getBoolean("Options.disableNPC")) {
+									if(instance.getNpcUtils() != null) {
+										if (instance.getNpcUtils().isNPCSpawned(shopId))
+											instance.getNpcUtils().despawnNPC(shopId);
+									}else {
+										if(instance.getVillagerUtils().isVillagerSpawned(shopId))
+											instance.getVillagerUtils().destroyVillager(shopId);
+									}
 								}
 				
 								BlockVector3 min = instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);

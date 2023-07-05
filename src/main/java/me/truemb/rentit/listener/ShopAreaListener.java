@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
+import org.bukkit.block.data.type.Sign;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
@@ -280,9 +281,14 @@ public class ShopAreaListener implements Listener {
 			int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
 
 		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
-
+		    
+		    //DOES SHOP EXISTS?
 			if (rentHandler == null)
-				return; //DOES SHOP EXISTS?
+				return;
+			
+			//Is Chest from ChestShop? If yes, then allow the usage
+			if(this.instance.getChestShopApi().isShopChest(b))
+				return;
 		    
 			if(!p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.chests")) 
 					&& (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Fill")) &&
@@ -294,6 +300,12 @@ public class ShopAreaListener implements Listener {
 					p.sendMessage(this.instance.getMessage("notShopOwner"));
 			}
 		}else {
+			
+			if(b.getState() instanceof Sign) {
+				//Is Sign from ChestShop? If yes, then allow the usage
+				if(this.instance.getChestShopApi().isShopChestSign(b))
+					return;
+			}
 			
 			boolean canceled = this.protectedRegion(p, true, loc, e.getHand() == EquipmentSlot.HAND);
 			if(canceled)
