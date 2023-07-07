@@ -22,6 +22,11 @@ public class ShopInventorySQL {
 
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv + " (ID INT PRIMARY KEY, sellInv LONGTEXT, buyInv LONGTEXT)");
 		
+
+		//TODO NEW
+		//sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv_new + " (ID INT, site ID, sellInv LONGTEXT, buyInv LONGTEXT, (PRIMARY KEY ID, site))");
+		// Column kann nicht nur hinzugefügt werden, da der Primary Key mit diesem zusammen gestellt werden muss
+		
 	}
 	
 	public void updateSellInv(int shopId, ItemStack[] contents){

@@ -30,6 +30,7 @@ public class AsyncSQL {
 	public String t_hotels = "rentit_hotels";
 	public String t_shops = "rentit_shops";
 	public String t_shop_inv = "rentit_shopInv";
+	public String t_shop_inv_new = "rentit_shopInventories";
 	public String t_perms = "rentit_perms";
 	public String t_settings = "rentit_psettings";
 
