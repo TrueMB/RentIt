@@ -22,10 +22,12 @@ public class ShopInventorySQL {
 
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv + " (ID INT PRIMARY KEY, sellInv LONGTEXT, buyInv LONGTEXT)");
 		
-
-		//TODO NEW
-		//sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv_new + " (ID INT, site ID, sellInv LONGTEXT, buyInv LONGTEXT, (PRIMARY KEY ID, site))");
-		// Column kann nicht nur hinzugefügt werden, da der Primary Key mit diesem zusammen gestellt werden muss
+		//TODO RUN ONLY ONCE
+		//Create new Table and import old data
+		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv_new + " (ID INT, site INT, sellInv LONGTEXT, buyInv LONGTEXT, PRIMARY KEY (ID, site))");
+		sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
+		//Delete old data
+		sql.queryUpdate("DROP TABLE " + sql.t_shop_inv + ";");
 		
 	}
 	
