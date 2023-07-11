@@ -12,7 +12,7 @@ import me.truemb.rentit.main.Main;
 
 public class UserShopGUI {
 
-	public static Inventory getSellInv(Main instance, int shopId, ItemStack[] contents) {
+	public static Inventory getSellInv(Main instance, int shopId, int site, ItemStack[] contents) {
 
 		RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
 
@@ -44,7 +44,7 @@ public class UserShopGUI {
 		return inv;
 	}
 
-	public static Inventory getBuyInv(Main instance, int shopId, ItemStack[] contents) {
+	public static Inventory getBuyInv(Main instance, int shopId, int site, ItemStack[] contents) {
 
 		RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
 

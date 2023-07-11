@@ -31,27 +31,27 @@ public class ShopInventorySQL {
 		
 	}
 	
-	public void updateSellInv(int shopId, ItemStack[] contents){
+	public void updateSellInv(int shopId, int site, ItemStack[] contents){
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		String contentsS = contents != null ? InventoryUtils.itemStackArrayToBase64(contents) : null;
 
 		if(sql.isSqlLite()) //SQLLITE
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv + " (ID, sellInv, buyInv) VALUES ('" + shopId + "', '" + contentsS + "', '" + null + "') "
-					+ "ON CONFLICT(ID) DO UPDATE SET sellInv='" + contentsS + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + contentsS + "', '" + null + "') "
+					+ "ON CONFLICT(ID, site) DO UPDATE SET sellInv='" + contentsS + "';");
 		else //MYSQL
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv + " (ID, sellInv, buyInv) VALUES ('" + shopId + "', '" + contentsS + "', '" + null + "') "
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + contentsS + "', '" + null + "') "
 					+ "ON DUPLICATE KEY UPDATE sellInv='" + contentsS + "';");
 	}
 	
-	public void updateBuyInv(int shopId, ItemStack[] contents){
+	public void updateBuyInv(int shopId, int site, ItemStack[] contents){
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		String contentsS = contents != null ? InventoryUtils.itemStackArrayToBase64(contents) : null;
 
 		if(sql.isSqlLite()) //SQLLITE
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv + " (ID, sellInv, buyInv) VALUES ('" + shopId + "', '" + null + "', '" + contentsS + "') "
-					+ "ON CONFLICT(ID) DO UPDATE SET buyInv='" + contentsS + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + null + "', '" + contentsS + "') "
+					+ "ON CONFLICT(ID, site) DO UPDATE SET buyInv='" + contentsS + "';");
 		else //MYSQL
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv + " (ID, sellInv, buyInv) VALUES ('" + shopId + "', '" + null + "', '" + contentsS + "') "
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + null + "', '" + contentsS + "') "
 					+ "ON DUPLICATE KEY UPDATE buyInv='" + contentsS + "';");
 	}
 	
@@ -60,7 +60,7 @@ public class ShopInventorySQL {
 		
 		int id = handler.getID();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_shop_inv + " WHERE ID='" + id + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_shop_inv_new + " WHERE ID='" + id + "';", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -68,20 +68,21 @@ public class ShopInventorySQL {
 
 					while (rs.next()) {
 						
+						int site = rs.getInt("site");
 						String sellInv = rs.getString("sellInv");
 						String buyInv = rs.getString("buyInv");
 						
 						ItemStack[] sellContents = !sellInv.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(sellInv) : null;
 						ItemStack[] buyContents = !buyInv.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInv) : null;
 						
-						handler.setSellInv(UserShopGUI.getSellInv(instance, id, sellContents));
-						handler.setBuyInv(UserShopGUI.getBuyInv(instance, id, buyContents));
+						handler.setSellInv(site, UserShopGUI.getSellInv(instance, id, site, sellContents));
+						handler.setBuyInv(site, UserShopGUI.getBuyInv(instance, id, site, buyContents));
 						return;
 					}
 
 					//NO ENTRY FOUND
-					handler.setSellInv(UserShopGUI.getSellInv(instance, id, null));
-					handler.setBuyInv(UserShopGUI.getBuyInv(instance, id, null));
+					handler.setSellInv(1, UserShopGUI.getSellInv(instance, id, 1, null));
+					handler.setBuyInv(1, UserShopGUI.getBuyInv(instance, id, 1, null));
 				} catch (SQLException | IOException e) {
 					e.printStackTrace();
 				}

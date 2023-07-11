@@ -1,6 +1,7 @@
 package me.truemb.rentit.handler;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,8 +34,9 @@ public class RentTypeHandler {
 	private Timestamp reminder;
 	private boolean reminded;
 	
-	private Inventory sellInv; //INVENTORY IS ALREADY LOADED AND KEEPS THE INSTANCE. SO EVERYBODY UPDATE, IF SOMETHING CHANGES
-	private Inventory buyInv;
+	
+	private HashMap<Integer, Inventory> sellInvHash; //INVENTORY IS ALREADY LOADED AND KEEPS THE INSTANCE. SO EVERYBODY UPDATE, IF SOMETHING CHANGES
+	private HashMap<Integer, Inventory> buyInvHash;
 	
 	public RentTypeHandler(Main plugin, RentTypes type, int id, int catID, UUID ownerUUID, String ownerName, Timestamp nextPayment, boolean autoPayment) {
 		this.instance = plugin;
@@ -158,8 +160,8 @@ public class RentTypeHandler {
 		this.setReminded(false);
 		
 		//INVENTORY
-		this.setSellInv(UserShopGUI.getSellInv(this.instance, id, null));
-		this.setBuyInv(UserShopGUI.getBuyInv(this.instance, id, null));
+		this.setSellInv(1, UserShopGUI.getSellInv(this.instance, id, 1, null));
+		this.setBuyInv(1, UserShopGUI.getBuyInv(this.instance, id, 1, null));
 	}
 	
 	public boolean isOwned() {
@@ -182,30 +184,48 @@ public class RentTypeHandler {
 		this.setReminder(reminderTs);
 	}
 
-	public void setBuyInv(Inventory buyInv) {
-		if(this.buyInv != null) {
-			List<HumanEntity> list = this.buyInv.getViewers();
-			for(int i = list.size() - 1; i >= 0; i--)
-				list.get(i).closeInventory();
+	public void setBuyInv(int site, Inventory buyInv) {
+		Inventory inv = this.buyInvHash.get(site);
+		if(inv != null) {
+			
+			//Inventory got the same size. Changing the content
+			if(inv.getSize() == buyInv.getSize()) {
+				inv.setContents(buyInv.getContents());
+
+			//Inventory is not the same size. Reopening the Inventory
+			}else {
+				List<HumanEntity> list = inv.getViewers();
+				for(int i = list.size() - 1; i >= 0; i--)
+					list.get(i).openInventory(buyInv);
+			}
 		}
-		this.buyInv = buyInv;
+		this.buyInvHash.put(site, buyInv);
 	}
 
-	public void setSellInv(Inventory sellInv) {
-		if(this.sellInv != null) {
-			List<HumanEntity> list = this.sellInv.getViewers();
-			for(int i = list.size() - 1; i >= 0; i--)
-				list.get(i).closeInventory();
+	public void setSellInv(int site, Inventory sellInv) {
+		Inventory inv = this.sellInvHash.get(site);
+		if(inv != null) {
+			
+			//Inventory got the same size. Changing the content
+			if(inv.getSize() == sellInv.getSize()) {
+				inv.setContents(sellInv.getContents());
+
+			//Inventory is not the same size. Reopening the Inventory
+			}else {
+				List<HumanEntity> list = inv.getViewers();
+				for(int i = list.size() - 1; i >= 0; i--)
+					list.get(i).openInventory(sellInv);
+			}
 		}
-		this.sellInv = sellInv;
+		this.sellInvHash.put(site, sellInv);
 	}
 
-	public Inventory getBuyInv() {
-		return this.buyInv;
+	public Inventory getBuyInv(int site) {
+		return this.buyInvHash.get(site);
 	}
 
-	public Inventory getSellInv() {
-		return this.sellInv;
+	public Inventory getSellInv(int site) {
+		return this.sellInvHash.get(site);
 	}
 
 }
