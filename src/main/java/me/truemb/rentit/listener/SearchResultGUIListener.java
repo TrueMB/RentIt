@@ -91,8 +91,7 @@ public class SearchResultGUIListener implements Listener{
 					if(handler == null)
 						continue;
 					
-					int foundAmount = handler.getSellInv().all(m).size();
-					if(foundAmount > 0)
+					if(handler.searchMaterial(m) > 0)
 						foundShopIds.add(handler.getID());
 				}
 				

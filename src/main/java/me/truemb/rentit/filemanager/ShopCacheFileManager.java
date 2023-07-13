@@ -3,11 +3,11 @@ package me.truemb.rentit.filemanager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 import me.truemb.rentit.utils.chests.SupportedChest;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -47,8 +47,8 @@ public class ShopCacheFileManager {
 	private YamlConfiguration getConfig() {
 		return this.config;
 	}
-	
-	public void setShopBackup(UUID uuid, int id) {
+
+	public void createShopBackup(UUID uuid, int id) {
 		
 		YamlConfiguration cfg = this.getConfig();
 
@@ -60,19 +60,22 @@ public class ShopCacheFileManager {
 			cfg.set(basicPath + "." + i, InventoryUtils.itemStackArrayToBase64(chests.get(i).getAllItems().toArray(ItemStack[]::new)));
 		}
 		
-		RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
-		Inventory sellInv = rentHandler.getSellInv();
-		if(sellInv != null) {
-			ItemStack[] sellItems = sellInv.getContents();
-			
-			for(ItemStack item : sellItems) {
-				if(item != null)
-					item = ShopItemManager.removeShopItem(this.instance, item);
-			}
-			
-			cfg.set(basicPath + "." + String.valueOf(chests.size()), InventoryUtils.itemStackArrayToBase64(sellItems));
-		}
+		RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
+		Collection<Inventory> sellInventories = rentHandler.getSellInventories();
 		
+		for(int i = 0; i < sellInventories.size(); i++) {
+			Inventory sellInv = (Inventory) sellInventories.toArray()[i];
+			if(sellInv != null) {
+				ItemStack[] sellItems = sellInv.getContents();
+				
+				for(ItemStack item : sellItems) {
+					if(item != null)
+						item = ShopItemManager.removeShopItem(this.instance, item);
+				}
+				
+				cfg.set(basicPath + "." + String.valueOf(chests.size() + i), InventoryUtils.itemStackArrayToBase64(sellItems));
+			}
+		}
 		try {
 			cfg.save(this.file);
 		} catch (IOException e) {
@@ -80,6 +83,7 @@ public class ShopCacheFileManager {
 		}
 	}
 	
+	@Deprecated
 	public void updateShopBackup(UUID uuid, int id, List<Inventory> inventories) {
 		
 		YamlConfiguration cfg = this.getConfig();
@@ -138,65 +142,6 @@ public class ShopCacheFileManager {
 		}
 		
 		return contents;
-	}
-	
-	@Deprecated
-	public void setShopBackup(UUID uuid, int id, ItemStack[] content) {
-		
-		if(content == null)
-			return;
-		
-		YamlConfiguration cfg = this.getConfig();
-		
-		String path = String.valueOf(id) + "." + uuid.toString();
-		
-		cfg.set(path, InventoryUtils.itemStackArrayToBase64(content));
-		
-		try {
-			cfg.save(this.file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Deprecated
-	public void removeShopBackup(UUID uuid, int id) {
-		
-		YamlConfiguration cfg = this.getConfig();
-
-		String path = String.valueOf(id) + "." + uuid.toString();
-		
-		cfg.set(path, null);
-		
-		try {
-			cfg.save(this.file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Deprecated
-	public Inventory getShopBackup(UUID uuid, int id) {
-		
-		YamlConfiguration cfg = this.getConfig();
-
-		String path = String.valueOf(id) + "." + uuid.toString();
-		String hash = cfg.getString(path);
-		
-		if(hash == null)
-			return null;
-		
-		ItemStack[] content;
-		try {
-			content = InventoryUtils.itemStackArrayFromBase64(hash);
-		} catch (IOException e) {
-			return null;
-		}
-		Inventory inv = Bukkit.createInventory(null, 54, "BACKUP SHOP " + id);
-		
-		inv.setContents(content);
-		
-		return inv;
 	}
 	
 }

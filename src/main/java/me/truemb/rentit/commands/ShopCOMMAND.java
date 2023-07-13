@@ -1412,6 +1412,8 @@ public class ShopCOMMAND extends BukkitCommand {
 
 				item = ShopItemManager.createShopItem(this.instance, item, shopId, price); // UPDATED ITEM WITH PRICE IN IT
 
+				//TODO Get latest Inventory and look, if there is free Space
+				//The same for opening/Removing Items. If only one item is on the second site, then remove the arrow and it one page before
 				Inventory inv = rentHandler.getSellInv();
 
 				int used = 0; // CHECKS HOW MANY SLOTS ARE USED
@@ -1434,7 +1436,6 @@ public class ShopCOMMAND extends BukkitCommand {
 				inv.addItem(item);
 				p.getInventory().setItemInMainHand(null);
 				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents()); // DATABASE UPDATE
-				// this.instance.getMethodes().updateSellInv(p, shopId, inv.getContents()); // UPDATE DATABASE AND OPEN INVS
 
 			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
 			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());

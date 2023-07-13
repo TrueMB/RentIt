@@ -1,12 +1,14 @@
 package me.truemb.rentit.handler;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -158,10 +160,6 @@ public class RentTypeHandler {
 		this.setNextPayment(null);
 		this.setReminder(null);
 		this.setReminded(false);
-		
-		//INVENTORY
-		this.setSellInv(1, UserShopGUI.getSellInv(this.instance, id, 1, null));
-		this.setBuyInv(1, UserShopGUI.getBuyInv(this.instance, id, 1, null));
 	}
 	
 	public boolean isOwned() {
@@ -219,13 +217,39 @@ public class RentTypeHandler {
 		}
 		this.sellInvHash.put(site, sellInv);
 	}
-
-	public Inventory getBuyInv(int site) {
-		return this.buyInvHash.get(site);
+	
+	public int searchMaterial(Material m) {
+		int amount = 0;
+		for(Inventory inv : this.sellInvHash.values()) {
+			amount += inv.all(m).size();
+		}
+		return amount;
+	}
+	
+	public Collection<Inventory> getBuyInventories(){
+		return this.buyInvHash.values();
 	}
 
+	public Inventory getBuyInv(int site) {
+		Inventory result = this.buyInvHash.get(site);
+		
+		if(result == null)
+			this.buyInvHash.put(site, result = UserShopGUI.getBuyInv(this.instance, this.getID(), site, null));
+		
+		return result;
+	}
+
+	public Collection<Inventory> getSellInventories(){
+		return this.sellInvHash.values();
+	}
+	
 	public Inventory getSellInv(int site) {
-		return this.sellInvHash.get(site);
+		Inventory result = this.sellInvHash.get(site);
+		
+		if(result == null)
+			this.sellInvHash.put(site, result = UserShopGUI.getSellInv(this.instance, this.getID(), site, null));
+		
+		return result;
 	}
 
 }

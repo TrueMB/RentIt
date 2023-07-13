@@ -17,7 +17,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
-import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
@@ -147,8 +146,6 @@ public class UserConfirmationListener implements Listener {
 	        	Timestamp ts = UtilitiesAPI.getNewTimestamp(time);
 	        	this.instance.getShopsSQL().setNextPayment(shopId, ts);
 	        	rentHandler.setNextPayment(ts);
-	        	rentHandler.setSellInv(UserShopGUI.getSellInv(this.instance, shopId, null));
-	        	rentHandler.setBuyInv(UserShopGUI.getBuyInv(this.instance, shopId, null));
 	        	
 	            p.closeInventory();
 	            return;

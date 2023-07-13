@@ -20,14 +20,23 @@ public class ShopInventorySQL {
 		this.instance = plugin;
 		AsyncSQL sql = this.instance.getAsyncSQL();
 
-		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv + " (ID INT PRIMARY KEY, sellInv LONGTEXT, buyInv LONGTEXT)");
+		//OLD sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv + " (ID INT PRIMARY KEY, sellInv LONGTEXT, buyInv LONGTEXT)");
 		
-		//TODO RUN ONLY ONCE
-		//Create new Table and import old data
-		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv_new + " (ID INT, site INT, sellInv LONGTEXT, buyInv LONGTEXT, PRIMARY KEY (ID, site))");
-		sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
-		//Delete old data
-		sql.queryUpdate("DROP TABLE " + sql.t_shop_inv + ";");
+		
+		//Create new Table
+		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv_new + " (ID INT, site INT, sellInv LONGTEXT, buyInv LONGTEXT, PRIMARY KEY (ID, site));");
+		
+		//CHECK IF OLD DATA EXISTS
+		sql.prepareStatement("SHOW TABLES LIKE " + sql.t_shop_inv + ";", new Consumer<ResultSet>() {
+
+			@Override
+			public void accept(ResultSet rs) {
+				//IMPORTING DATA
+				sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
+				//Delete old data
+				sql.queryUpdate("DROP TABLE " + sql.t_shop_inv + ";");
+			}
+		});
 		
 	}
 	
