@@ -107,7 +107,7 @@ public class NPCUtils {
 		
 		npc.setProtected(true);
 		
-		String customName = this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName: ChatColor.translateAlternateColorCodes('&', "&6" + playerName);
+		String customName = this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName: ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("Options.displayNameColor") + playerName);
 		npc.setName(customName);
 		
 		npc.spawn(loc);

@@ -68,7 +68,7 @@ public class VillagerUtils {
 		//v.setMetadata("shopname", new FixedMetadataValue(this.instance, type));
 		
 		
-		String customName = ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName: "&6" + playerName);
+		String customName = ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName : this.instance.manageFile().getString("Options.displayNameColor") + playerName);
 		
 		v.setCustomName(customName);
 		v.setCustomNameVisible(true);
