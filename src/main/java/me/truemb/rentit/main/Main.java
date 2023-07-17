@@ -66,6 +66,7 @@ import me.truemb.rentit.filemanager.SignFileManager;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
+import me.truemb.rentit.inventory.ShopInventoryBuilder;
 import me.truemb.rentit.listener.AdminHotelListener;
 import me.truemb.rentit.listener.AdminShopListener;
 import me.truemb.rentit.listener.CategoryGUIListener;
@@ -139,6 +140,7 @@ public class Main extends JavaPlugin {
 	public HashMap<UUID, PlayerHandler> playerHandlers = new HashMap<>(); // UUID = playerUUID - SettingsHandler
 	public HashMap<RentTypes, HashMap<Integer, CategoryHandler>> catHandlers = new HashMap<>(); // RentType = hotel/shop - int = catID -  CategoryHandler
 	public HashMap<RentTypes, HashMap<Integer, RentTypeHandler>> rentTypeHandlers = new HashMap<>(); // RentType = hotel/shop - int = shop/hotel ID - RentTypeHandler
+	private HashMap<UUID, ShopInventoryBuilder> shopInvBuilder = new HashMap<>(); 
 
 	public HashMap<UUID, Material> search = new HashMap<>(); 
 	
@@ -610,13 +612,11 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	//ECONOMY
-	/*
-	public Economy getEconomy() {
-		return this.econ;
+	public void setShopInvBuilder(UUID uuid, ShopInventoryBuilder builder) {
+		this.shopInvBuilder.put(uuid, builder);
 	}
-*/
 
+	//ECONOMY
 	public EconomySystem getEconomySystem() {
 		return this.economySystem;
 	}
@@ -729,5 +729,9 @@ public class Main extends JavaPlugin {
 
 	public ChestShopAPI getChestShopApi() {
 		return this.chestShopApi;
+	}
+
+	public ShopInventoryBuilder getShopInvBuilder(UUID uuid) {
+		return this.shopInvBuilder.get(uuid);
 	}
 }

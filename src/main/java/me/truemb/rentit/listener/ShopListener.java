@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.events.ItemBuyEvent;
 import me.truemb.rentit.events.ItemSellEvent;
 import me.truemb.rentit.handler.RentTypeHandler;
@@ -41,6 +42,8 @@ public class ShopListener implements Listener {
 
 		Player p = (Player) e.getWhoClicked();
 		UUID uuid = p.getUniqueId();
+		
+		//TODO Click to next Site
 
 		// ANKAUF
 		if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameSell") + " "))) {
@@ -129,6 +132,8 @@ public class ShopListener implements Listener {
 
 				p.getInventory().addItem(copyItem); // GIVES BUYER THE ITEM
 				Bukkit.getPluginManager().callEvent(new ItemSellEvent(p, rentHandler, copyItem, price));
+				
+				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 
 				if (this.instance.getChestsUtils().checkChestsInArea(shopId, copyItem)) {
 					// LOOKS IN NEARBY CHESTS
@@ -141,10 +146,10 @@ public class ShopListener implements Listener {
 					if (item != null && item.getAmount() > 0)
 						item = ShopItemManager.editShopItemPrice(this.instance, item, itemPrice - price);
 
-					this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
+					this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.SELL, site, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
 				}
 
-				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents());
+				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.SELL, site, inv.getContents());
 				
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
@@ -182,8 +187,9 @@ public class ShopListener implements Listener {
 				
 				e.setCurrentItem(null);
 				p.getInventory().addItem(copyItem);
-				
-				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
+
+				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
+				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.SELL, site, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
 				
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
@@ -295,7 +301,8 @@ public class ShopListener implements Listener {
 					return;
 				}
 
-				this.instance.getShopsInvSQL().updateBuyInv(shopId, inv.getContents());
+				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
+				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
 				
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
@@ -316,7 +323,9 @@ public class ShopListener implements Listener {
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
 				e.setCurrentItem(null);
-				this.instance.getShopsInvSQL().updateBuyInv(shopId, inv.getContents());
+
+				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
+				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
 				
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;

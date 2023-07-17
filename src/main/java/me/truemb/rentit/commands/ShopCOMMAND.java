@@ -33,6 +33,7 @@ import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;
+import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.gui.SearchResultGUI;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PermissionsHandler;
@@ -181,7 +182,7 @@ public class ShopCOMMAND extends BukkitCommand {
 							if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
 								this.instance.getVillagerUtils().moveVillager(shopId, p.getLocation());
 							}else {
-								UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
+								UUID ownerUUID = rentHandler.getOwnerUUID();
 								
 								//SHOP IS OWNED
 								if(ownerUUID != null) {
@@ -343,7 +344,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					}
 				}
 
-				UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
+				UUID ownerUUID = rentHandler.getOwnerUUID();
 				
 				if(ownerUUID != null)
 					this.instance.getShopCacheFileManager().createShopBackup(ownerUUID, shopId);
@@ -1400,58 +1401,8 @@ public class ShopCOMMAND extends BukkitCommand {
 					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
-				
-				//Check if Item Blacklisted
-				List<String> blacklistedItems = this.instance.manageFile().getStringList("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".blacklistedItems");
-				for(String blacklistedMaterial : blacklistedItems) {
-					if(item.getType().toString().equalsIgnoreCase(blacklistedMaterial)) {
-						p.sendMessage(this.instance.getMessage("shopItemBlacklisted"));
-						return true;
-					}
-				}
 
-				item = ShopItemManager.createShopItem(this.instance, item, shopId, price); // UPDATED ITEM WITH PRICE IN IT
-
-				//TODO Get latest Inventory and look, if there is free Space
-				//The same for opening/Removing Items. If only one item is on the second site, then remove the arrow and it one page before
-				Inventory inv = rentHandler.getSellInv();
-
-				int used = 0; // CHECKS HOW MANY SLOTS ARE USED
-				for (ItemStack items : inv.getContents()) {
-					if (items != null && items.getType() != Material.AIR) {
-						used++;
-
-						if (items.isSimilar(item)) {
-							p.sendMessage(this.instance.getMessage("shopContainsItem"));
-							return true;
-						}
-					}
-				}
-
-				if (used == inv.getContents().length) {
-					p.sendMessage(this.instance.getMessage("shopInvFull"));
-					return true;
-				}
-
-				inv.addItem(item);
-				p.getInventory().setItemInMainHand(null);
-				this.instance.getShopsInvSQL().updateSellInv(shopId, inv.getContents()); // DATABASE UPDATE
-
-			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
-			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-				
-				String type = StringUtils.capitalize(item.getType().toString());
-				String itemName = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : type;
-			    
-				p.sendMessage(this.instance.getMessage("shopItemAdded")
-						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
-						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-						.replaceAll("(?i)%" + "alias" + "%", alias)
-						.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
-						.replaceAll("(?i)%" + "itemname" + "%", itemName)
-						.replaceAll("(?i)%" + "type" + "%", type)
-						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(item.getAmount())));
-
+				this.addShopItem(p, rentHandler, catHandler, ShopInventoryType.SELL, item, price);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("buyitem")) {
@@ -1514,8 +1465,8 @@ public class ShopCOMMAND extends BukkitCommand {
 					p.sendMessage(this.instance.getMessage("notANumber"));
 					return true;
 				}
-
-				this.setBuyItem(p, rentHandler, catHandler, item, price);
+				
+				this.addShopItem(p, rentHandler, catHandler, ShopInventoryType.BUY, item, price);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("search")) {
@@ -1546,12 +1497,15 @@ public class ShopCOMMAND extends BukkitCommand {
 				List<Integer> foundShopIds = new ArrayList<>();
 				for(int shopId : typeHash.keySet()) {
 					RentTypeHandler handler = typeHash.get((Integer) shopId);
-					if(handler == null || handler.getSellInv() == null)
+					if(handler == null)
 						continue;
 					
-					int foundAmount = handler.getSellInv().all(m).size();
-					if(foundAmount > 0)
-						foundShopIds.add(handler.getID());
+					for(Inventory inv : handler.getInventories(ShopInventoryType.SELL)) {
+						int foundAmount = inv.all(m).size();
+						if(foundAmount > 0)
+							foundShopIds.add(handler.getID());
+					}
+					
 				}
 
 				this.instance.search.put(uuid, m);
@@ -1623,7 +1577,7 @@ public class ShopCOMMAND extends BukkitCommand {
 
 				ItemStack item = new ItemStack(m);
 				item.setAmount(1);
-				this.setBuyItem(p, rentHandler, catHandler, item, price);
+				this.addShopItem(p, rentHandler, catHandler, ShopInventoryType.BUY, item, price);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("door")) {
@@ -1860,7 +1814,7 @@ public class ShopCOMMAND extends BukkitCommand {
 
 				ItemStack item = new ItemStack(m);
 				item.setAmount(amount);
-				this.setBuyItem(p, rentHandler, catHandler, item, price);
+				this.addShopItem(p, rentHandler, catHandler, ShopInventoryType.BUY, item, price);
 				return true;
 			}
 			
@@ -1992,37 +1946,59 @@ public class ShopCOMMAND extends BukkitCommand {
 		}
 	}
 
-	private void setBuyItem(Player p, RentTypeHandler rentHandler, CategoryHandler catHandler, ItemStack item, double price) {
-
+	private void addShopItem(Player p, RentTypeHandler rentHandler, CategoryHandler catHandler, ShopInventoryType shopInvType, ItemStack item, double price) {
+		
+		//Check if Item Blacklisted
+		List<String> blacklistedItems = this.instance.manageFile().getStringList("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".blacklistedItems");
+		for(String blacklistedMaterial : blacklistedItems) {
+			if(item.getType().toString().equalsIgnoreCase(blacklistedMaterial)) {
+				p.sendMessage(this.instance.getMessage("shopItemBlacklisted"));
+				return;
+			}
+		}
+		
 		item = ShopItemManager.createShopItem(this.instance, item, rentHandler.getID(), price); // UPDATED ITEM WITH PRICE IN IT
 
-		Inventory inv = rentHandler.getBuyInv();
-		
+		//TODO Get latest Inventory and look, if there is free Space
+		//The same for opening/Removing Items. If only one item is on the second site, then remove the arrow and it one page before
+		int site = rentHandler.getInventories(shopInvType).size(); //TODO Is space on the latest site? If not ++
+		Inventory inv = rentHandler.getInventory(shopInvType, site);
+
 		int used = 0; // CHECKS HOW MANY SLOTS ARE USED
 		for (ItemStack items : inv.getContents()) {
 			if (items != null && items.getType() != Material.AIR) {
 				used++;
 
 				if (items.isSimilar(item)) {
-					p.sendMessage(this.instance.getMessage("shopContainsItem"));
+					p.sendMessage(this.instance.getMessage("shopContainsItem")); //TODO CHECK ALL INVENTORIES
 					return;
 				}
 			}
 		}
-
+		//TODO CHECK IF DEFINED LIMIT REACHED
 		if (used == inv.getContents().length) {
 			p.sendMessage(this.instance.getMessage("shopInvFull"));
 			return;
 		}
 
 		inv.addItem(item);
-
-		this.instance.getShopsInvSQL().updateBuyInv(rentHandler.getID(), inv.getContents()); // DATABASE UPDATE
 		
+		//Remove item if the player wants to sell it in the Shop
+		if(shopInvType == ShopInventoryType.SELL)
+			p.getInventory().setItemInMainHand(null);
+		
+		this.instance.getShopsInvSQL().updateInventory(rentHandler.getID(), shopInvType, site, inv.getContents()); // DATABASE UPDATE
+		
+		String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
+		String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+			
 		String type = StringUtils.capitalize(item.getType().toString());
 		String itemName = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : type;
-		
+		    
 		p.sendMessage(this.instance.getMessage("shopItemAdded")
+				.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(rentHandler.getID()))
+				.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+				.replaceAll("(?i)%" + "alias" + "%", alias)
 				.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
 				.replaceAll("(?i)%" + "itemname" + "%", itemName)
 				.replaceAll("(?i)%" + "type" + "%", type)
@@ -2032,10 +2008,10 @@ public class ShopCOMMAND extends BukkitCommand {
 	private void resetArea(Player p, RentTypeHandler rentHandler) {
 		
 		int shopId = rentHandler.getID();
-		UUID ownerUUID = this.instance.getAreaFileManager().getOwner(this.type, shopId);
+		UUID ownerUUID = rentHandler.getOwnerUUID();
 
 		if(ownerUUID != null)
-			this.instance.getShopCacheFileManager().setShopBackup(ownerUUID, shopId);
+			this.instance.getShopCacheFileManager().createShopBackup(ownerUUID, shopId);
 
 		if(!instance.manageFile().getBoolean("Options.disableNPC")) {
 			if(instance.manageFile().getBoolean("Options.useNPC")) {
@@ -2070,8 +2046,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		this.instance.getAreaFileManager().unsetDoorClosed(this.type, shopId);
 		this.instance.getMethodes().updateSign(this.type, shopId);
 		
-		this.instance.getShopsInvSQL().updateSellInv(shopId, null);
-		this.instance.getShopsInvSQL().updateBuyInv(shopId, null);
+		this.instance.getShopsInvSQL().resetInventories(shopId);
 
 	}
 	

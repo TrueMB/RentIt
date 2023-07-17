@@ -21,26 +21,36 @@ public class ShopInventoryBuilder {
 		this.currentSite = 1;
 	}
 
-	public void beforeSite() {
+	public ShopInventoryBuilder beforeSite() {
 		if(this.currentSite == 0)
-			return;
+			return this;
 		
 		this.currentSite--;
 		this.openInventory();
+		
+		return this;
 	}
 	
-	public void nextSite() {
+	public ShopInventoryBuilder nextSite() {
 		if(this.currentSite >= this.shopHandler.getInventories(this.type).size())
-			return;
+			return this;
 		
 		this.currentSite++;
 		this.openInventory();
+		
+		return this;
 	}
 	
-	public void build(ShopInventoryType type) {
+	public ShopInventoryBuilder build(ShopInventoryType type) {
 		this.type = type;
 		
 		this.openInventory();
+		
+		return this;
+	}
+	
+	public int getSite() {
+		return this.currentSite;
 	}
 	
 	private void openInventory() {

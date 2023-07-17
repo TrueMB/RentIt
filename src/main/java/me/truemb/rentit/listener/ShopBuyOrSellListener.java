@@ -1,5 +1,7 @@
 package me.truemb.rentit.listener;
 
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -13,7 +15,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.handler.RentTypeHandler;
+import me.truemb.rentit.inventory.ShopInventoryBuilder;
 import me.truemb.rentit.main.Main;
 
 public class ShopBuyOrSellListener implements Listener{
@@ -33,6 +37,7 @@ public class ShopBuyOrSellListener implements Listener{
 	public void onClick(InventoryClickEvent e) {
 
         Player p = (Player) e.getWhoClicked();
+        UUID uuid = p.getUniqueId();
         
 		if(e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopBuyOrSell.displayName")))) {
 
@@ -67,7 +72,8 @@ public class ShopBuyOrSellListener implements Listener{
 					return;
 				}
 				
-				p.openInventory(rentHandler.getSellInv());
+				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler).build(ShopInventoryType.SELL);
+				this.instance.setShopInvBuilder(uuid, builder);
 				
 			}else if(this.instance.getMethodes().getGUIItem("shopBuyOrSell", "buyItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
 				
@@ -77,8 +83,9 @@ public class ShopBuyOrSellListener implements Listener{
 					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return;
 				}
-				
-				p.openInventory(rentHandler.getBuyInv());
+
+				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler).build(ShopInventoryType.BUY);
+				this.instance.setShopInvBuilder(uuid, builder);
 
 			}else if(this.instance.getMethodes().getGUIItem("shopBuyOrSell", "cancelItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
 				p.closeInventory();
