@@ -15,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 
 import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.UtilitiesAPI;
@@ -36,9 +37,8 @@ public class RentTypeHandler {
 	private Timestamp reminder;
 	private boolean reminded;
 	
-	
-	private HashMap<Integer, Inventory> sellInvHash; //INVENTORY IS ALREADY LOADED AND KEEPS THE INSTANCE. SO EVERYBODY UPDATE, IF SOMETHING CHANGES
-	private HashMap<Integer, Inventory> buyInvHash;
+	//INVENTORY IS ALREADY LOADED AND KEEPS THE INSTANCE. SO EVERYBODY UPDATE, IF SOMETHING CHANGES
+	private HashMap<ShopInventoryType, HashMap<Integer, Inventory>> inventoryCache = new HashMap<>(); 
 	
 	public RentTypeHandler(Main plugin, RentTypes type, int id, int catID, UUID ownerUUID, String ownerName, Timestamp nextPayment, boolean autoPayment) {
 		this.instance = plugin;
@@ -50,6 +50,9 @@ public class RentTypeHandler {
 		this.setOwner(ownerUUID, ownerName);
 		this.setAutoPayment(autoPayment);
 		this.setNextPayment(nextPayment);
+		
+		for(ShopInventoryType shopTypes : ShopInventoryType.values())
+			this.inventoryCache.put(shopTypes, new HashMap<>());
 	}
 	
 	//GET METHODES
@@ -182,72 +185,49 @@ public class RentTypeHandler {
 		this.setReminder(reminderTs);
 	}
 
-	public void setBuyInv(int site, Inventory buyInv) {
-		Inventory inv = this.buyInvHash.get(site);
+	public void setInventory(ShopInventoryType type, int site, Inventory inventoryToSet) {
+		HashMap<Integer, Inventory> invHash = this.inventoryCache.get(type);
+		if(invHash == null) return;
+		
+		Inventory inv = invHash.get(site);
 		if(inv != null) {
 			
 			//Inventory got the same size. Changing the content
-			if(inv.getSize() == buyInv.getSize()) {
-				inv.setContents(buyInv.getContents());
+			if(inv.getSize() == inventoryToSet.getSize()) {
+				inv.setContents(inventoryToSet.getContents());
 
 			//Inventory is not the same size. Reopening the Inventory
 			}else {
 				List<HumanEntity> list = inv.getViewers();
 				for(int i = list.size() - 1; i >= 0; i--)
-					list.get(i).openInventory(buyInv);
+					list.get(i).openInventory(inventoryToSet);
 			}
 		}
-		this.buyInvHash.put(site, buyInv);
-	}
-
-	public void setSellInv(int site, Inventory sellInv) {
-		Inventory inv = this.sellInvHash.get(site);
-		if(inv != null) {
-			
-			//Inventory got the same size. Changing the content
-			if(inv.getSize() == sellInv.getSize()) {
-				inv.setContents(sellInv.getContents());
-
-			//Inventory is not the same size. Reopening the Inventory
-			}else {
-				List<HumanEntity> list = inv.getViewers();
-				for(int i = list.size() - 1; i >= 0; i--)
-					list.get(i).openInventory(sellInv);
-			}
-		}
-		this.sellInvHash.put(site, sellInv);
+		
+		invHash.put(site, inventoryToSet);
 	}
 	
 	public int searchMaterial(Material m) {
 		int amount = 0;
-		for(Inventory inv : this.sellInvHash.values()) {
+		for(Inventory inv : this.inventoryCache.get(ShopInventoryType.SELL).values()) {
 			amount += inv.all(m).size();
 		}
 		return amount;
 	}
 	
-	public Collection<Inventory> getBuyInventories(){
-		return this.buyInvHash.values();
+	public Collection<Inventory> getInventories(ShopInventoryType type){
+		return this.inventoryCache.get(type).values();
 	}
 
-	public Inventory getBuyInv(int site) {
-		Inventory result = this.buyInvHash.get(site);
+	public Inventory getInventory(ShopInventoryType type, int site) {
+		HashMap<Integer, Inventory> invHash = this.inventoryCache.get(type);
+		if(invHash == null) 
+			return null;
 		
-		if(result == null)
-			this.buyInvHash.put(site, result = UserShopGUI.getBuyInv(this.instance, this.getID(), site, null));
+		Inventory result = invHash.get(site);
 		
-		return result;
-	}
-
-	public Collection<Inventory> getSellInventories(){
-		return this.sellInvHash.values();
-	}
-	
-	public Inventory getSellInv(int site) {
-		Inventory result = this.sellInvHash.get(site);
-		
-		if(result == null)
-			this.sellInvHash.put(site, result = UserShopGUI.getSellInv(this.instance, this.getID(), site, null));
+		if(result == null && site == 1)
+			invHash.put(site, result = UserShopGUI.getInventory(this.instance, type, this.getID(), site, null));
 		
 		return result;
 	}

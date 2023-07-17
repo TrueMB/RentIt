@@ -81,6 +81,7 @@ public class AreaFileManager {
 		}
 	}
 
+	@Deprecated //The loaded rentType Handler should be used
 	public UUID getOwner(RentTypes type, int id) {
 		String path = type.toString().toUpperCase() + "." + id;
 		

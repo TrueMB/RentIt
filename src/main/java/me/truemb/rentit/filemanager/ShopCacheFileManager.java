@@ -18,6 +18,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.InventoryUtils;
@@ -61,7 +62,7 @@ public class ShopCacheFileManager {
 		}
 		
 		RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
-		Collection<Inventory> sellInventories = rentHandler.getSellInventories();
+		Collection<Inventory> sellInventories = rentHandler.getInventories(ShopInventoryType.SELL);
 		
 		for(int i = 0; i < sellInventories.size(); i++) {
 			Inventory sellInv = (Inventory) sellInventories.toArray()[i];

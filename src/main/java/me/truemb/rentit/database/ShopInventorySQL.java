@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 import org.bukkit.inventory.ItemStack;
 
+import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
@@ -45,28 +46,16 @@ public class ShopInventorySQL {
 		sql.queryUpdate("UPDATE " + sql.t_shop_inv_new + " sellInv = null, buyInv = null WHERE ID='" + shopId + "';");
 	}
 	
-	public void updateSellInv(int shopId, int site, ItemStack[] contents){
+	public void updateInventory(int shopId, ShopInventoryType type, int site, ItemStack[] contents){
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		String contentsS = contents != null ? InventoryUtils.itemStackArrayToBase64(contents) : null;
 
 		if(sql.isSqlLite()) //SQLLITE
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + contentsS + "', '" + null + "') "
-					+ "ON CONFLICT(ID, site) DO UPDATE SET sellInv='" + contentsS + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + (type == ShopInventoryType.SELL ? contentsS : null) + "', '" + (type == ShopInventoryType.BUY ? contentsS : null) + "') "
+					+ "ON CONFLICT(ID, site) DO UPDATE SET " + type.toString().toLowerCase() + "Inv='" + contentsS + "';");
 		else //MYSQL
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + contentsS + "', '" + null + "') "
-					+ "ON DUPLICATE KEY UPDATE sellInv='" + contentsS + "';");
-	}
-	
-	public void updateBuyInv(int shopId, int site, ItemStack[] contents){
-		AsyncSQL sql = this.instance.getAsyncSQL();
-		String contentsS = contents != null ? InventoryUtils.itemStackArrayToBase64(contents) : null;
-
-		if(sql.isSqlLite()) //SQLLITE
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + null + "', '" + contentsS + "') "
-					+ "ON CONFLICT(ID, site) DO UPDATE SET buyInv='" + contentsS + "';");
-		else //MYSQL
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + null + "', '" + contentsS + "') "
-					+ "ON DUPLICATE KEY UPDATE buyInv='" + contentsS + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + (type == ShopInventoryType.SELL ? contentsS : null) + "', '" + (type == ShopInventoryType.BUY ? contentsS : null) + "') "
+					+ "ON DUPLICATE KEY UPDATE " + type.toString().toLowerCase() + "Inv='" + contentsS + "';");
 	}
 	
 	public void setupShopInventories(RentTypeHandler handler) {
@@ -88,15 +77,11 @@ public class ShopInventorySQL {
 						
 						ItemStack[] sellContents = !sellInv.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(sellInv) : null;
 						ItemStack[] buyContents = !buyInv.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInv) : null;
-						
-						handler.setSellInv(site, UserShopGUI.getSellInv(instance, id, site, sellContents));
-						handler.setBuyInv(site, UserShopGUI.getBuyInv(instance, id, site, buyContents));
+
+						handler.setInventory(ShopInventoryType.SELL, site, UserShopGUI.getInventory(instance, ShopInventoryType.SELL, id, site, sellContents));
+						handler.setInventory(ShopInventoryType.BUY, site, UserShopGUI.getInventory(instance, ShopInventoryType.BUY, id, site, buyContents));
 						return;
 					}
-
-					//NO ENTRY FOUND
-					handler.setSellInv(1, UserShopGUI.getSellInv(instance, id, 1, null));
-					handler.setBuyInv(1, UserShopGUI.getBuyInv(instance, id, 1, null));
 				} catch (SQLException | IOException e) {
 					e.printStackTrace();
 				}

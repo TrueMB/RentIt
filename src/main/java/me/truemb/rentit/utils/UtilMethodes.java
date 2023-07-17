@@ -152,7 +152,11 @@ public class UtilMethodes {
 	}
 	
 	public boolean hasPermission(RentTypes type, int id, UUID uuid, String permission) {
-		UUID ownerUUID = this.instance.getAreaFileManager().getOwner(type, id);
+		RentTypeHandler handler = this.getTypeHandler(type, id);
+		if (handler == null)
+			return false;
+		
+		UUID ownerUUID = handler.getOwnerUUID();
 		if (ownerUUID != null && ownerUUID.equals(uuid))
 			return true;
 
