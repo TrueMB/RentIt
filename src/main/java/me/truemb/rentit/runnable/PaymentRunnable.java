@@ -129,7 +129,7 @@ public class PaymentRunnable implements Runnable {
 
 							@Override
 							public void run() {
-					        	instance.getShopCacheFileManager().setShopBackup(uuid, shopId);
+					        	instance.getShopCacheFileManager().createShopBackup(uuid, shopId);
 								rentHandler.reset();
 				
 								//REMOVE NPC
@@ -158,8 +158,7 @@ public class PaymentRunnable implements Runnable {
 										
 								instance.getMethodes().updateSign(RentTypes.SHOP, shopId, null, time, costs, shopId);
 								
-								instance.getShopsInvSQL().updateSellInv(shopId, null);
-								instance.getShopsInvSQL().updateBuyInv(shopId, null);
+								instance.getShopsInvSQL().resetInventories(shopId);
 							}
 						});
 							
