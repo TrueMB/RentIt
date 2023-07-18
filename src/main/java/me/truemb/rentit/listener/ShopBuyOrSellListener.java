@@ -72,7 +72,7 @@ public class ShopBuyOrSellListener implements Listener{
 					return;
 				}
 				
-				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler).build(ShopInventoryType.SELL);
+				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler, ShopInventoryType.SELL).build();
 				this.instance.setShopInvBuilder(uuid, builder);
 				
 			}else if(this.instance.getMethodes().getGUIItem("shopBuyOrSell", "buyItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
@@ -84,7 +84,7 @@ public class ShopBuyOrSellListener implements Listener{
 					return;
 				}
 
-				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler).build(ShopInventoryType.BUY);
+				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler, ShopInventoryType.BUY).build();
 				this.instance.setShopInvBuilder(uuid, builder);
 
 			}else if(this.instance.getMethodes().getGUIItem("shopBuyOrSell", "cancelItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {

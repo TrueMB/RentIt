@@ -84,7 +84,6 @@ public class ShopCacheFileManager {
 		}
 	}
 	
-	@Deprecated
 	public void updateShopBackup(UUID uuid, int id, List<Inventory> inventories) {
 		
 		YamlConfiguration cfg = this.getConfig();

@@ -1,5 +1,7 @@
 package me.truemb.rentit.inventory;
 
+import java.util.UUID;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -9,16 +11,16 @@ import me.truemb.rentit.handler.RentTypeHandler;
 public class ShopInventoryBuilder {
 	
 	private Player player;
+	private UUID targetUUID;
 	
 	private RentTypeHandler shopHandler;
 	private ShopInventoryType type;
 	private int currentSite;
 	
-	public ShopInventoryBuilder(Player p, RentTypeHandler shopHandler) {
-		this.player = p;
-		
+	public ShopInventoryBuilder(Player player, RentTypeHandler shopHandler, ShopInventoryType type) {
+		this.player = player;
 		this.shopHandler = shopHandler;
-		this.currentSite = 1;
+		this.type = type;
 	}
 
 	public ShopInventoryBuilder beforeSite() {
@@ -41,11 +43,21 @@ public class ShopInventoryBuilder {
 		return this;
 	}
 	
-	public ShopInventoryBuilder build(ShopInventoryType type) {
-		this.type = type;
+	/**
+	 * Sets the Target. Currently used if an Admin opens another Players Rollback Inventory
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public ShopInventoryBuilder setTarget(UUID uuid) {
+		this.targetUUID = uuid;
+		return this;
+	}
+	
+	public ShopInventoryBuilder build() {
+		this.currentSite = 1;
 		
 		this.openInventory();
-		
 		return this;
 	}
 	
@@ -53,9 +65,17 @@ public class ShopInventoryBuilder {
 		return this.currentSite;
 	}
 	
+	public Inventory getCurrentInventory() {
+		if(this.type == ShopInventoryType.ROLLBACK) {
+			return this.shopHandler.getRollbackInventory(this.targetUUID != null ? this.targetUUID : this.player.getUniqueId(), this.currentSite);
+		}else
+			return this.shopHandler.getInventory(this.type, this.currentSite);
+	}
+	
 	private void openInventory() {
-		Inventory inv = this.shopHandler.getInventory(this.type, this.currentSite);
-		this.player.openInventory(inv);
+		Inventory inv = this.getCurrentInventory();
+		if(inv != null)
+			this.player.openInventory(inv);
 	}
 
 }

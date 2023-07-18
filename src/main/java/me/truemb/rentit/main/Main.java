@@ -21,7 +21,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -45,8 +44,6 @@ import me.truemb.rentit.commands.HotelsCOMMAND;
 import me.truemb.rentit.commands.RentItCOMMAND;
 import me.truemb.rentit.commands.ShopCOMMAND;
 import me.truemb.rentit.commands.ShopsCOMMAND;
-import me.truemb.rentit.data.RollbackInventoryData;
-import me.truemb.rentit.data.RollbackInventoryManager;
 import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.database.CategoriesSQL;
 import me.truemb.rentit.database.HotelsSQL;
@@ -133,8 +130,6 @@ public class Main extends JavaPlugin {
 	private AreaFileManager areaFM;
 	private DoorFileManager doorFM;
 	
-	private RollbackInventoryManager rollbackInvManager;
-	
 	private UTF8YamlConfiguration config;
 
 	public HashMap<UUID, PlayerHandler> playerHandlers = new HashMap<>(); // UUID = playerUUID - SettingsHandler
@@ -205,8 +200,6 @@ public class Main extends JavaPlugin {
 		
 		//TODO REMOVE/SET IF DisableNPC was changed
 		//Maybe not needed, because Villager/NPC are getting destroyed on server stop.
-		
-		this.rollbackInvManager = new RollbackInventoryManager(this);
 				
 		this.setupPlaceholderAPI();
 		
@@ -276,29 +269,12 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		
-		//SAVING THE ROLLBACK INVENTORY IF STILL OPENED
-		if(this.getRollbackInventoryManager() != null) {
-			for(Player all : Bukkit.getOnlinePlayers()) {
-	
-				UUID uuid = all.getUniqueId();
-				
-				RollbackInventoryData data = this.getRollbackInventoryManager().getRollbackInventoryData(uuid);
-				
-				if(data == null)
-					continue;
-	
-				Inventory inv = all.getOpenInventory().getTopInventory();
-				
-				data.getSiteInventory(data.getCurrentSite()).setContents(inv.getContents()); //SET CHANGES
-				
-				//SAVE INVENTORIES IN THE FILE
-				this.getShopCacheFileManager().updateShopBackup(data.getOwnerUUID(), data.getShopId(), data.getRollbackInventories());
-				
-				//CLOSE OLD DATA AND MAKE THE INVENTORY OPENABLE
-				this.getRollbackInventoryManager().closeInventory(uuid);
-				
-				all.closeInventory();
-			}
+		for(RentTypeHandler shopHandler : this.rentTypeHandlers.get(RentTypes.SHOP).values()) {
+			HashMap<UUID, List<Inventory>> rollbackHash = shopHandler.getRollbackInventories();
+			
+			//SAVE INVENTORIES IN THE FILE
+			for(UUID uuid : rollbackHash.keySet())
+				this.getShopCacheFileManager().updateShopBackup(uuid, shopHandler.getID(), rollbackHash.get(uuid));
 		}
 		
 		if(this.getVillagerUtils() != null)
@@ -310,7 +286,7 @@ public class Main extends JavaPlugin {
 			this.getAsyncSQL().getMySQL().closeConnection();
 		
 		else if(this.getAsyncSQL() != null && this.getAsyncSQL().getSqlLite() != null && this.getAsyncSQL().getSqlLite().getConnection() != null)
-				this.getAsyncSQL().getSqlLite().closeConnection();
+			this.getAsyncSQL().getSqlLite().closeConnection();
 	}
 	
 	public void initRestart(CommandSender sender) {
@@ -721,10 +697,6 @@ public class Main extends JavaPlugin {
 
 	public VillagerUtils getVillagerUtils() {
 		return this.vilUtils;
-	}
-
-	public RollbackInventoryManager getRollbackInventoryManager() {
-		return this.rollbackInvManager;
 	}
 
 	public ChestShopAPI getChestShopApi() {

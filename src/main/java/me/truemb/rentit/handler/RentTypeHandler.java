@@ -16,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.ShopInventoryType;
+import me.truemb.rentit.gui.RollbackGUI;
 import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.UtilitiesAPI;
@@ -38,7 +39,10 @@ public class RentTypeHandler {
 	private boolean reminded;
 	
 	//INVENTORY IS ALREADY LOADED AND KEEPS THE INSTANCE. SO EVERYBODY UPDATE, IF SOMETHING CHANGES
-	private HashMap<ShopInventoryType, HashMap<Integer, Inventory>> inventoryCache = new HashMap<>(); 
+	private HashMap<ShopInventoryType, HashMap<Integer, Inventory>> inventoryCache = new HashMap<>();
+	
+	//Inventory which contains old Items
+	private HashMap<UUID, List<Inventory>> rollbackInv = new HashMap<>();
 	
 	public RentTypeHandler(Main plugin, RentTypes type, int id, int catID, UUID ownerUUID, String ownerName, Timestamp nextPayment, boolean autoPayment) {
 		this.instance = plugin;
@@ -51,8 +55,8 @@ public class RentTypeHandler {
 		this.setAutoPayment(autoPayment);
 		this.setNextPayment(nextPayment);
 		
-		for(ShopInventoryType shopTypes : ShopInventoryType.values())
-			this.inventoryCache.put(shopTypes, new HashMap<>());
+		this.inventoryCache.put(ShopInventoryType.BUY, new HashMap<>());
+		this.inventoryCache.put(ShopInventoryType.SELL, new HashMap<>());
 	}
 	
 	//GET METHODES
@@ -218,6 +222,10 @@ public class RentTypeHandler {
 	public Collection<Inventory> getInventories(ShopInventoryType type){
 		return this.inventoryCache.get(type).values();
 	}
+	
+	public HashMap<UUID, List<Inventory>> getRollbackInventories(){
+		return this.rollbackInv;
+	}
 
 	public Inventory getInventory(ShopInventoryType type, int site) {
 		HashMap<Integer, Inventory> invHash = this.inventoryCache.get(type);
@@ -230,6 +238,17 @@ public class RentTypeHandler {
 			invHash.put(site, result = UserShopGUI.getInventory(this.instance, type, this.getID(), site, null));
 		
 		return result;
+	}
+	
+	public Inventory getRollbackInventory(UUID uuid, int site) {
+		
+		if(this.rollbackInv.get(uuid) == null)
+			this.rollbackInv.put(uuid, RollbackGUI.getRollbackInventories(this.instance, this.ownerUUID, this.id));
+		
+		if(this.rollbackInv.get(uuid).size() <= 0)
+			return null;
+		
+		return this.rollbackInv.get(uuid).get(site - 1);
 	}
 
 }
