@@ -46,7 +46,7 @@ public class ShopListener implements Listener {
 		//TODO Click to next Site
 
 		// ANKAUF
-		if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameSell") + " "))) {
+		if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameSell")))) {
 
 			e.setCancelled(true);
 
@@ -207,7 +207,7 @@ public class ShopListener implements Listener {
 			}
 
 			// Owner buys Item from Player
-		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameBuy") + " "))) {
+		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameBuy")))) {
 
 			e.setCancelled(true);
 

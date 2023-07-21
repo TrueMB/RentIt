@@ -238,9 +238,8 @@ GUI:
   shopUser:
     displayNameShopRentSettings: '&f&lShop Rent'
     displayNameHotelRentSettings: '&f&lHotel Rent'
-    #Space and the Player Name will be added as well. So: Buy/Sell-Shop IngameName
-    displayNameSell: '&a&lSell-Shop&f'
-    displayNameBuy: '&a&lBuy-Shop&f'
+    displayNameSell: '&a&lSell-Shop'
+    displayNameBuy: '&a&lBuy-Shop'
     loreSellItemPrice: '&6Price&7: &f%price%'
     items:
       #If the Automatic Payment is active, players will pay until they got no more money or stop the automaticly payment
@@ -678,7 +677,7 @@ Messages:
     - '&f/shops &7- &6Shows all your owned Shops.'
     - '&f/freeshops &7- &6Shows all free Shops.'
     - '&f/shop help &7- &6Opens the Help Book.'
-    - '&f/shop createCat <CategoryID> <Price> <Size> <Time> &7- &6Create a Category.'
+    - '&f/shop createCat <CategoryID> <Price> <Size> <Max Sites> <Time> &7- &6Create a Category.'
     - '&f/shop deleteCat <CategoryID> &7- &6Delete a Category.'
     - '&f/shop listCat &7- &6Lists all Categories.'
     - '&f/shop setAlias &7- &6Set an alias for the shop.'

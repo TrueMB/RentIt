@@ -8,6 +8,7 @@ public class CategoryHandler {
 	private double price = 0D;
 	private String time = "";
 	private int size = -1;
+	private int maxSite = 1;
 	
 	public CategoryHandler(int catID, double price, String time) {
 		this.catID = catID;
@@ -18,19 +19,23 @@ public class CategoryHandler {
 	
 	//GET METHODES
 	public String getTime() {
-		return time;
+		return this.time;
 	}
 
 	public int getSize() {
-		return size;
+		return this.size;
 	}
 
 	public double getPrice() {
-		return price;
+		return this.price;
 	}
 
 	public int getCatID() {
 		return this.catID;
+	}
+	
+	public int getMaxSite() {
+		return this.maxSite;
 	}
 	
 	public String getAlias() {
@@ -49,6 +54,10 @@ public class CategoryHandler {
 
 	public void setSize(int size) {
 		this.size = size;
+	}
+
+	public void setMaxSite(int maxSite) {
+		this.maxSite = maxSite;
 	}
 	
 	public void setAlias(String alias) {

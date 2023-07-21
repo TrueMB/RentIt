@@ -25,10 +25,9 @@ public class UserShopGUI {
 		if (catHandler == null)
 			return null;
 
-		String ownerName = rentHandler.getOwnerName();
 		int size = catHandler.getSize();
 
-		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.displayNameBuy") + " " + ownerName)); //TODO Remove Hard Coded Name?
+		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.displayNameBuy")));
 		
 		int puf = 0;
 		if (contents != null) {

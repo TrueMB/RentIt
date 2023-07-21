@@ -17,11 +17,12 @@ public class CategoriesSQL {
 		this.instance = plugin;
 		AsyncSQL sql = this.instance.getAsyncSQL();
 
-		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_categories + " (catID INT PRIMARY KEY, alias VARCHAR(100), size INT, costs DOUBLE, time VARCHAR(30))");
+		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_categories + " (catID INT PRIMARY KEY, alias VARCHAR(100), size INT, maxSite INT, costs DOUBLE, time VARCHAR(30))");
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_hotel_categories + " (catID INT PRIMARY KEY, alias VARCHAR(100), costs DOUBLE, time VARCHAR(30))");
 		
 		//UPDATES
 		sql.addColumn(sql.t_shop_categories, "alias", "VARCHAR(100)");
+		sql.addColumn(sql.t_shop_categories, "maxSite", "INT");
 		sql.addColumn(sql.t_hotel_categories, "alias", "VARCHAR(100)");
 	}
 	

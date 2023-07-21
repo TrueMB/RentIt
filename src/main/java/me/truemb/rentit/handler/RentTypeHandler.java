@@ -38,10 +38,10 @@ public class RentTypeHandler {
 	private Timestamp reminder;
 	private boolean reminded;
 	
-	//INVENTORY IS ALREADY LOADED AND KEEPS THE INSTANCE. SO EVERYBODY UPDATE, IF SOMETHING CHANGES
+	//Inventory gets loaded on startup. Players using this inventories. So every Inventory gets automatically updated, if something changes
 	private HashMap<ShopInventoryType, HashMap<Integer, Inventory>> inventoryCache = new HashMap<>();
 	
-	//Inventory which contains old Items
+	//Inventory which contains the backed up Items for the different players
 	private HashMap<UUID, List<Inventory>> rollbackInv = new HashMap<>();
 	
 	public RentTypeHandler(Main plugin, RentTypes type, int id, int catID, UUID ownerUUID, String ownerName, Timestamp nextPayment, boolean autoPayment) {
@@ -227,6 +227,13 @@ public class RentTypeHandler {
 		return this.rollbackInv;
 	}
 
+	/**
+	 * Remember the site is used as index. There is no 0 value
+	 * 
+	 * @param type
+	 * @param site
+	 * @return
+	 */
 	public Inventory getInventory(ShopInventoryType type, int site) {
 		HashMap<Integer, Inventory> invHash = this.inventoryCache.get(type);
 		if(invHash == null) 

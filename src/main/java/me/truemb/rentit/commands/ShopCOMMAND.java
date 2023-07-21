@@ -1797,7 +1797,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				return true;
 			}
 			
-		} else if (args.length == 5) {
+		} else if (args.length == 5 || args.length == 6) {
 			if (args[0].equalsIgnoreCase("createCat")) {
 				
 				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "createcat")) {
@@ -1813,13 +1813,15 @@ public class ShopCOMMAND extends BukkitCommand {
 				int catID = 0;
 				int price = 0;
 				int size = 0;
-				String timeS = args[4];
+				int maxSite = 1;
+				String timeS = args.length == 6 ? args[5] : args[4];
 
 				// SHOP PRICE
 				try {
 					catID = Integer.parseInt(args[1]);
 					price = Integer.parseInt(args[2]);
 					size = Integer.parseInt(args[3]);
+					maxSite = args.length == 6 ? Integer.parseInt(args[4]) : 1;
 				} catch (NumberFormatException ex) {
 					p.sendMessage(this.instance.getMessage("notANumber"));
 					return true;
@@ -1848,10 +1850,12 @@ public class ShopCOMMAND extends BukkitCommand {
 					this.instance.catHandlers.put(this.type, hash);
 					
 					catHandler.setSize(size);
+					catHandler.setMaxSite(maxSite);
 				}else {
 					catHandler.setPrice(price);
 					catHandler.setTime(timeS);
 					catHandler.setSize(size);
+					catHandler.setMaxSite(maxSite);
 				}
 
 			    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
@@ -1864,6 +1868,7 @@ public class ShopCOMMAND extends BukkitCommand {
 						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 						.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
 						.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+						.replaceAll("(?i)%" + "maxSite" + "%", String.valueOf(maxSite))
 						.replaceAll("(?i)%" + "time" + "%", timeS));
 				return true;
 			}
@@ -1938,27 +1943,32 @@ public class ShopCOMMAND extends BukkitCommand {
 		
 		item = ShopItemManager.createShopItem(this.instance, item, rentHandler.getID(), price); // UPDATED ITEM WITH PRICE IN IT
 
-		//TODO Get latest Inventory and look, if there is free Space
-		//The same for opening/Removing Items. If only one item is on the second site, then remove the arrow and it one page before
-		int site = rentHandler.getInventories(shopInvType).size(); //TODO Is space on the latest site? If not ++
+		int site = rentHandler.getInventories(shopInvType).size();
+		if(site > catHandler.getMaxSite())
+			site = catHandler.getMaxSite();
+		
 		Inventory inv = rentHandler.getInventory(shopInvType, site);
 
 		int used = 0; // CHECKS HOW MANY SLOTS ARE USED
-		for (ItemStack items : inv.getContents()) {
-			if (items != null && items.getType() != Material.AIR) {
-				used++;
-
-				if (items.isSimilar(item)) {
-					p.sendMessage(this.instance.getMessage("shopContainsItem")); //TODO CHECK ALL INVENTORIES
-					return;
+		for(Inventory inventories : rentHandler.getInventories(shopInvType)) {
+			for (ItemStack items : inventories.getContents()) {
+				if (items != null && items.getType() != Material.AIR) {
+					used++;
+	
+					if (items.isSimilar(item)) {
+						p.sendMessage(this.instance.getMessage("shopContainsItem"));
+						return;
+					}
 				}
 			}
 		}
-		//TODO CHECK IF DEFINED LIMIT REACHED
-		if (used == inv.getContents().length) {
+		
+		if (used >= catHandler.getSize() * catHandler.getMaxSite()) {
 			p.sendMessage(this.instance.getMessage("shopInvFull"));
 			return;
 		}
+		
+		//TODO Calculate in which Inventory the item should be placed and if arrows for the next site are needed
 
 		inv.addItem(item);
 		
