@@ -126,12 +126,17 @@ public class ShopListener implements Listener {
 				}
 
 				copyItem.setAmount(amount); // SETS HOW MUCH THE PLAYER BOUGHT
+				
+				ItemSellEvent event = new ItemSellEvent(p, rentHandler, copyItem, price);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(event.isCancelled())
+					return;
 
 				this.instance.getEconomySystem().withdraw(p, price); // REMVOES THE MONEY FROM THE BUYER
 				this.instance.getEconomySystem().deposit(owner, price); // GIVE SHOPOWNER THE MONEY
 
 				p.getInventory().addItem(copyItem); // GIVES BUYER THE ITEM
-				Bukkit.getPluginManager().callEvent(new ItemSellEvent(p, rentHandler, copyItem, price));
 				
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 
@@ -145,10 +150,9 @@ public class ShopListener implements Listener {
 
 					if (item != null && item.getAmount() > 0)
 						item = ShopItemManager.editShopItemPrice(this.instance, item, itemPrice - price);
-
-					this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.SELL, site, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
 				}
-
+				
+				// UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
 				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.SELL, site, inv.getContents());
 				
 				String type = StringUtils.capitalize(copyItem.getType().toString());
@@ -160,6 +164,7 @@ public class ShopListener implements Listener {
 						.replaceAll("(?i)%" + "itemname" + "%", itemName)
 						.replaceAll("(?i)%" + "type" + "%", type));
 				return;
+				
 			} else if (e.isRightClick()) {
 
 				// NO PERMISSIONS TO REMOVE
@@ -238,6 +243,7 @@ public class ShopListener implements Listener {
 
 			// Player selling to owner
 			if (e.isLeftClick() && !ownerUUID.equals(uuid)) {
+				
 				double itemPrice = ShopItemManager.getPriceFromShopItem(this.instance, item);
 				double price;
 				int amount;
@@ -277,29 +283,32 @@ public class ShopListener implements Listener {
 
 				}
 
-
 				if (!this.instance.getEconomySystem().has(owner, price)) {
 					p.sendMessage(this.instance.getMessage("notEnoughMoneyOwner"));
 					return;
 				}
 
 				copyItem.setAmount(amount); // SETS HOW MUCH THE PLAYER SELLED
+				
 
-				if (this.instance.getChestsUtils().checkForSpaceInArea(shopId, copyItem)) {
-
-					// LOOKS IN NEARBY CHESTS
-					this.instance.getChestsUtils().addItemToChestsInArea(shopId, copyItem);
-					this.instance.getMethodes().removeItemFromPlayer(p, copyItem);
-
-					this.instance.getEconomySystem().deposit(p, price); // REMVOES THE MONEY FROM THE BUYER
-					this.instance.getEconomySystem().withdraw(owner, price); // GIVE SHOPOWNER THE MONEY
-
-					Bukkit.getPluginManager().callEvent(new ItemBuyEvent(p, rentHandler, copyItem, price));
-
-				} else {
-					p.sendMessage(instance.getMessage("notEnoughSpace"));
+				if (!this.instance.getChestsUtils().checkForSpaceInArea(shopId, copyItem)) {
+					p.sendMessage(this.instance.getMessage("notEnoughSpace"));
 					return;
 				}
+				
+				ItemBuyEvent event = new ItemBuyEvent(p, rentHandler, copyItem, price);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if(event.isCancelled())
+					return;
+
+				// LOOKS IN NEARBY CHESTS
+				this.instance.getChestsUtils().addItemToChestsInArea(shopId, copyItem);
+				this.instance.getMethodes().removeItemFromPlayer(p, copyItem);
+
+				this.instance.getEconomySystem().deposit(p, price); // REMVOES THE MONEY FROM THE BUYER
+				this.instance.getEconomySystem().withdraw(owner, price); // GIVE SHOPOWNER THE MONEY
+
 
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
@@ -313,6 +322,7 @@ public class ShopListener implements Listener {
 						.replaceAll("(?i)%" + "itemname" + "%", itemName)
 						.replaceAll("(?i)%" + "type" + "%", type));
 				return;
+				
 			} else if (e.isRightClick()) {
 
 				// NO PERMISSIONS TO REMOVE
@@ -339,6 +349,15 @@ public class ShopListener implements Listener {
 		} else if (e.getView().getTitle().startsWith("BACKUP SHOP ")) {
 			e.setCancelled(true);
 
+			if (e.getClickedInventory() == null)
+				return;
+
+			if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
+				return;
+
+			if (!e.getClickedInventory().equals(e.getView().getTopInventory()))
+				return;
+			
 			ItemStack item = e.getCurrentItem();
 
 			if (item != null)
