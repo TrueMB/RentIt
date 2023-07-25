@@ -26,8 +26,24 @@ public class UserShopGUI {
 			return null;
 
 		int size = catHandler.getSize();
-
-		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.displayNameBuy")));
+		String title = "";
+		
+		switch (type) {
+		case BUY: {
+				title = instance.manageFile().getString("GUI.shopUser.displayNameBuy");
+				break;
+			}
+			case SELL: {
+				title = instance.manageFile().getString("GUI.shopUser.displayNameSell");
+				break;
+			}
+			case ROLLBACK: {
+				title = instance.manageFile().getString("GUI.rollback.displayName");
+				break;
+			}
+		}
+		
+		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', title));
 		
 		int puf = 0;
 		if (contents != null) {
