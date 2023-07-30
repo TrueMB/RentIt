@@ -79,7 +79,7 @@ dependencies {
 group = 'RentIt'
 version = '2.7.5'
 description = 'RentIt'
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 sourceSets {
     main { 
