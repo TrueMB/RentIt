@@ -23,7 +23,9 @@ import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.events.ItemBuyEvent;
 import me.truemb.rentit.events.ItemSellEvent;
+import me.truemb.rentit.gui.ShopBuyOrSell;
 import me.truemb.rentit.handler.RentTypeHandler;
+import me.truemb.rentit.inventory.ShopInventoryBuilder;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.ShopItemManager;
 import me.truemb.rentit.utils.UtilitiesAPI;
@@ -42,11 +44,9 @@ public class ShopListener implements Listener {
 
 		Player p = (Player) e.getWhoClicked();
 		UUID uuid = p.getUniqueId();
-		
-		//TODO Click to next Site
 
 		// ANKAUF
-		if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameSell")))) {
+		if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameSell")))) {
 
 			e.setCancelled(true);
 
@@ -79,6 +79,9 @@ public class ShopListener implements Listener {
 			Inventory inv = e.getClickedInventory();
 
 			NumberFormat formatter = new DecimalFormat("#0.00");
+			
+			if(this.checkSpecialItem(p, item))
+				return;
 
 			// Owner sells Items
 			if (e.isLeftClick() && !ownerUUID.equals(uuid)) {
@@ -190,6 +193,8 @@ public class ShopListener implements Listener {
 					return;
 				}
 				
+				//TODO Move Items on Slot
+				
 				e.setCurrentItem(null);
 				p.getInventory().addItem(copyItem);
 
@@ -207,7 +212,7 @@ public class ShopListener implements Listener {
 			}
 
 			// Owner buys Item from Player
-		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameBuy")))) {
+		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameBuy")))) {
 
 			e.setCancelled(true);
 
@@ -333,6 +338,8 @@ public class ShopListener implements Listener {
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
 				e.setCurrentItem(null);
+				
+				//TODO Move Items on Slot
 
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
@@ -346,24 +353,34 @@ public class ShopListener implements Listener {
 						.replaceAll("(?i)%" + "type" + "%", type));
 
 			}
-		} else if (e.getView().getTitle().startsWith("BACKUP SHOP ")) {
-			e.setCancelled(true);
-
-			if (e.getClickedInventory() == null)
-				return;
-
-			if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
-				return;
-
-			if (!e.getClickedInventory().equals(e.getView().getTopInventory()))
-				return;
-			
-			ItemStack item = e.getCurrentItem();
-
-			if (item != null)
-				p.getInventory().addItem(ShopItemManager.removeShopItem(this.instance, item));
-
-			e.setCurrentItem(null);
 		}
+	}
+
+	private boolean checkSpecialItem(Player p, ItemStack item) {
+		
+		UUID uuid = p.getUniqueId();
+		
+		ShopInventoryBuilder builder = this.instance.getShopInvBuilder(uuid);
+
+		boolean isNextItem = item.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem"));
+		boolean isBeforeItem = item.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem"));
+		boolean isReturnItem = item.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "returnItem"));
+		
+		if(isNextItem) {
+			builder.nextSite();
+			return true;
+		}else if(isBeforeItem) {
+			builder.beforeSite();
+			return true;
+		}else if(isReturnItem) {
+			
+			this.instance.removeShopInvBuilder(uuid);
+			p.openInventory(ShopBuyOrSell.getSelectInv(this.instance, builder.getShopHandler().getID()));
+			
+			return true;
+			
+		}
+		
+		return false;
 	}
 }

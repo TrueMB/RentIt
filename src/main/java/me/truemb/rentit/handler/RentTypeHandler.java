@@ -17,7 +17,7 @@ import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.gui.RollbackGUI;
-import me.truemb.rentit.gui.UserShopGUI;
+import me.truemb.rentit.inventory.ShopInventoryBuilder;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.UtilitiesAPI;
 
@@ -219,6 +219,7 @@ public class RentTypeHandler {
 		return amount;
 	}
 	
+	//Loaded Inventories
 	public Collection<Inventory> getInventories(ShopInventoryType type){
 		return this.inventoryCache.get(type).values();
 	}
@@ -228,7 +229,21 @@ public class RentTypeHandler {
 	}
 
 	/**
+	 * This Method should only be called from the builder.
+	 * To open the GUI use the @ShopInventoryBuilder
+	 * 
+	 * @param type
+	 * @param site
+	 * @return
+	 */
+	public Inventory getInventory(ShopInventoryBuilder builder) {
+		return this.getInventory(builder.getType(), builder.getSite());
+	}
+	
+	/**
 	 * Remember the site is used as index. There is no 0 value
+	 * This Method should only be called from the builder.
+	 * To open the GUI use the @ShopInventoryBuilder
 	 * 
 	 * @param type
 	 * @param site
@@ -241,8 +256,10 @@ public class RentTypeHandler {
 		
 		Inventory result = invHash.get(site);
 		
+		/*
 		if(result == null && site == 1)
-			invHash.put(site, result = UserShopGUI.getInventory(this.instance, type, this.getID(), site, null));
+			invHash.put(site, result = UserShopGUI.getInventory(this.instance, builder));
+		*/
 		
 		return result;
 	}

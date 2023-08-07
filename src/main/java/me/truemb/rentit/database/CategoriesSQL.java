@@ -92,7 +92,7 @@ public class CategoriesSQL {
 		sql.queryUpdate("DELETE FROM " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + " WHERE catID='" + catID + "'");
 	}
 
-	public void setupCategories() {
+	public void setupCategories(Consumer<Boolean> c) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
 		for(RentTypes type : RentTypes.values()) {
@@ -131,9 +131,11 @@ public class CategoriesSQL {
 						}
 						
 						instance.getLogger().info(String.valueOf(catAmount) + " " + type.toString() + "-Categories are loaded.");
+						c.accept(true);
 						return;
 					} catch (SQLException e) {
 						e.printStackTrace();
+						c.accept(false);
 					}
 				}
 			});

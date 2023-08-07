@@ -144,7 +144,7 @@ public class Main extends JavaPlugin {
 	public NamespacedKey idKey = new NamespacedKey(this, "ID");
 	public NamespacedKey siteKey = new NamespacedKey(this, "Site");
 
-	private static final int configVersion = 18;
+	private static final int configVersion = 19;
     private static final String SPIGOT_RESOURCE_ID = "90195";
     private static final int BSTATS_PLUGIN_ID = 12060;
     
@@ -400,9 +400,11 @@ public class Main extends JavaPlugin {
 	}
 
 	private void initHandlers() {
-		this.getShopsSQL().setupShops();
-		this.getHotelsSQL().setupHotels();
-		this.getCategorySQL().setupCategories();
+		//First load the categories. They are needed for the Shops/Hotelrooms
+		this.getCategorySQL().setupCategories(b -> {
+			this.getShopsSQL().setupShops();
+			this.getHotelsSQL().setupHotels();
+		});
 	}
 	
 	//CONFIG
@@ -590,6 +592,10 @@ public class Main extends JavaPlugin {
 
 	public void setShopInvBuilder(UUID uuid, ShopInventoryBuilder builder) {
 		this.shopInvBuilder.put(uuid, builder);
+	}
+	
+	public void removeShopInvBuilder(UUID uuid) {
+		this.shopInvBuilder.remove(uuid);
 	}
 
 	//ECONOMY

@@ -234,13 +234,10 @@ GUI:
         - '&fInput'
   shopUserEdit:
     displayName: '&a&lShop Editing'
-  #Name makes no sense, both use the same
+  #Section Name makes no sense, both use the same
   shopUser:
     displayNameShopRentSettings: '&f&lShop Rent'
     displayNameHotelRentSettings: '&f&lHotel Rent'
-    displayNameSell: '&a&lSell-Shop'
-    displayNameBuy: '&a&lBuy-Shop'
-    loreSellItemPrice: '&6Price&7: &f%price%'
     items:
       #If the Automatic Payment is active, players will pay until they got no more money or stop the automaticly payment
       schedulerActiveItem:
@@ -525,6 +522,7 @@ GUI:
         displayName: '&cBack'
         type: BARRIER
         lore: {}
+  #Rollback GUI /shop rollback
   rollback:
     displayName: '&f&lForgotten Items'
     items:
@@ -540,6 +538,30 @@ GUI:
         displayName: '&cReturn'
         type: BARRIER
         lore: {}
+  #Shop buy and sell GUI; The items are only shown if multiple sites are used and added as the last row
+  ShopBuyAndSell:
+    displayNameSell: '&a&lSell-Shop'
+    displayNameBuy: '&a&lBuy-Shop'
+    loreSellItemPrice: '&6Price&7: &f%price%'
+    # Items are only for multiple Shop sites 
+    items:
+      placeholderItem:
+        displayName: ' '
+        type: WHITE_STAINED_GLASS_PANE
+        lore: {}
+      nextSiteItem:
+        displayName: '&5Next Page'
+        type: GREEN_STAINED_GLASS_PANE
+        lore: {}
+      beforeSiteItem:
+        displayName: '&5Previous Page'
+        type: GREEN_STAINED_GLASS_PANE
+        lore: {}
+      returnItem:
+        displayName: '&cReturn'
+        type: RED_STAINED_GLASS_PANE
+        lore: {}
+  #Search GUI /shop search
   searchInventory:
     displayName: '&f&lSearch Result'
     items:
@@ -611,6 +633,7 @@ Messages:
   shopRentTimeChanged: '&aRent Time was changed to &f%time% &afor Category &f%catAlias%&a.'
   shopPriceChanged: '&aRent Price was changed to &f%price% &afor Category &f%catAlias%&a.'
   shopSizeNotValid: '&4ERROR. &cThe Shop Size hast to be multiplide in 9. (MAX: 54)'
+  shopSizeNotValidForMultipleSites: '&4ERROR. &cThe Shop can be max 45. The last row is for the skipping the site'
   shopSizeChanged: '&aShop Size was changed to &f%size% &afor Category &f%catAlias%&a.'
   shopReseted: '&aThe ShopID &f%alias% &awas reseted.'
   shopDeleted: '&aThe ShopID &f%alias% &awas deleted.'

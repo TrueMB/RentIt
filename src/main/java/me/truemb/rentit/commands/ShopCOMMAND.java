@@ -34,6 +34,7 @@ import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;
 import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.gui.SearchResultGUI;
+import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PermissionsHandler;
 import me.truemb.rentit.handler.PlayerHandler;
@@ -155,7 +156,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					this.instance.getNPCFileManager().setNPCLocForShop(shopId, p.getLocation());
 
 					if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-						if(instance.manageFile().getBoolean("Options.useNPC")) {
+						if(instance.manageFile().getBoolean("Options.useNPCs")) {
 							//NPC
 							if(this.instance.getNpcUtils().existsNPCForShop(shopId)) {
 								this.instance.getNpcUtils().moveNPC(shopId, p.getLocation());
@@ -1944,16 +1945,17 @@ public class ShopCOMMAND extends BukkitCommand {
 		item = ShopItemManager.createShopItem(this.instance, item, rentHandler.getID(), price); // UPDATED ITEM WITH PRICE IN IT
 
 		int site = rentHandler.getInventories(shopInvType).size();
+		boolean multiSite = catHandler.getMaxSite() > 1;
 		if(site > catHandler.getMaxSite())
 			site = catHandler.getMaxSite();
 		
-		Inventory inv = rentHandler.getInventory(shopInvType, site);
+		Inventory currentLastInv = rentHandler.getInventory(shopInvType, site);
 
-		int used = 0; // CHECKS HOW MANY SLOTS ARE USED
+		//Check if Item is already in the Shop
 		for(Inventory inventories : rentHandler.getInventories(shopInvType)) {
-			for (ItemStack items : inventories.getContents()) {
+			for (int i = 0; i < inventories.getSize() - (multiSite ? 9 : 0); i++) {
+				ItemStack items = inventories.getItem(i);
 				if (items != null && items.getType() != Material.AIR) {
-					used++;
 	
 					if (items.isSimilar(item)) {
 						p.sendMessage(this.instance.getMessage("shopContainsItem"));
@@ -1962,21 +1964,50 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 			}
 		}
-		
-		if (used >= catHandler.getSize() * catHandler.getMaxSite()) {
-			p.sendMessage(this.instance.getMessage("shopInvFull"));
-			return;
+
+		int used = 0;
+		for (int i = 0; i < currentLastInv.getSize() - (multiSite ? 9 : 0); i++) {
+			ItemStack items = currentLastInv.getItem(i);
+			if (items != null && items.getType() != Material.AIR) {
+				used++;
+			}
 		}
 		
-		//TODO Calculate in which Inventory the item should be placed and if arrows for the next site are needed
 
-		inv.addItem(item);
+		if (used >= currentLastInv.getSize() - (multiSite ? 9 : 0)) {
+			if(site >= catHandler.getMaxSite()) {
+				p.sendMessage(this.instance.getMessage("shopInvFull"));
+				return;
+			}else {
+				//Site is full but a new one can be created
+				
+				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler, shopInvType);
+				builder.setSite(site);
+				
+				//New last Inventory
+				currentLastInv = UserShopGUI.getInventory(this.instance, builder);
+			}
+		}
 		
+		//Add the Item to the Shop
+		currentLastInv.addItem(item);
+
+		//Remove the multi Site Row, so that this is not in the Database
+		ItemStack[] content = null;
+		if(multiSite) {
+			content = new ItemStack[currentLastInv.getSize() - 9];
+			
+			for(int i = 0; i < content.length; i++)
+				content[i] = currentLastInv.getContents()[i];
+		} else
+			content = currentLastInv.getContents();
+		
+
 		//Remove item if the player wants to sell it in the Shop
 		if(shopInvType == ShopInventoryType.SELL)
 			p.getInventory().setItemInMainHand(null);
-		
-		this.instance.getShopsInvSQL().updateInventory(rentHandler.getID(), shopInvType, site, inv.getContents()); // DATABASE UPDATE
+
+		this.instance.getShopsInvSQL().updateInventory(rentHandler.getID(), shopInvType, site, content); // DATABASE UPDATE
 		
 		String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
 		String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());

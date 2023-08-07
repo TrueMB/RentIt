@@ -26,7 +26,7 @@ public class ShopItemManager {
 		if(lore == null)
 			lore = new ArrayList<>();
 
-		lore.add(ChatColor.translateAlternateColorCodes('&', plugin.manageFile().getString("GUI.shopUser.loreSellItemPrice"))
+		lore.add(ChatColor.translateAlternateColorCodes('&', plugin.manageFile().getString("GUI.ShopBuyAndSell.loreSellItemPrice"))
 				.replace("%price%", String.valueOf(formatter.format(price))));
 		
 		NamespacedKey key = new NamespacedKey(plugin, "price");
@@ -77,7 +77,7 @@ public class ShopItemManager {
 		if(lore == null)
 			lore = new ArrayList<>();
 		
-		lore.set(lore.size() - 1, ChatColor.translateAlternateColorCodes('&', plugin.manageFile().getString("GUI.shopUser.loreSellItemPrice"))
+		lore.set(lore.size() - 1, ChatColor.translateAlternateColorCodes('&', plugin.manageFile().getString("GUI.ShopBuyAndSell.loreSellItemPrice"))
 				.replace("%price%", String.valueOf(UtilitiesAPI.getHumanReadablePriceFromNumber(price)))); //USER DISPLAY PRICE
 		
 		NamespacedKey key = new NamespacedKey(plugin, "price");

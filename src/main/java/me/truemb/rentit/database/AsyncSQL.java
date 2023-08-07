@@ -233,7 +233,6 @@ public class AsyncSQL {
 		}
 
 		public Connection openConnection() throws Exception {
-			//Class.forName("com.mysql.jdbc.Driver");
 			return this.conn = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useSSL=" + String.valueOf(this.useSSL), this.user, this.password);
 		}
 		

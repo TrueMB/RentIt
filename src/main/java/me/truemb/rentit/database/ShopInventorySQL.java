@@ -5,11 +5,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.gui.UserShopGUI;
+import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
+import me.truemb.rentit.inventory.ShopInventoryBuilder;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.InventoryUtils;
 
@@ -28,14 +32,21 @@ public class ShopInventorySQL {
 		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shop_inv_new + " (ID INT, site INT, sellInv LONGTEXT, buyInv LONGTEXT, PRIMARY KEY (ID, site));");
 		
 		//CHECK IF OLD DATA EXISTS
-		sql.prepareStatement("SHOW TABLES LIKE " + sql.t_shop_inv + ";", new Consumer<ResultSet>() {
+		String sqlLiteStatement = "PRAGMA table_list(" + sql.t_shop_inv + ");";
+		String mysqlStatement = "SHOW TABLES LIKE " + sql.t_shop_inv + ";";
+		sql.prepareStatement(sql.isSqlLite() ? sqlLiteStatement : mysqlStatement, new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
 				//IMPORTING DATA
-				sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
+				
+				if(sql.isSqlLite()) //SQLLITE
+					sql.queryUpdate("INSERT OR REPLACE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
+				else //MYSQL
+					sql.queryUpdate("INSERT IGNORE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
+
 				//Delete old data
-				sql.queryUpdate("DROP TABLE " + sql.t_shop_inv + ";");
+				sql.queryUpdate("DROP TABLE " + sql.t_shop_inv + ";"); //TODO
 			}
 		});
 		
@@ -72,15 +83,37 @@ public class ShopInventorySQL {
 					while (rs.next()) {
 						
 						int site = rs.getInt("site");
-						String sellInv = rs.getString("sellInv");
-						String buyInv = rs.getString("buyInv");
+						String sellInvS = rs.getString("sellInv");
+						String buyInvS = rs.getString("buyInv");
 						
-						ItemStack[] sellContents = !sellInv.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(sellInv) : null;
-						ItemStack[] buyContents = !buyInv.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInv) : null;
+						ItemStack[] sellContents = !sellInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(sellInvS) : null;
+						ItemStack[] buyContents = !buyInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInvS) : null;
 
-						handler.setInventory(ShopInventoryType.SELL, site, UserShopGUI.getInventory(instance, ShopInventoryType.SELL, id, site, sellContents));
-						handler.setInventory(ShopInventoryType.BUY, site, UserShopGUI.getInventory(instance, ShopInventoryType.BUY, id, site, buyContents));
-						return;
+						ShopInventoryBuilder sellBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.SELL);
+						Inventory sellInv = UserShopGUI.getInventory(instance, sellBuilder);
+						
+						ShopInventoryBuilder buyBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.BUY);
+						Inventory buyInv = UserShopGUI.getInventory(instance, buyBuilder);
+						
+						CategoryHandler catHandler = instance.getMethodes().getCategory(RentTypes.SHOP, handler.getCatID());
+						
+						if(catHandler.getMaxSite() > 1) {
+							if(sellContents != null)
+								for(int i = 0; i < sellInv.getSize(); i++)
+									sellInv.setItem(i, sellContents[i]);
+							
+							if(buyContents != null)
+								for(int i = 0; i < buyInv.getSize(); i++)
+									buyInv.setItem(i, buyContents[i]);
+						}else {
+							if(sellContents != null)
+								sellInv.setContents(sellContents);
+							if(buyContents != null)
+								buyInv.setContents(buyContents);
+						}
+						
+						handler.setInventory(ShopInventoryType.SELL, site, sellInv);
+						handler.setInventory(ShopInventoryType.BUY, site, buyInv);
 					}
 				} catch (SQLException | IOException e) {
 					e.printStackTrace();

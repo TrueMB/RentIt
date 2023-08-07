@@ -6,16 +6,16 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import me.truemb.rentit.enums.RentTypes;
-import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
+import me.truemb.rentit.inventory.ShopInventoryBuilder;
 import me.truemb.rentit.main.Main;
 
 public class UserShopGUI {
 
-	public static Inventory getInventory(Main instance, ShopInventoryType type, int shopId, int site, ItemStack[] contents) {
+	public static Inventory getInventory(Main instance, ShopInventoryBuilder builder) {
 
-		RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
+		RentTypeHandler rentHandler = builder.getShopHandler();
 
 		if (rentHandler == null)
 			return null;
@@ -28,22 +28,33 @@ public class UserShopGUI {
 		int size = catHandler.getSize();
 		String title = "";
 		
-		switch (type) {
-		case BUY: {
-				title = instance.manageFile().getString("GUI.shopUser.displayNameBuy");
+		switch (builder.getType()) {
+			case BUY: {
+				title = instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameBuy");
 				break;
 			}
 			case SELL: {
-				title = instance.manageFile().getString("GUI.shopUser.displayNameSell");
+				title = instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameSell");
 				break;
 			}
 			case ROLLBACK: {
-				title = instance.manageFile().getString("GUI.rollback.displayName");
+				//Is not called from this class
 				break;
 			}
 		}
 		
-		Inventory inv = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', title));
+		int site = builder.getSite();
+		Inventory inv = rentHandler.getInventory(builder); //Uses the builder current Site
+		boolean hasNextSite = rentHandler.getInventories(builder.getType()).size() > site;
+		boolean multiSite = catHandler.getMaxSite() > 1;
+		
+		//Inventory not found
+		if(inv == null) {
+			inv = Bukkit.createInventory(null, size + (multiSite ? 9 : 0), ChatColor.translateAlternateColorCodes('&', title));
+			rentHandler.setInventory(builder.getType(), site, inv); //Links the Inventory; No need to wait for items, since no player could have opened the Inventory
+		}
+		
+		ItemStack[] contents = inv.getContents();
 		
 		int puf = 0;
 		if (contents != null) {
@@ -58,6 +69,22 @@ public class UserShopGUI {
 				inv.setItem(i - puf, item);
 			}
 		}
+		
+		//ONLY ADDED IN THE NEXT INVENTORY, IF COUNTER REACHED
+		if(multiSite) {
+			int start = inv.getSize() - 9;
+			for(int i = start; i < inv.getSize(); i++)
+				inv.setItem(i, instance.getMethodes().getGUIItem("ShopBuyAndSell", "placeholderItem"));
+			
+			if(site > 1)
+				inv.setItem(start, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem"));
+				
+			if(hasNextSite)
+				inv.setItem(start + 8, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem"));
+			
+			inv.setItem(start + 4, instance.getMethodes().getGUIItem("ShopBuyAndSell", "returnItem"));
+		}
+		
 		return inv;
 	}
 }

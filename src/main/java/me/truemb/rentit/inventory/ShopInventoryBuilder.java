@@ -61,15 +61,27 @@ public class ShopInventoryBuilder {
 		return this;
 	}
 	
+	public void setSite(int currentSite) {
+		this.currentSite = currentSite;
+	}
+	
 	public int getSite() {
 		return this.currentSite;
+	}
+	
+	public RentTypeHandler getShopHandler() {
+		return this.shopHandler;
+	}
+	
+	public ShopInventoryType getType() {
+		return this.type;
 	}
 	
 	public Inventory getCurrentInventory() {
 		if(this.type == ShopInventoryType.ROLLBACK) {
 			return this.shopHandler.getRollbackInventory(this.targetUUID != null ? this.targetUUID : this.player.getUniqueId(), this.currentSite);
 		}else
-			return this.shopHandler.getInventory(this.type, this.currentSite);
+			return this.shopHandler.getInventory(this);
 	}
 	
 	private void openInventory() {
