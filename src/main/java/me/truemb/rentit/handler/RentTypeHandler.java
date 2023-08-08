@@ -207,8 +207,10 @@ public class RentTypeHandler {
 					list.get(i).openInventory(inventoryToSet);
 			}
 		}
-		
-		invHash.put(site, inventoryToSet);
+		if(inventoryToSet == null)
+			invHash.remove(site);
+		else
+			invHash.put(site, inventoryToSet);
 	}
 	
 	public int searchMaterial(Material m) {

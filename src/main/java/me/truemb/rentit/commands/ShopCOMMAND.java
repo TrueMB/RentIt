@@ -1991,6 +1991,8 @@ public class ShopCOMMAND extends BukkitCommand {
 		
 		//Add the Item to the Shop
 		currentLastInv.addItem(item);
+		
+		//TODO Next Item missing?
 
 		//Remove the multi Site Row, so that this is not in the Database
 		ItemStack[] content = null;

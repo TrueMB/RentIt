@@ -24,6 +24,7 @@ import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.events.ItemBuyEvent;
 import me.truemb.rentit.events.ItemSellEvent;
 import me.truemb.rentit.gui.ShopBuyOrSell;
+import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.inventory.ShopInventoryBuilder;
 import me.truemb.rentit.main.Main;
@@ -153,6 +154,8 @@ public class ShopListener implements Listener {
 
 					if (item != null && item.getAmount() > 0)
 						item = ShopItemManager.editShopItemPrice(this.instance, item, itemPrice - price);
+					else
+						this.moveItems(e, rentHandler, ShopInventoryType.SELL);
 				}
 				
 				// UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
@@ -192,10 +195,8 @@ public class ShopListener implements Listener {
 							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount() - freeSpace)));
 					return;
 				}
-				
-				//TODO Move Items on Slot
-				
-				e.setCurrentItem(null);
+
+				this.moveItems(e, rentHandler, ShopInventoryType.SELL);
 				p.getInventory().addItem(copyItem);
 
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
@@ -337,9 +338,7 @@ public class ShopListener implements Listener {
 				}
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
-				e.setCurrentItem(null);
-				
-				//TODO Move Items on Slot
+				this.moveItems(e, rentHandler, ShopInventoryType.BUY);
 
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
@@ -352,6 +351,43 @@ public class ShopListener implements Listener {
 						.replaceAll("(?i)%" + "itemname" + "%", itemName)
 						.replaceAll("(?i)%" + "type" + "%", type));
 
+			}
+		}
+	}
+	
+	private void moveItems(InventoryClickEvent e, RentTypeHandler rentHandler, ShopInventoryType type) {
+		CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, rentHandler.getCatID());
+		if(catHandler == null)
+			return;
+		
+		boolean multiSite = catHandler.getMaxSite() > 1;
+		int last = rentHandler.getInventories(type).size();
+		Inventory lastInv = rentHandler.getInventory(type, last);
+		
+		int counter = 0;
+		int lastItemSlot = -1;
+		for(int i = 0; i < lastInv.getSize() - (multiSite ? 9 : 0); i++) {
+			ItemStack temp = lastInv.getItem(i);
+			if(temp != null && temp.getType() != Material.AIR) {
+				counter++;
+				lastItemSlot = i;
+			}
+		}
+		
+		ItemStack lastItem = lastItemSlot >= 0 ? lastInv.getItem(lastItemSlot) : null;
+		e.setCurrentItem(lastItem);
+		
+		
+		if(multiSite && counter <= 1 && last > 1) {
+			//Remove lastInv
+			rentHandler.setInventory(type, last, null);
+			
+			//Remove next Button from Inventory before
+			if(last - 1 >= 1) {
+				Inventory buttonInv = rentHandler.getInventory(type, last - 1);
+
+				int slot = buttonInv.getSize() - 1; //Hardcoded in @UserShopGUI
+				buttonInv.setItem(slot, instance.getMethodes().getGUIItem("ShopBuyAndSell", "placeholderItem"));
 			}
 		}
 	}
