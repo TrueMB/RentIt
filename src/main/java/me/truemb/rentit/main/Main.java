@@ -20,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -44,13 +43,13 @@ import me.truemb.rentit.commands.HotelsCOMMAND;
 import me.truemb.rentit.commands.RentItCOMMAND;
 import me.truemb.rentit.commands.ShopCOMMAND;
 import me.truemb.rentit.commands.ShopsCOMMAND;
-import me.truemb.rentit.database.AsyncSQL;
 import me.truemb.rentit.database.CategoriesSQL;
 import me.truemb.rentit.database.HotelsSQL;
 import me.truemb.rentit.database.PermissionsSQL;
 import me.truemb.rentit.database.PlayerSettingsSQL;
 import me.truemb.rentit.database.ShopInventorySQL;
 import me.truemb.rentit.database.ShopsSQL;
+import me.truemb.rentit.database.connector.AsyncSQL;
 import me.truemb.rentit.economy.EconomySystem;
 import me.truemb.rentit.economy.PlayerPointsEconomy;
 import me.truemb.rentit.economy.VaultEconomy;
@@ -144,7 +143,7 @@ public class Main extends JavaPlugin {
 	public NamespacedKey idKey = new NamespacedKey(this, "ID");
 	public NamespacedKey siteKey = new NamespacedKey(this, "Site");
 
-	private static final int configVersion = 19;
+	private static final int configVersion = 20;
     private static final String SPIGOT_RESOURCE_ID = "90195";
     private static final int BSTATS_PLUGIN_ID = 12060;
     
@@ -269,12 +268,14 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		
-		for(RentTypeHandler shopHandler : this.rentTypeHandlers.get(RentTypes.SHOP).values()) {
-			HashMap<UUID, List<Inventory>> rollbackHash = shopHandler.getRollbackInventories();
-			
-			//SAVE INVENTORIES IN THE FILE
-			for(UUID uuid : rollbackHash.keySet())
-				this.getShopCacheFileManager().updateShopBackup(uuid, shopHandler.getID(), rollbackHash.get(uuid));
+		if(this.rentTypeHandlers.get(RentTypes.SHOP) != null) {
+			for(RentTypeHandler shopHandler : this.rentTypeHandlers.get(RentTypes.SHOP).values()) {
+				HashMap<UUID, List<Inventory>> rollbackHash = shopHandler.getRollbackInventories();
+				
+				//SAVE INVENTORIES IN THE FILE
+				for(UUID uuid : rollbackHash.keySet())
+					this.getShopCacheFileManager().updateShopBackup(uuid, shopHandler.getID(), rollbackHash.get(uuid));
+			}
 		}
 		
 		if(this.getVillagerUtils() != null)
@@ -282,11 +283,8 @@ public class Main extends JavaPlugin {
 
 		Bukkit.getScheduler().cancelTask(this.runnId);
 		
-		if(this.getAsyncSQL() != null && this.getAsyncSQL().getMySQL() != null && this.getAsyncSQL().getMySQL().getConnection() != null)
-			this.getAsyncSQL().getMySQL().closeConnection();
-		
-		else if(this.getAsyncSQL() != null && this.getAsyncSQL().getSqlLite() != null && this.getAsyncSQL().getSqlLite().getConnection() != null)
-			this.getAsyncSQL().getSqlLite().closeConnection();
+		if(this.getAsyncSQL() != null && this.getAsyncSQL().getDatabaseConnector() != null && this.getAsyncSQL().getDatabaseConnector().getConnection() != null)
+			this.getAsyncSQL().getDatabaseConnector().closeConnection();
 	}
 	
 	public void initRestart(CommandSender sender) {
@@ -314,13 +312,9 @@ public class Main extends JavaPlugin {
 				Bukkit.getScheduler().cancelTask(runnId);
 				runnId = -1;
 				
-				//CLOSE MYSQL CONNECTION
-				if(getAsyncSQL() != null && getAsyncSQL().getMySQL() != null && getAsyncSQL().getMySQL().getConnection() != null)
-					getAsyncSQL().getMySQL().closeConnection();
-				
-				//OR SQL LITE CONNECTION
-				else if(getAsyncSQL() != null && getAsyncSQL().getSqlLite() != null && getAsyncSQL().getSqlLite().getConnection() != null)
-						getAsyncSQL().getSqlLite().closeConnection();
+				//CLOSE SQL CONNECTION
+				if(getAsyncSQL() != null && getAsyncSQL().getDatabaseConnector() != null && getAsyncSQL().getDatabaseConnector().getConnection() != null)
+					getAsyncSQL().getDatabaseConnector().closeConnection();
 				
 				//RESET CONFIG CACHE
 				config = null;
@@ -425,7 +419,7 @@ public class Main extends JavaPlugin {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 	
-	public YamlConfiguration manageFile() {
+	public UTF8YamlConfiguration manageFile() {
 		File configFile = this.getConfigFile();
 		if (!configFile.exists())
 			saveResource("config.yml", true);
@@ -572,7 +566,7 @@ public class Main extends JavaPlugin {
 	
 	//MySQL
 	private void startMySql() {
-		this.getLogger().info("{SQL}  starting SQL . . .");
+		this.getLogger().info("{SQL} starting SQL . . .");
 		try {
 			this.sql = new AsyncSQL(this);
 			this.hotelsSQL = new HotelsSQL(this);
@@ -583,9 +577,9 @@ public class Main extends JavaPlugin {
 			this.psettingSQL = new PlayerSettingsSQL(this);
 
 			this.isSystemRunningOkay = true; //STOP PLUGIN HERE
-			this.getLogger().info("{SQL}  successfully connected to Database.");
+			this.getLogger().info("{SQL} successfully connected to Database.");
 		} catch (Exception e) {
-			this.getLogger().warning("{SQL}  Failed to start MySql (" + e.getMessage() + ")");
+			this.getLogger().warning("{SQL} Failed to start MySql (" + e.getMessage() + ")");
 			this.isSystemRunningOkay = false; //STOP PLUGIN HERE
 		}
 	}

@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 import org.bukkit.World;
 
+import me.truemb.rentit.database.connector.AsyncSQL;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.PermissionsHandler;
 import me.truemb.rentit.main.Main;

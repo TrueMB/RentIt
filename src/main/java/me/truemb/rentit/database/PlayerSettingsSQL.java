@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import me.truemb.rentit.database.connector.AsyncSQL;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;
 import me.truemb.rentit.handler.SettingsHandler;

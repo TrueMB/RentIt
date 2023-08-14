@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import me.truemb.rentit.database.connector.AsyncSQL;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.gui.UserShopGUI;

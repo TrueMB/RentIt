@@ -28,7 +28,7 @@ import org.bukkit.inventory.meta.BookMeta;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
-import me.truemb.rentit.database.AsyncSQL;
+import me.truemb.rentit.database.connector.AsyncSQL;
 import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;

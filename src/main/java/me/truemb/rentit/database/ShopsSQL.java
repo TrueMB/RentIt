@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
+import me.truemb.rentit.database.connector.AsyncSQL;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;

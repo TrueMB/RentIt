@@ -1,11 +1,12 @@
 #ALL CHANGES NEEDS A RESTART TO TAKE AFFECT
 #
-#Your MySQL Connection Settings
-#If you got problems to establish a Connection, try disabling the "useSSL".
+#Your MySQL Connection Settings; SQLLite only needs the type. The other settings are ignored.
+#Type can be MARIADB, MYSQL and SQLITE
 Database:
+  type: 'SQLITE'
   host: 'ipaddress'
   port: 3306
-  useSSL: true
+  useSSL: false
   user: 'admin'
   password: 'S€CR3T'
   database: 'Database'
@@ -869,4 +870,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 19
+ConfigVersion: 20
