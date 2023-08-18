@@ -17,6 +17,7 @@ import me.truemb.rentit.enums.CategorySettings;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.gui.RollbackGUI;
+import me.truemb.rentit.gui.UserShopGUI;
 import me.truemb.rentit.inventory.ShopInventoryBuilder;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.UtilitiesAPI;
@@ -207,8 +208,10 @@ public class RentTypeHandler {
 					list.get(i).openInventory(inventoryToSet);
 			}
 		}
-		
-		invHash.put(site, inventoryToSet);
+		if(inventoryToSet == null)
+			invHash.remove(site);
+		else
+			invHash.put(site, inventoryToSet);
 	}
 	
 	public int searchMaterial(Material m) {
@@ -237,7 +240,18 @@ public class RentTypeHandler {
 	 * @return
 	 */
 	public Inventory getInventory(ShopInventoryBuilder builder) {
-		return this.getInventory(builder.getType(), builder.getSite());
+		int site = builder.getSite();
+		
+		HashMap<Integer, Inventory> invHash = this.inventoryCache.get(builder.getType());
+		if(invHash == null) 
+			return null;
+		
+		Inventory result = invHash.get(site);
+		
+		if(result == null && site == 1)
+			invHash.put(site, result = UserShopGUI.getInventory(this.instance, builder));
+		
+		return result;
 	}
 	
 	/**
@@ -254,14 +268,7 @@ public class RentTypeHandler {
 		if(invHash == null) 
 			return null;
 		
-		Inventory result = invHash.get(site);
-		
-		/*
-		if(result == null && site == 1)
-			invHash.put(site, result = UserShopGUI.getInventory(this.instance, builder));
-		*/
-		
-		return result;
+		return invHash.get(site);
 	}
 	
 	public Inventory getRollbackInventory(UUID uuid, int site) {

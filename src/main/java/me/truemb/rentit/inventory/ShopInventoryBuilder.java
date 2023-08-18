@@ -21,6 +21,7 @@ public class ShopInventoryBuilder {
 		this.player = player;
 		this.shopHandler = shopHandler;
 		this.type = type;
+		this.currentSite = 1;
 	}
 
 	public ShopInventoryBuilder beforeSite() {
@@ -55,8 +56,6 @@ public class ShopInventoryBuilder {
 	}
 	
 	public ShopInventoryBuilder build() {
-		this.currentSite = 1;
-		
 		this.openInventory();
 		return this;
 	}

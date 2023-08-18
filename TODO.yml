@@ -1,0 +1,2 @@
+Player buys item and removes it from shop -> Updates Inventory all items after to the new positions
+Same for player removing an item from the shop 

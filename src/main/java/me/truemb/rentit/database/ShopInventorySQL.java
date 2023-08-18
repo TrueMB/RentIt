@@ -41,9 +41,10 @@ public class ShopInventorySQL {
 			public void accept(ResultSet rs) {
 				//IMPORTING DATA
 				
-				if(sql.isSqlLite()) //SQLLITE
+				if(sql.isSqlLite()) { //SQLLITE
 					sql.queryUpdate("INSERT OR REPLACE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
-				else //MYSQL
+					sql.queryUpdate("COMMIT;");
+				}else //MYSQL
 					sql.queryUpdate("INSERT IGNORE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
 
 				//Delete old data
