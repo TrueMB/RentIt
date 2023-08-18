@@ -56,6 +56,10 @@ repositories {
 }
 
 dependencies {
+    //SQL
+    library 'mysql:mysql-connector-java:8.0.33'
+    library 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
+    
     api 'net.wesjd:anvilgui:1.6.6-SNAPSHOT'
     api 'org.bstats:bstats-bukkit:3.0.0'
     api 'com.jeff_media:SpigotUpdateChecker:3.0.0'
