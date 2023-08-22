@@ -43,10 +43,11 @@ public class ShopInventorySQL {
 				
 				if(sql.isSqlLite()) { //SQLLITE
 					sql.queryUpdate("INSERT OR REPLACE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
-					sql.queryUpdate("COMMIT;");
+					
+					sql.getDatabaseConnector().closeConnection(); //Closes the SQLite DB, results in committing changes.
 				}else //MYSQL
 					sql.queryUpdate("INSERT IGNORE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
-
+				
 				//Delete old data
 				sql.queryUpdate("DROP TABLE " + sql.t_shop_inv + ";"); //TODO
 			}
