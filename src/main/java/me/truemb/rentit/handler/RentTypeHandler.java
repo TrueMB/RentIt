@@ -248,8 +248,8 @@ public class RentTypeHandler {
 		
 		Inventory result = invHash.get(site);
 		
-		if(result == null && site == 1)
-			invHash.put(site, result = UserShopGUI.getInventory(this.instance, builder));
+		//if(result == null && site == 1)
+		//	invHash.put(site, result = UserShopGUI.getInventory(this.instance, builder));
 		
 		return result;
 	}

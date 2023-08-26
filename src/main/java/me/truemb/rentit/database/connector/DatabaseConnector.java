@@ -47,6 +47,7 @@ public class DatabaseConnector {
 	}
 
 	public void queryUpdate(String query) {
+		checkConnection();
 		try (PreparedStatement statement = this.conn.prepareStatement(query)) {
 			queryUpdate(statement);
 		} catch (Exception e) {
@@ -70,6 +71,7 @@ public class DatabaseConnector {
 	}
 
 	public ResultSet query(String query) {
+		checkConnection();
 		try {
 			return query(this.conn.prepareStatement(query));
 		} catch (Exception e) {

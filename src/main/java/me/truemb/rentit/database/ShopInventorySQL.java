@@ -34,22 +34,29 @@ public class ShopInventorySQL {
 		
 		//CHECK IF OLD DATA EXISTS
 		String sqlLiteStatement = "PRAGMA table_list(" + sql.t_shop_inv + ");";
-		String mysqlStatement = "SHOW TABLES LIKE " + sql.t_shop_inv + ";";
+		String mysqlStatement = "SHOW TABLES LIKE '" + sql.t_shop_inv + "';";
 		sql.prepareStatement(sql.isSqlLite() ? sqlLiteStatement : mysqlStatement, new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
 				//IMPORTING DATA
-				
-				if(sql.isSqlLite()) { //SQLLITE
-					sql.queryUpdate("INSERT OR REPLACE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
-					
-					sql.getDatabaseConnector().closeConnection(); //Closes the SQLite DB, results in committing changes.
-				}else //MYSQL
-					sql.queryUpdate("INSERT IGNORE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
-				
-				//Delete old data
-				sql.queryUpdate("DROP TABLE " + sql.t_shop_inv + ";"); //TODO
+				try {
+					if(rs.next()) {
+						if(sql.isSqlLite()) { //SQLLITE
+							sql.queryUpdate("INSERT OR REPLACE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
+							
+							sql.getDatabaseConnector().closeConnection(); //Closes the SQLite DB, results in committing changes.
+							sql.getDatabaseConnector().openConnection();
+							
+						}else //MYSQL
+							sql.queryUpdate("INSERT IGNORE INTO " + sql.t_shop_inv_new + " SELECT ID, 1 AS site, sellInv, buyInv FROM " + sql.t_shop_inv + ";");
+						
+						//Delete old data
+						sql.queryUpdate("DROP TABLE " + sql.t_shop_inv + ";");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		
