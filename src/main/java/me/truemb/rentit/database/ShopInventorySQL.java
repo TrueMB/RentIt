@@ -124,7 +124,9 @@ public class ShopInventorySQL {
 						
 						handler.setInventory(ShopInventoryType.SELL, site, sellInv);
 						handler.setInventory(ShopInventoryType.BUY, site, buyInv);
+						return;
 					}
+					
 				} catch (SQLException | IOException e) {
 					e.printStackTrace();
 				}

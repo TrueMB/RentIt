@@ -58,6 +58,9 @@ public class RentTypeHandler {
 		
 		this.inventoryCache.put(ShopInventoryType.BUY, new HashMap<>());
 		this.inventoryCache.put(ShopInventoryType.SELL, new HashMap<>());
+		
+		this.inventoryCache.get(ShopInventoryType.BUY).put(1, UserShopGUI.getInventory(this.instance, new ShopInventoryBuilder(null, this, ShopInventoryType.BUY)));
+		this.inventoryCache.get(ShopInventoryType.SELL).put(1, UserShopGUI.getInventory(this.instance, new ShopInventoryBuilder(null, this, ShopInventoryType.SELL)));
 	}
 	
 	//GET METHODES

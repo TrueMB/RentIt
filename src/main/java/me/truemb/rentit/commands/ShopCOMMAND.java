@@ -58,34 +58,34 @@ public class ShopCOMMAND extends BukkitCommand {
 		super("shop", "Shop Main Command", null, plugin.manageFile().getStringList("Options.commands.shop.aliases"));
 		this.instance = plugin;
 
-		subCommands.add("noinfo");
-		subCommands.add("users");
-		subCommands.add("permissions");
-		subCommands.add("setPermission");
-		subCommands.add("buy");
-		subCommands.add("sellItem");
-		subCommands.add("buyItem");
-		subCommands.add("resign");
-		subCommands.add("search");
-		subCommands.add("help");
+		this.subCommands.add("noinfo");
+		this.subCommands.add("users");
+		this.subCommands.add("permissions");
+		this.subCommands.add("setPermission");
+		this.subCommands.add("buy");
+		this.subCommands.add("sellItem");
+		this.subCommands.add("buyItem");
+		this.subCommands.add("resign");
+		this.subCommands.add("search");
+		this.subCommands.add("help");
 
-		adminSubCommands.add("createCat");
-		adminSubCommands.add("deleteCat");
-		adminSubCommands.add("setAliasCat");
-		adminSubCommands.add("listCat");
-		adminSubCommands.add("setNPC");
-		adminSubCommands.add("setArea");
-		adminSubCommands.add("setAlias");
-		adminSubCommands.add("reset");
-		adminSubCommands.add("delete");
-		adminSubCommands.add("updateBackup");
-		adminSubCommands.add("info");
-		adminSubCommands.add("door");
-		adminSubCommands.add("rollback");
-		adminSubCommands.add("setTime");
-		adminSubCommands.add("setSize");
-		adminSubCommands.add("setPrice");
-		adminSubCommands.add("list");
+		this.adminSubCommands.add("createCat");
+		this.adminSubCommands.add("deleteCat");
+		this.adminSubCommands.add("setAliasCat");
+		this.adminSubCommands.add("listCat");
+		this.adminSubCommands.add("setNPC");
+		this.adminSubCommands.add("setArea");
+		this.adminSubCommands.add("setAlias");
+		this.adminSubCommands.add("reset");
+		this.adminSubCommands.add("delete");
+		this.adminSubCommands.add("updateBackup");
+		this.adminSubCommands.add("info");
+		this.adminSubCommands.add("door");
+		this.adminSubCommands.add("rollback");
+		this.adminSubCommands.add("setTime");
+		this.adminSubCommands.add("setSize");
+		this.adminSubCommands.add("setPrice");
+		this.adminSubCommands.add("list");
 		
 
 		//DISABLED COMMANDS
@@ -330,8 +330,8 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-					if(instance.manageFile().getBoolean("Options.useNPC")) {
+				if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
+					if(this.instance.manageFile().getBoolean("Options.useNPC")) {
 						if (this.instance.getNpcUtils().isNPCSpawned(shopId)) {
 							// SHOP IS OWNED AND NPC SPAWNED
 							this.instance.getNpcUtils().destroyNPC(shopId);
@@ -1328,7 +1328,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				this.instance.getMethodes().setPrice(p, this.type, rentHandler.getCatID(), args[1]);
 				return true;
 
-			} else if (args[0].equalsIgnoreCase("sellitem")) {
+			} else if (args[0].equalsIgnoreCase("sellItem")) {
 				
 				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "sellitem")) {
 					sender.sendMessage(this.instance.getMessage("commandDisabled"));
