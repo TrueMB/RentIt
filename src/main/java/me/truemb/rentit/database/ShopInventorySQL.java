@@ -110,11 +110,13 @@ public class ShopInventorySQL {
 						if(catHandler.getMaxSite() > 1) {
 							if(sellContents != null)
 								for(int i = 0; i < sellInv.getSize(); i++)
-									sellInv.setItem(i, sellContents[i]);
+									if(sellContents.length > i)
+										sellInv.setItem(i, sellContents[i]);
 							
 							if(buyContents != null)
 								for(int i = 0; i < buyInv.getSize(); i++)
-									buyInv.setItem(i, buyContents[i]);
+									if(buyContents.length > i)
+										buyInv.setItem(i, buyContents[i]);
 						}else {
 							if(sellContents != null)
 								sellInv.setContents(sellContents);

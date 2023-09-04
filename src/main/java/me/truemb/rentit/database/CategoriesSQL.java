@@ -28,14 +28,14 @@ public class CategoriesSQL {
 	}
 	
 	
-	public void updateShopCategory(int catID, int invSize, double costs, String time){
+	public void updateShopCategory(int catID, int invSize, int maxSite, double costs, String time){
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		if(sql.isSqlLite()) //SQLLITE
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_categories + " (catID, size, costs, time) VALUES ('" + catID + "','" + invSize + "', '" + costs + "', '" + time + "') "
-					+ "ON CONFLICT(catID) DO UPDATE SET size='" + invSize + "', costs='" + costs + "', time='" + time + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_categories + " (catID, size, maxSite, costs, time) VALUES ('" + catID + "','" + invSize + "','" + maxSite + "', '" + costs + "', '" + time + "') "
+					+ "ON CONFLICT(catID) DO UPDATE SET size='" + invSize + "', maxSite='" + maxSite + "', costs='" + costs + "', time='" + time + "';");
 		else //MYSQL
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_categories + " (catID, size, costs, time) VALUES ('" + catID + "','" + invSize + "', '" + costs + "', '" + time + "') "
-					+ "ON DUPLICATE KEY UPDATE size='" + invSize + "', costs='" + costs + "', time='" + time + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_categories + " (catID, size, maxSite, costs, time) VALUES ('" + catID + "','" + invSize + "','" + maxSite + "', '" + costs + "', '" + time + "') "
+					+ "ON DUPLICATE KEY UPDATE size='" + invSize + "', maxSite='" + maxSite + "', costs='" + costs + "', time='" + time + "';");
 	}
 	
 	public void updateHotelCategory(int catID, double costs, String time){
@@ -121,6 +121,9 @@ public class CategoriesSQL {
 							if(type.equals(RentTypes.SHOP)) {
 								int size = rs.getInt("size");
 								handler.setSize(size);
+								
+								int maxSite = rs.getInt("maxSite");
+								handler.setMaxSite(maxSite);
 							}
 							
 							HashMap<Integer, CategoryHandler> hash = new HashMap<>();

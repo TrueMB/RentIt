@@ -1861,7 +1861,7 @@ public class ShopCOMMAND extends BukkitCommand {
 
 			    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 			    
-				this.instance.getCategorySQL().updateShopCategory(catID, size, price, timeS);
+				this.instance.getCategorySQL().updateShopCategory(catID, size, maxSite, price, timeS);
 				this.instance.getMethodes().updateAllSigns(this.type, catID);
 				
 				p.sendMessage(this.instance.getMessage("shopCategoryUpdated")
