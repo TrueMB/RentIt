@@ -64,7 +64,7 @@ public class ShopInventorySQL {
 	
 	public void resetInventories(int shopId){
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_shop_inv_new + " sellInv = null, buyInv = null WHERE ID='" + shopId + "';");
+		sql.queryUpdate("UPDATE " + sql.t_shop_inv_new + " SET sellInv = null, buyInv = null WHERE ID='" + shopId + "';");
 	}
 	
 	public void updateInventory(int shopId, ShopInventoryType type, int site, ItemStack[] contents){

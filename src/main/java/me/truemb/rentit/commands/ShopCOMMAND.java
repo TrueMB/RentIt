@@ -331,7 +331,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 
 				if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
-					if(this.instance.manageFile().getBoolean("Options.useNPC")) {
+					if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
 						if (this.instance.getNpcUtils().isNPCSpawned(shopId)) {
 							// SHOP IS OWNED AND NPC SPAWNED
 							this.instance.getNpcUtils().destroyNPC(shopId);
@@ -1131,7 +1131,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				
 				String prefix = instance.getPermissionsAPI().getPrefix(ownerUUID);
 				if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-					if(instance.manageFile().getBoolean("Options.useNPC")) {
+					if(instance.manageFile().getBoolean("Options.useNPCs")) {
 						instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerUUID, owner);
 					}else {
 						instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, owner);
@@ -1921,6 +1921,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					.replaceAll("(?i)%" + "owner" + "%", ownerName == null ? "" : ownerName)
 					.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
 					.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+					.replaceAll("(?i)%" + "sites" + "%", String.valueOf(catHandler.getMaxSite()))
 					.replaceAll("(?i)%" + "time" + "%", time)
 					.replaceAll("(?i)%" + "doorstatus" + "%", String.valueOf(doorsClosed))
 					.replaceAll("(?i)%" + "x" + "%", String.valueOf(loc.getBlockX()))
@@ -2036,7 +2037,7 @@ public class ShopCOMMAND extends BukkitCommand {
 			this.instance.getShopCacheFileManager().createShopBackup(ownerUUID, shopId);
 
 		if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-			if(instance.manageFile().getBoolean("Options.useNPC")) {
+			if(instance.manageFile().getBoolean("Options.useNPCs")) {
 				if (this.instance.getNpcUtils().isNPCSpawned(shopId))
 					this.instance.getNpcUtils().despawnNPC(shopId);
 			}else {

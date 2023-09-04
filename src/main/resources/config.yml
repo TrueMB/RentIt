@@ -761,6 +761,7 @@ Messages:
     - ''
     - '&6Price&7: &f%price%'
     - '&6Inventory Size&7: &f%size%'
+    - '&6Inventory Sites&7: &f%sites%'
     - '&6Rent time&7: &f%time%'
     - '&6Doors closed&7: &f%doorStatus%'
   shopList:
