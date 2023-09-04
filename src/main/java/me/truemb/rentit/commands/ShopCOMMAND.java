@@ -1981,12 +1981,13 @@ public class ShopCOMMAND extends BukkitCommand {
 				return;
 			}else {
 				//Site is full but a new one can be created
-				
-				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler, shopInvType);
-				builder.setSite(site);
-				
-				//New last Inventory
-				currentLastInv = UserShopGUI.getInventory(this.instance, builder);
+			    currentLastInv.setItem(currentLastInv.getSize() - 1, this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", rentHandler.getID()));
+			    ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler, shopInvType);
+			    site++;
+			    builder.setSite(site);
+
+			    //New last Inventory
+			    currentLastInv = UserShopGUI.getInventory(this.instance, builder);
 			}
 		}
 		

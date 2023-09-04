@@ -47,7 +47,8 @@ public class ShopListener implements Listener {
 		UUID uuid = p.getUniqueId();
 
 		// ANKAUF
-		if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameSell")))) {
+		if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&',
+				this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameSell")))) {
 
 			e.setCancelled(true);
 
@@ -80,8 +81,8 @@ public class ShopListener implements Listener {
 			Inventory inv = e.getClickedInventory();
 
 			NumberFormat formatter = new DecimalFormat("#0.00");
-			
-			if(this.checkSpecialItem(p, item))
+
+			if (this.checkSpecialItem(p, item))
 				return;
 
 			// Owner sells Items
@@ -106,114 +107,123 @@ public class ShopListener implements Listener {
 					price = itemPrice;
 
 				}
-				
-				//Player has space in the Inventory?
+
+				// Player has space in the Inventory?
 				int freeSpace = 0;
 				for (ItemStack items : p.getInventory().getStorageContents()) {
 					if (items == null || items.getType() == Material.AIR) {
 						freeSpace += copyItem.getMaxStackSize();
-					}else if (items.isSimilar(copyItem)) {
-						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0 : copyItem.getMaxStackSize() - items.getAmount();
+					} else if (items.isSimilar(copyItem)) {
+						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0
+								: copyItem.getMaxStackSize() - items.getAmount();
 					}
 				}
-				
-				if(freeSpace < copyItem.getAmount()) {
-					p.sendMessage(this.instance.getMessage("notEnoughInvSpace")
-							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount() - freeSpace)));
+
+				if (freeSpace < copyItem.getAmount()) {
+					p.sendMessage(this.instance.getMessage("notEnoughInvSpace").replaceAll("(?i)%" + "amount" + "%",
+							String.valueOf(copyItem.getAmount() - freeSpace)));
 					return;
 				}
 
 				if (!this.instance.getEconomySystem().has(p, price)) {
-					p.sendMessage(this.instance.getMessage("notEnoughMoney")
-							.replaceAll("(?i)%" + "amount" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price - this.instance.getEconomySystem().getBalance(p))));
+					p.sendMessage(this.instance.getMessage("notEnoughMoney").replaceAll("(?i)%" + "amount" + "%",
+							UtilitiesAPI.getHumanReadablePriceFromNumber(
+									price - this.instance.getEconomySystem().getBalance(p))));
 					return;
 				}
 
 				copyItem.setAmount(amount); // SETS HOW MUCH THE PLAYER BOUGHT
-				
+
 				ItemSellEvent event = new ItemSellEvent(p, rentHandler, copyItem, price);
 				Bukkit.getPluginManager().callEvent(event);
-				
-				if(event.isCancelled())
+
+				if (event.isCancelled())
 					return;
 
 				this.instance.getEconomySystem().withdraw(p, price); // REMVOES THE MONEY FROM THE BUYER
 				this.instance.getEconomySystem().deposit(owner, price); // GIVE SHOPOWNER THE MONEY
 
 				p.getInventory().addItem(copyItem); // GIVES BUYER THE ITEM
-				
+
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 
 				if (this.instance.getChestsUtils().checkChestsInArea(shopId, copyItem)) {
 					// LOOKS IN NEARBY CHESTS
 					this.instance.getChestsUtils().removeItemFromChestsInArea(shopId, copyItem);
 
-				} else {
-					// CHANGES THE SHOP INV
-					item.setAmount(item.getAmount() - amount); // DELETES ITEM FROM SHOP
+				}else {
+			        item.setAmount(item.getAmount() - amount);
+			        if (item != null && item.getAmount() > 0) {
+			            item = ShopItemManager.editShopItemPrice(this.instance, item, itemPrice - price);
+			        } else {
+			        	this.moveItems(e, rentHandler, ShopInventoryType.SELL);
+			    	} 
+			    } 
 
-					if (item != null && item.getAmount() > 0)
-						item = ShopItemManager.editShopItemPrice(this.instance, item, itemPrice - price);
-					else
-						this.moveItems(e, rentHandler, ShopInventoryType.SELL);
-				}
-				
 				// UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
 				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.SELL, site, inv.getContents());
-				
+
 				String type = StringUtils.capitalize(copyItem.getType().toString());
-				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
-				
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
+						? copyItem.getItemMeta().getDisplayName()
+						: type;
+
 				p.sendMessage(this.instance.getMessage("shopItemBought")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(amount))
 						.replaceAll("(?i)%" + "price" + "%", String.valueOf(formatter.format(price)))
-						.replaceAll("(?i)%" + "itemname" + "%", itemName)
-						.replaceAll("(?i)%" + "type" + "%", type));
+						.replaceAll("(?i)%" + "itemname" + "%", itemName).replaceAll("(?i)%" + "type" + "%", type));
 				return;
-				
+
 			} else if (e.isRightClick()) {
 
 				// NO PERMISSIONS TO REMOVE
-				if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Sell"))
-						&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+				if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
+						this.instance.manageFile().getString("UserPermissions.shop.Sell"))
+						&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
+								this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
 					return;
 				}
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
-				
+
 				int freeSpace = 0;
 				for (ItemStack items : p.getInventory().getStorageContents()) {
 					if (items == null || items.getType() == Material.AIR) {
 						freeSpace += copyItem.getMaxStackSize();
-					}else if (items.isSimilar(copyItem)) {
-						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0 : copyItem.getMaxStackSize() - items.getAmount();
+					} else if (items.isSimilar(copyItem)) {
+						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0
+								: copyItem.getMaxStackSize() - items.getAmount();
 					}
 				}
-				
-				if(freeSpace < copyItem.getAmount()) {
-					p.sendMessage(this.instance.getMessage("notEnoughInvSpace")
-							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount() - freeSpace)));
+
+				if (freeSpace < copyItem.getAmount()) {
+					p.sendMessage(this.instance.getMessage("notEnoughInvSpace").replaceAll("(?i)%" + "amount" + "%",
+							String.valueOf(copyItem.getAmount() - freeSpace)));
 					return;
 				}
 
-				this.moveItems(e, rentHandler, ShopInventoryType.SELL);
+		        this.moveItems(e, rentHandler, ShopInventoryType.SELL);
+
+				e.setCurrentItem(null);
 				p.getInventory().addItem(copyItem);
 
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.SELL, site, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
-				
+
 				String type = StringUtils.capitalize(copyItem.getType().toString());
-				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
-				
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
+						? copyItem.getItemMeta().getDisplayName()
+						: type;
+
 				p.sendMessage(this.instance.getMessage("shopItemRemoved")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount()))
-						.replaceAll("(?i)%" + "itemname" + "%", itemName)
-						.replaceAll("(?i)%" + "type" + "%", type));
+						.replaceAll("(?i)%" + "itemname" + "%", itemName).replaceAll("(?i)%" + "type" + "%", type));
 
 			}
 
 			// Owner buys Item from Player
-		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameBuy")))) {
+		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&',
+				this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameBuy")))) {
 
 			e.setCancelled(true);
 
@@ -249,7 +259,7 @@ public class ShopListener implements Listener {
 
 			// Player selling to owner
 			if (e.isLeftClick() && !ownerUUID.equals(uuid)) {
-				
+
 				double itemPrice = ShopItemManager.getPriceFromShopItem(this.instance, item);
 				double price;
 				int amount;
@@ -263,11 +273,11 @@ public class ShopListener implements Listener {
 						targetItemAmount += items.getAmount();
 
 				if (targetItemAmount <= 0) {
-					p.sendMessage(this.instance.getMessage("notEnoughOwningItems")
-							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(1)));
+					p.sendMessage(this.instance.getMessage("notEnoughOwningItems").replaceAll("(?i)%" + "amount" + "%",
+							String.valueOf(1)));
 					return;
 				}
-				
+
 				// Shiftclick buys one item, for the price of one
 				if (e.isShiftClick()) {
 
@@ -275,7 +285,7 @@ public class ShopListener implements Listener {
 					amount = 1;
 					price = itemPrice / item.getAmount();
 
-				} else if (targetItemAmount >= item.getAmount()){
+				} else if (targetItemAmount >= item.getAmount()) {
 
 					// MULTIPLE BUY
 					amount = item.getAmount();
@@ -295,17 +305,16 @@ public class ShopListener implements Listener {
 				}
 
 				copyItem.setAmount(amount); // SETS HOW MUCH THE PLAYER SELLED
-				
 
 				if (!this.instance.getChestsUtils().checkForSpaceInArea(shopId, copyItem)) {
 					p.sendMessage(this.instance.getMessage("notEnoughSpace"));
 					return;
 				}
-				
+
 				ItemBuyEvent event = new ItemBuyEvent(p, rentHandler, copyItem, price);
 				Bukkit.getPluginManager().callEvent(event);
-				
-				if(event.isCancelled())
+
+				if (event.isCancelled())
 					return;
 
 				// LOOKS IN NEARBY CHESTS
@@ -315,108 +324,120 @@ public class ShopListener implements Listener {
 				this.instance.getEconomySystem().deposit(p, price); // REMVOES THE MONEY FROM THE BUYER
 				this.instance.getEconomySystem().withdraw(owner, price); // GIVE SHOPOWNER THE MONEY
 
-
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
-				
+
 				String type = StringUtils.capitalize(copyItem.getType().toString());
-				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
-				
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
+						? copyItem.getItemMeta().getDisplayName()
+						: type;
+
 				p.sendMessage(this.instance.getMessage("shopItemSold")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(amount))
 						.replaceAll("(?i)%" + "price" + "%", String.valueOf(formatter.format(price)))
-						.replaceAll("(?i)%" + "itemname" + "%", itemName)
-						.replaceAll("(?i)%" + "type" + "%", type));
+						.replaceAll("(?i)%" + "itemname" + "%", itemName).replaceAll("(?i)%" + "type" + "%", type));
 				return;
-				
+
 			} else if (e.isRightClick()) {
 
 				// NO PERMISSIONS TO REMOVE
-				if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Buy"))
-						&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+				if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
+						this.instance.manageFile().getString("UserPermissions.shop.Buy"))
+						&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
+								this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
 					return;
 				}
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
-				this.moveItems(e, rentHandler, ShopInventoryType.BUY);
+				e.setCurrentItem(null);
+
+		        this.moveItems(e, rentHandler, ShopInventoryType.BUY);
 
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
-				
+
 				String type = StringUtils.capitalize(copyItem.getType().toString());
-				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
+						? copyItem.getItemMeta().getDisplayName()
+						: type;
 
 				p.sendMessage(this.instance.getMessage("shopItemRemoved")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount()))
-						.replaceAll("(?i)%" + "itemname" + "%", itemName)
-						.replaceAll("(?i)%" + "type" + "%", type));
+						.replaceAll("(?i)%" + "itemname" + "%", itemName).replaceAll("(?i)%" + "type" + "%", type));
 
 			}
 		}
 	}
-	
+
 	private void moveItems(InventoryClickEvent e, RentTypeHandler rentHandler, ShopInventoryType type) {
 		CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, rentHandler.getCatID());
-		if(catHandler == null)
+		if (catHandler == null)
 			return;
 		
-		boolean multiSite = catHandler.getMaxSite() > 1;
+		boolean multiSite = (catHandler.getMaxSite() > 1);
 		int last = rentHandler.getInventories(type).size();
 		Inventory lastInv = rentHandler.getInventory(type, last);
-		
 		int counter = 0;
 		int lastItemSlot = -1;
-		for(int i = 0; i < lastInv.getSize() - (multiSite ? 9 : 0); i++) {
+		for (int i = 0; i < lastInv.getSize() - (multiSite ? 9 : 0); i++) {
 			ItemStack temp = lastInv.getItem(i);
-			if(temp != null && temp.getType() != Material.AIR) {
+			if (temp != null && temp.getType() != Material.AIR) {
 				counter++;
 				lastItemSlot = i;
 			}
 		}
 		
-		ItemStack lastItem = lastItemSlot >= 0 ? lastInv.getItem(lastItemSlot) : null;
-		e.setCurrentItem(lastItem);
+		ItemStack lastItem = (lastItemSlot >= 0) ? lastInv.getItem(lastItemSlot) : null;
+		if (e.getCurrentItem() != null && e.getCurrentItem().equals(lastItem)) {
+			e.setCurrentItem(null);
+		} else {
+			e.setCurrentItem(lastItem);
+			if (lastItem != null)
+				lastInv.setItem(lastItemSlot, null);
+		}
 		
-		
-		if(multiSite && counter <= 1 && last > 1) {
-			//Remove lastInv
+		if (multiSite && counter <= 1 && last > 1) {
 			rentHandler.setInventory(type, last, null);
-			
-			//Remove next Button from Inventory before
-			if(last - 1 >= 1) {
+			if (last - 1 >= 1) {
 				Inventory buttonInv = rentHandler.getInventory(type, last - 1);
-
-				int slot = buttonInv.getSize() - 1; //Hardcoded in @UserShopGUI
-				buttonInv.setItem(slot, instance.getMethodes().getGUIItem("ShopBuyAndSell", "placeholderItem"));
+				int slot = buttonInv.getSize() - 1;
+				buttonInv.setItem(slot, this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "placeholderItem"));
 			}
 		}
 	}
 
 	private boolean checkSpecialItem(Player p, ItemStack item) {
-		
+
 		UUID uuid = p.getUniqueId();
-		
+
 		ShopInventoryBuilder builder = this.instance.getShopInvBuilder(uuid);
 
-		boolean isNextItem = item.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem"));
-		boolean isBeforeItem = item.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem"));
-		boolean isReturnItem = item.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "returnItem"));
-		
-		if(isNextItem) {
+		ItemStack clonedItem = this.instance.getMethodes().removeIDKeyFromItem(item.clone());
+		boolean isNextItem = clonedItem
+				.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem"));
+		boolean isBeforeItem = clonedItem
+				.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem"));
+		boolean isReturnItem = clonedItem
+				.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "returnItem"));
+		boolean isPlaceholder = clonedItem
+				.isSimilar(this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "placeholderItem"));
+
+		if (isNextItem) {
 			builder.nextSite();
 			return true;
-		}else if(isBeforeItem) {
+		} else if (isBeforeItem) {
 			builder.beforeSite();
 			return true;
-		}else if(isReturnItem) {
-			
+		} else if (isReturnItem) {
+
 			this.instance.removeShopInvBuilder(uuid);
 			p.openInventory(ShopBuyOrSell.getSelectInv(this.instance, builder.getShopHandler().getID()));
-			
+
 			return true;
-			
+		} else if (isPlaceholder) {
+			return true;
 		}
-		
+
 		return false;
 	}
 }

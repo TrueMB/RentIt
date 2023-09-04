@@ -89,21 +89,37 @@ public class ShopInventorySQL {
 			@Override
 			public void accept(ResultSet rs) {
 				try {
-
+					Inventory sellInv = null;
+					Inventory buyInv = null;
+					
 					while (rs.next()) {
 						
 						int site = rs.getInt("site");
 						String sellInvS = rs.getString("sellInv");
 						String buyInvS = rs.getString("buyInv");
 						
-						ItemStack[] sellContents = !sellInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(sellInvS) : null;
-						ItemStack[] buyContents = !buyInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInvS) : null;
+						ItemStack[] sellContents = sellInvS != null && !sellInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(sellInvS) : null;
+						ItemStack[] buyContents = buyInvS != null && !buyInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInvS) : null;
+						
+						//Adding next Site Button
+						if(sellInv != null && sellContents != null)
+							sellInv.setItem(sellInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
+						
+						if(buyInv != null && buyContents != null)
+							buyInv.setItem(buyInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
 
+						//Adding before Site Button
+						if(sellInv != null)
+							sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
+						
+						if(buyInv != null)
+							buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
+						
 						ShopInventoryBuilder sellBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.SELL);
-						Inventory sellInv = UserShopGUI.getInventory(instance, sellBuilder);
+						sellInv = UserShopGUI.getInventory(instance, sellBuilder);
 						
 						ShopInventoryBuilder buyBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.BUY);
-						Inventory buyInv = UserShopGUI.getInventory(instance, buyBuilder);
+						buyInv = UserShopGUI.getInventory(instance, buyBuilder);
 						
 						CategoryHandler catHandler = instance.getMethodes().getCategory(RentTypes.SHOP, handler.getCatID());
 						

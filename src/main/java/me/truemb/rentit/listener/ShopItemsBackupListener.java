@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
 
 public class ShopItemsBackupListener implements Listener {
@@ -101,7 +102,12 @@ public class ShopItemsBackupListener implements Listener {
 		Player p = (Player) e.getPlayer();
 		UUID uuid = p.getUniqueId();
 		
-		this.instance.rentTypeHandlers.get(RentTypes.SHOP).values().forEach(shopHandler -> {
+		HashMap<Integer, RentTypeHandler> handlers = this.instance.rentTypeHandlers.get(RentTypes.SHOP);
+		
+		if(handlers == null)
+			return;
+		
+		handlers.values().forEach(shopHandler -> {
 			HashMap<UUID, List<Inventory>> rollbackHash = shopHandler.getRollbackInventories();
 			
 			//SAVE INVENTORIES IN THE FILE

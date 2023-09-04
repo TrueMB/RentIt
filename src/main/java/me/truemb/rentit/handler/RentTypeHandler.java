@@ -171,6 +171,12 @@ public class RentTypeHandler {
 		this.setNextPayment(null);
 		this.setReminder(null);
 		this.setReminded(false);
+		
+		this.inventoryCache.put(ShopInventoryType.BUY, new HashMap<>());
+		this.inventoryCache.put(ShopInventoryType.SELL, new HashMap<>());
+		
+		this.inventoryCache.get(ShopInventoryType.BUY).put(1, UserShopGUI.getInventory(this.instance, new ShopInventoryBuilder(null, this, ShopInventoryType.BUY)));
+		this.inventoryCache.get(ShopInventoryType.SELL).put(1, UserShopGUI.getInventory(this.instance, new ShopInventoryBuilder(null, this, ShopInventoryType.SELL)));
 	}
 	
 	public boolean isOwned() {
@@ -196,6 +202,9 @@ public class RentTypeHandler {
 	public void setInventory(ShopInventoryType type, int site, Inventory inventoryToSet) {
 		HashMap<Integer, Inventory> invHash = this.inventoryCache.get(type);
 		if(invHash == null) return;
+		
+		if(inventoryToSet == null)
+			invHash.remove(site);
 		
 		Inventory inv = invHash.get(site);
 		if(inv != null) {

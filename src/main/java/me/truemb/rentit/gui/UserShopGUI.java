@@ -43,6 +43,7 @@ public class UserShopGUI {
 			}
 		}
 		
+		int shopId = rentHandler.getID();
 		int site = builder.getSite();
 		Inventory inv = rentHandler.getInventory(builder); //Uses the builder current Site
 		boolean hasNextSite = rentHandler.getInventories(builder.getType()).size() > site;
@@ -74,15 +75,15 @@ public class UserShopGUI {
 		if(multiSite) {
 			int start = inv.getSize() - 9;
 			for(int i = start; i < inv.getSize(); i++)
-				inv.setItem(i, instance.getMethodes().getGUIItem("ShopBuyAndSell", "placeholderItem"));
+				inv.setItem(i, instance.getMethodes().getGUIItem("ShopBuyAndSell", "placeholderItem", shopId));
 			
 			if(site > 1)
-				inv.setItem(start, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem"));
+				inv.setItem(start, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", shopId));
 				
 			if(hasNextSite)
-				inv.setItem(start + 8, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem"));
+				inv.setItem(start + 8, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", shopId));
 			
-			inv.setItem(start + 4, instance.getMethodes().getGUIItem("ShopBuyAndSell", "returnItem"));
+			inv.setItem(start + 4, instance.getMethodes().getGUIItem("ShopBuyAndSell", "returnItem", shopId));
 		}
 		
 		return inv;
