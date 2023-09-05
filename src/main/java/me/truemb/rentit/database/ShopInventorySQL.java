@@ -107,19 +107,21 @@ public class ShopInventorySQL {
 						
 						if(buyInv != null && buyContents != null)
 							buyInv.setItem(buyInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
-
-						//Adding before Site Button
-						if(sellInv != null)
-							sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
-						
-						if(buyInv != null)
-							buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
 						
 						ShopInventoryBuilder sellBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.SELL);
+						sellBuilder.setSite(site);
 						sellInv = UserShopGUI.getInventory(instance, sellBuilder);
 						
 						ShopInventoryBuilder buyBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.BUY);
+						buyBuilder.setSite(site);
 						buyInv = UserShopGUI.getInventory(instance, buyBuilder);
+
+						//Adding before Site Button
+						if(sellInv != null && site > 1)
+							sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
+						
+						if(buyInv != null && site > 1)
+							buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
 						
 						CategoryHandler catHandler = instance.getMethodes().getCategory(RentTypes.SHOP, handler.getCatID());
 						
@@ -142,7 +144,6 @@ public class ShopInventorySQL {
 						
 						handler.setInventory(ShopInventoryType.SELL, site, sellInv);
 						handler.setInventory(ShopInventoryType.BUY, site, buyInv);
-						return;
 					}
 					
 				} catch (SQLException | IOException e) {

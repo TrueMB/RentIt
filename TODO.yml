@@ -3,3 +3,44 @@ Same for player removing an item from the shop
 
 
 - Category Info
+
+
+TODO:
+- First Item from second site wont be set as last item
+- Search menu doesn't show shop and back doesn't work
+- automatically go one site before, if shop site is empty
+
+BUG:
+- first item from second site was removed and the second also went missing
+
+
+[19:31:54 ERROR]: null
+org.bukkit.command.CommandException: Unhandled exception executing 'shop sellItem 5' in me.truemb.rentit.commands.ShopCOMMAND(shop)
+        at org.bukkit.command.SimpleCommandMap.dispatch(SimpleCommandMap.java:165) ~[paper-api-1.20.1-R0.1-SNAPSHOT.jar:?]
+        at org.bukkit.craftbukkit.v1_20_R1.CraftServer.dispatchCommand(CraftServer.java:1006) ~[paper-1.20.1.jar:git-Paper-100]
+        at org.bukkit.craftbukkit.v1_20_R1.command.BukkitCommandWrapper.run(BukkitCommandWrapper.java:64) ~[paper-1.20.1.jar:git-Paper-100]
+        at com.mojang.brigadier.CommandDispatcher.execute(CommandDispatcher.java:265) ~[paper-1.20.1.jar:?]
+        at net.minecraft.commands.Commands.performCommand(Commands.java:324) ~[?:?]
+        at net.minecraft.commands.Commands.performCommand(Commands.java:308) ~[?:?]
+        at net.minecraft.server.network.ServerGamePacketListenerImpl.performChatCommand(ServerGamePacketListenerImpl.java:2299) ~[?:?]
+        at net.minecraft.server.network.ServerGamePacketListenerImpl.lambda$handleChatCommand$20(ServerGamePacketListenerImpl.java:2259) ~[?:?]
+        at net.minecraft.util.thread.BlockableEventLoop.lambda$submitAsync$0(BlockableEventLoop.java:59) ~[?:?]
+        at java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768) ~[?:?]
+        at net.minecraft.server.TickTask.run(TickTask.java:18) ~[paper-1.20.1.jar:git-Paper-100]
+        at net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:153) ~[?:?]
+        at net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:24) ~[?:?]
+        at net.minecraft.server.MinecraftServer.doRunTask(MinecraftServer.java:1339) ~[paper-1.20.1.jar:git-Paper-100]
+        at net.minecraft.server.MinecraftServer.d(MinecraftServer.java:197) ~[paper-1.20.1.jar:git-Paper-100]
+        at net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:126) ~[?:?]
+        at net.minecraft.server.MinecraftServer.pollTaskInternal(MinecraftServer.java:1316) ~[paper-1.20.1.jar:git-Paper-100]
+        at net.minecraft.server.MinecraftServer.pollTask(MinecraftServer.java:1309) ~[paper-1.20.1.jar:git-Paper-100]
+        at net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:136) ~[?:?]
+        at net.minecraft.server.MinecraftServer.waitUntilNextTick(MinecraftServer.java:1287) ~[paper-1.20.1.jar:git-Paper-100]
+        at net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:1175) ~[paper-1.20.1.jar:git-Paper-100]
+        at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:318) ~[paper-1.20.1.jar:git-Paper-100]
+        at java.lang.Thread.run(Thread.java:833) ~[?:?]
+Caused by: java.lang.NullPointerException: Cannot invoke "org.bukkit.inventory.Inventory.getSize()" because "inventories" is null
+        at me.truemb.rentit.commands.ShopCOMMAND.addShopItem(ShopCOMMAND.java:1957) ~[RentIt-2.8.0-all.jar:?]
+        at me.truemb.rentit.commands.ShopCOMMAND.execute(ShopCOMMAND.java:1385) ~[RentIt-2.8.0-all.jar:?]
+        at org.bukkit.command.SimpleCommandMap.dispatch(SimpleCommandMap.java:155) ~[paper-api-1.20.1-R0.1-SNAPSHOT.jar:?]
+        ... 22 more
