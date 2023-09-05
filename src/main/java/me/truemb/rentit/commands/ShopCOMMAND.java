@@ -1954,13 +1954,15 @@ public class ShopCOMMAND extends BukkitCommand {
 
 		//Check if Item is already in the Shop
 		for(Inventory inventories : rentHandler.getInventories(shopInvType)) {
-			for (int i = 0; i < inventories.getSize() - (multiSite ? 9 : 0); i++) {
-				ItemStack items = inventories.getItem(i);
-				if (items != null && items.getType() != Material.AIR) {
-	
-					if (items.isSimilar(item)) {
-						p.sendMessage(this.instance.getMessage("shopContainsItem"));
-						return;
+			if(inventories != null) {
+				for (int i = 0; i < inventories.getSize() - (multiSite ? 9 : 0); i++) {
+					ItemStack items = inventories.getItem(i);
+					if (items != null && items.getType() != Material.AIR) {
+		
+						if (items.isSimilar(item)) {
+							p.sendMessage(this.instance.getMessage("shopContainsItem"));
+							return;
+						}
 					}
 				}
 			}
