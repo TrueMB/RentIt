@@ -135,14 +135,15 @@ public class CategoriesSQL {
 						}
 						
 						instance.getLogger().info(String.valueOf(catAmount) + " " + type.toString() + "-Categories are loaded.");
-						c.accept(true);
-						return;
 					} catch (SQLException e) {
 						e.printStackTrace();
 						c.accept(false);
+						return;
 					}
 				}
 			});
 		}
+
+		c.accept(true);
 	}
 }
