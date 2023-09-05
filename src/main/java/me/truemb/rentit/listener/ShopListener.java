@@ -203,8 +203,6 @@ public class ShopListener implements Listener {
 				}
 
 		        this.moveItems(e, rentHandler, ShopInventoryType.SELL);
-
-				e.setCurrentItem(null);
 				p.getInventory().addItem(copyItem);
 
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
@@ -349,9 +347,25 @@ public class ShopListener implements Listener {
 				}
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
-				e.setCurrentItem(null);
+
+				int freeSpace = 0;
+				for (ItemStack items : p.getInventory().getStorageContents()) {
+					if (items == null || items.getType() == Material.AIR) {
+						freeSpace += copyItem.getMaxStackSize();
+					} else if (items.isSimilar(copyItem)) {
+						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0
+								: copyItem.getMaxStackSize() - items.getAmount();
+					}
+				}
+
+				if (freeSpace < copyItem.getAmount()) {
+					p.sendMessage(this.instance.getMessage("notEnoughInvSpace").replaceAll("(?i)%" + "amount" + "%",
+							String.valueOf(copyItem.getAmount() - freeSpace)));
+					return;
+				}
 
 		        this.moveItems(e, rentHandler, ShopInventoryType.BUY);
+				p.getInventory().addItem(copyItem);
 
 				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
 				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
@@ -391,9 +405,11 @@ public class ShopListener implements Listener {
 		if (e.getCurrentItem() != null && e.getCurrentItem().equals(lastItem)) {
 			e.setCurrentItem(null);
 		} else {
-			e.setCurrentItem(lastItem);
+			e.getInventory().setItem(e.getSlot(), lastItem); //e.setCurrentItem doesn't work. Maybe because of cancel
 			if (lastItem != null)
 				lastInv.setItem(lastItemSlot, null);
+
+			this.instance.getShopsInvSQL().updateInventory(rentHandler.getID(), ShopInventoryType.SELL, last, lastInv.getContents());
 		}
 		
 		if (multiSite && counter <= 1 && last > 1) {

@@ -203,8 +203,10 @@ public class RentTypeHandler {
 		HashMap<Integer, Inventory> invHash = this.inventoryCache.get(type);
 		if(invHash == null) return;
 		
-		if(inventoryToSet == null)
+		if(inventoryToSet == null) {
 			invHash.remove(site);
+			return;
+		}
 		
 		Inventory inv = invHash.get(site);
 		if(inv != null) {
