@@ -1290,7 +1290,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
-				this.instance.getMethodes().setSize(p, shopId, rentHandler.getCatID(), args[1]);
+				this.instance.getMethodes().setSize(p, rentHandler.getCatID(), shopId, args[1]);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setPrice")) {
@@ -1842,7 +1842,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				if (size < 0 || size % 9 > 0 || size > 54) {
+				if (size < 0 || size % 9 > 0 || size > 54 || maxSite > 1 && size > 45) {
 					p.sendMessage(this.instance.getMessage("shopSizeNotValid"));
 					return true;
 				}

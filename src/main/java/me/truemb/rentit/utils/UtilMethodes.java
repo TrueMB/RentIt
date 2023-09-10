@@ -230,7 +230,7 @@ public class UtilMethodes {
 
 		HashMap<Integer, CategoryHandler> catHash = this.instance.catHandlers.get(type);
 
-		return catHash.get(id);
+		return catHash.get((Integer) id);
 	}
 
 	public PlayerHandler getPlayerHandler(UUID uuid) {
@@ -436,23 +436,23 @@ public class UtilMethodes {
 			return;
 		}
 
-		if (size < 0 || size % 9 > 0 || size > 54) {
-			p.sendMessage(this.instance.getMessage("shopSizeNotValid"));
-			return;
-		}
 
 		boolean success = catID > 0;
 		CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, catID);
-
+		
 		if (success) {
-
+			
+			if (size < 0 || size % 9 > 0 || size > 54 || catHandler.getMaxSite() > 1 && size > 45) {
+				p.sendMessage(this.instance.getMessage("shopSizeNotValid"));
+				return;
+			}
+			
 			if (catHandler != null)
 				catHandler.setSize(size);
 
 			this.instance.getCategorySQL().setSize(catID, size);
-		}
-
-		if (!success) {
+			
+		}else {
 			p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 			return;
 		}
@@ -461,16 +461,18 @@ public class UtilMethodes {
 		RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
 
 		if (rentHandler == null) {
-			p.sendMessage(instance.getMessage("shopDatabaseEntryMissing"));
+			p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 			return;
 		}
-
-		this.instance.getShopsInvSQL().setupShopInventories(rentHandler); // UPDATE SHOP INVENTORIES
+		
+		rentHandler.resetInventories(); //Deletes the Inventories, so that the new Size will be used
+		this.instance.getShopsInvSQL().setupShopInventories(rentHandler); // Load the Shop Inventory again with the correct size
 		
 	    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
 		this.updateAllSigns(RentTypes.SHOP, catID);
 		p.sendMessage(this.instance.getMessage("shopSizeChanged")
+				.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
 				.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
 				.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 

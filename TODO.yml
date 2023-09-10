@@ -10,4 +10,4 @@ TODO:
 - automatically go one site before, if shop site is empty
 - Buy Shop return button doesnt work
 - Test buying items
-- Empty Inventory -> Server stop -> Server start -> results in bugged inventory
+- shop setSize doesn't update Shop Size and also shows second site, if empty (after reload works)

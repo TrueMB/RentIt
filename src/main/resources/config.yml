@@ -633,7 +633,7 @@ Messages:
   shopOwnerChanged: '&aShopowner was changed to &f%player% &afrom the Shop &f%alias%&a.'
   shopRentTimeChanged: '&aRent Time was changed to &f%time% &afor Category &f%catAlias%&a.'
   shopPriceChanged: '&aRent Price was changed to &f%price% &afor Category &f%catAlias%&a.'
-  shopSizeNotValid: '&4ERROR. &cThe Shop Size hast to be multiplide in 9. (MAX: 54)'
+  shopSizeNotValid: '&4ERROR. &cThe Shop Size hast to be multiplide in 9. (MAX: 54 or 45 if multiple sites)'
   shopSizeNotValidForMultipleSites: '&4ERROR. &cThe Shop can be max 45. The last row is for the skipping the site'
   shopSizeChanged: '&aShop Size was changed to &f%size% &afor Category &f%catAlias%&a.'
   shopReseted: '&aThe ShopID &f%alias% &awas reseted.'
