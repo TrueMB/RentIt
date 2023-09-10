@@ -286,7 +286,7 @@ public class RentTypeHandler {
 	public Inventory getRollbackInventory(UUID uuid, int site) {
 		
 		if(this.rollbackInv.get(uuid) == null)
-			this.rollbackInv.put(uuid, RollbackGUI.getRollbackInventories(this.instance, this.ownerUUID, this.id));
+			this.rollbackInv.put(uuid, RollbackGUI.getRollbackInventories(this.instance, uuid, this.id));
 		
 		if(this.rollbackInv.get(uuid).size() <= 0)
 			return null;

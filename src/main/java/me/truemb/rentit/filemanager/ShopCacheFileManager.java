@@ -70,8 +70,13 @@ public class ShopCacheFileManager {
 				ItemStack[] sellItems = sellInv.getContents();
 				
 				for(ItemStack item : sellItems) {
-					if(item != null)
-						item = ShopItemManager.removeShopItem(this.instance, item);
+					if(item != null) {
+						ItemMeta meta = item.getItemMeta();
+						if(meta.getPersistentDataContainer().has(this.instance.guiItem, PersistentDataType.STRING))
+							item.setType(Material.AIR);
+						else
+							item = ShopItemManager.removeShopItem(this.instance, item);
+					}
 				}
 				
 				cfg.set(basicPath + "." + String.valueOf(chests.size() + i), InventoryUtils.itemStackArrayToBase64(sellItems));
