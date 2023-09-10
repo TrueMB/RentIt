@@ -5,6 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
+
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
@@ -62,7 +64,7 @@ public class UserShopGUI {
 			for (int i = 0; i < inv.getSize() && i < contents.length; i++) {
 					
 				ItemStack item = contents[i];
-				if (item == null || item.getType() == Material.AIR) {
+				if (item == null || item.getType() == Material.AIR || item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
 					puf++;
 					continue;
 				}

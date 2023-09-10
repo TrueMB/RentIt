@@ -25,6 +25,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
@@ -1480,8 +1482,20 @@ public class ShopCOMMAND extends BukkitCommand {
 					if(handler == null)
 						continue;
 					
+					//TODO Placeholders? How many items, sell or buy?
 					for(Inventory inv : handler.getInventories(ShopInventoryType.SELL)) {
-						int foundAmount = inv.all(m).size();
+						int foundAmount = 0;
+						
+						for(ItemStack content : inv.getContents()) {
+							if(content != null && content.getType() == m) {
+								ItemMeta contentMeta = content.getItemMeta();
+								if (!contentMeta.getPersistentDataContainer().has(this.instance.guiItem, PersistentDataType.STRING)) {
+									System.out.println(contentMeta.getPersistentDataContainer().getKeys());
+									foundAmount++;
+								}
+							}
+						}
+								
 						if(foundAmount > 0)
 							foundShopIds.add(handler.getID());
 					}
@@ -2103,7 +2117,7 @@ public class ShopCOMMAND extends BukkitCommand {
 
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("search")) {
 			for(Material m : Material.values())
-				if(m.toString().toLowerCase().startsWith(args[1].toLowerCase()))
+				if(m.toString().toLowerCase().contains(args[1].toLowerCase()))
 					list.add(m.toString());
 			
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("door")) {

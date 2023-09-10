@@ -8,4 +8,6 @@ Same for player removing an item from the shop
 TODO:
 - Search menu doesn't show shop and back doesn't work
 - automatically go one site before, if shop site is empty
+- Buy Shop return button doesnt work
 - Test buying items
+- Empty Inventory -> Server stop -> Server start -> results in bugged inventory
