@@ -55,12 +55,8 @@ public class RentTypeHandler {
 		this.setOwner(ownerUUID, ownerName);
 		this.setAutoPayment(autoPayment);
 		this.setNextPayment(nextPayment);
-		
-		this.inventoryCache.put(ShopInventoryType.BUY, new HashMap<>());
-		this.inventoryCache.put(ShopInventoryType.SELL, new HashMap<>());
-		
-		this.inventoryCache.get(ShopInventoryType.BUY).put(1, UserShopGUI.getInventory(this.instance, new ShopInventoryBuilder(null, this, ShopInventoryType.BUY)));
-		this.inventoryCache.get(ShopInventoryType.SELL).put(1, UserShopGUI.getInventory(this.instance, new ShopInventoryBuilder(null, this, ShopInventoryType.SELL)));
+
+		this.resetInventories();
 	}
 	
 	//GET METHODES

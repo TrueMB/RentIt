@@ -35,8 +35,13 @@ public class ShopInventoryBuilder {
 	}
 	
 	public ShopInventoryBuilder nextSite() {
-		if(this.currentSite >= this.shopHandler.getInventories(this.type).size())
-			return this;
+		if(this.type != ShopInventoryType.ROLLBACK) {
+			if(this.currentSite >= this.shopHandler.getInventories(this.type).size())
+				return this;
+		}else {
+			if(this.currentSite >= this.shopHandler.getRollbackInventories().get(this.targetUUID != null ? this.targetUUID : this.player.getUniqueId()).size())
+				return this;
+		}
 		
 		this.currentSite++;
 		this.openInventory();
