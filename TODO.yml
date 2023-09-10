@@ -12,3 +12,4 @@ TODO:
 - Buy Shop return button doesnt work
 - Test buying items
 - shop setSize doesn't update Shop Size and also shows second site, if empty (after reload works)
+- items being added on the second site, even if first site is empty
