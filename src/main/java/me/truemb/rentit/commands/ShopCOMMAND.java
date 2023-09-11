@@ -86,6 +86,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		this.adminSubCommands.add("rollback");
 		this.adminSubCommands.add("setTime");
 		this.adminSubCommands.add("setSize");
+		this.adminSubCommands.add("setMaxSite");
 		this.adminSubCommands.add("setPrice");
 		this.adminSubCommands.add("list");
 		
@@ -1290,7 +1291,44 @@ public class ShopCOMMAND extends BukkitCommand {
 					p.sendMessage(this.instance.getMessage("categoryError"));
 					return true;
 				}
-				this.instance.getMethodes().setSize(p, rentHandler.getCatID(), shopId, args[1]);
+				this.instance.getMethodes().setSize(p, rentHandler.getCatID(), args[1]);
+				return true;
+
+			} else if (args[0].equalsIgnoreCase("setMaxSite")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setmaxsite")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setmaxsite")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
+
+				if (shopId < 0) {
+					// PLAYER NOT IN SHOP AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("notInShop"));
+					return true;
+				}
+
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+				if (rentHandler == null) {
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
+					return true;
+				}
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+
+				if (catHandler == null) {
+					p.sendMessage(this.instance.getMessage("categoryError"));
+					return true;
+				}
+				
+				this.instance.getMethodes().setMaxSite(p, rentHandler.getCatID(), args[1]);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setPrice")) {

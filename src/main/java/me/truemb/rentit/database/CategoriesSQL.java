@@ -65,6 +65,16 @@ public class CategoriesSQL {
 					+ "ON DUPLICATE KEY UPDATE size='" + invSize + "';");
 	}
 	
+	public void setMaxSite(int catID, int maxSite){
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		if(sql.isSqlLite()) //SQLLITE
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_categories + " (catID, maxSite) VALUES ('" + catID + "','" + maxSite + "') "
+					+ "ON CONFLICT(catID) DO UPDATE SET maxSite='" + maxSite + "';");
+		else //MYSQL
+			sql.queryUpdate("INSERT INTO " + sql.t_shop_categories + " (catID, maxSite) VALUES ('" + catID + "','" + maxSite + "') "
+					+ "ON DUPLICATE KEY UPDATE maxSite='" + maxSite + "';");
+	}
+	
 	public void setCosts(int catID, RentTypes type, double costs){
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		if(sql.isSqlLite()) //SQLLITE

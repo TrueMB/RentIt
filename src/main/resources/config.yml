@@ -355,20 +355,27 @@ GUI:
         type: GOLD_NUGGET
         lore:
           - '&fChange the Rentprice'
-        slot: 3
+        slot: 2
       changeSizeItem:
         displayName: '&6Change Size'
         type: CHEST
         lore:
           - '&fChange Shop Slot Size'
-        slot: 5
+        slot: 3
+      changeMaxSiteItem:
+        displayName: '&6Change Max Sites Amount'
+        type: BOOK
+        lore:
+          - '&fChanges the amount of sites'
+          - '&fwhich should be the limit for this category'
+        slot: 4
       changeAliasItem:
         displayName: '&6Change Alias'
         type: PAPER
         lore:
           - '&fChange the Alias'
           - '&fof the Shop'
-        slot: 7
+        slot: 8
       changeCategoryAliasItem:
         displayName: '&6Change Alias of the Category'
         type: PAPER
@@ -385,27 +392,27 @@ GUI:
         type: CLOCK
         lore:
           - '&fChange the Renttime'
-        slot: 2
+        slot: 1
       changePriceItem:
         displayName: '&6Change Rentprice'
         type: GOLD_NUGGET
         lore:
           - '&fChange the Rentprice'
-        slot: 4
+        slot: 2
       changeAliasItem:
         displayName: '&6Change Alias'
         type: PAPER
         lore:
           - '&fChange the Alias'
           - '&fof the Hotelroom'
-        slot: 6
+        slot: 8
       changeCategoryAliasItem:
         displayName: '&6Change Alias of the Category'
         type: PAPER
         lore:
           - '&fChange the Alias'
           - '&fof the Hotelrooms Category'
-        slot: 8
+        slot: 9
   #GUI that players see, if they try to Rent a Hotelroom
   hotelConfirmation:
     displayName: '&a&lHotelrooms Confirmation'
@@ -635,7 +642,9 @@ Messages:
   shopPriceChanged: '&aRent Price was changed to &f%price% &afor Category &f%catAlias%&a.'
   shopSizeNotValid: '&4ERROR. &cThe Shop Size hast to be multiplide in 9. (MAX: 54 or 45 if multiple sites)'
   shopSizeNotValidForMultipleSites: '&4ERROR. &cThe Shop can be max 45. The last row is for the skipping the site'
+  shopMaxSiteInvalid: '&4ERROR. &cThe Shop max Sites needs to be at least one.'
   shopSizeChanged: '&aShop Size was changed to &f%size% &afor Category &f%catAlias%&a.'
+  shopMaxSiteChanged: '&aShop max sites was changed to &f%maxSite% &afor Category &f%catAlias%&a.'
   shopReseted: '&aThe ShopID &f%alias% &awas reseted.'
   shopDeleted: '&aThe ShopID &f%alias% &awas deleted.'
   shopItemBought: '&6You bought &f%amount%x %itemname% &6for &f%price%$&6.'
@@ -710,6 +719,7 @@ Messages:
     - '&f/shop setnpc &7- &6Set or Change the Position of the Shop NPC.'
     - '&f/shop setprice <Price> &7- &6Change the Rent Price. (Changes the Category Settings)'
     - '&f/shop setsize <Size> &7- &6Change the Shop Size. (Changes the Category Settings)'
+    - '&f/shop setmaxsite <max Sites> &7- &6Change the Shop Sites amount. (Changes the Category Settings)'
     - '&f/shop settime <Time> &7- &6Change the Rent Time. (Changes the Category Settings)'
     - '&f/shop reset &7- &6Reset the Shop, so it can get a new Owner.'
     - '&f/shop delete &7- &6Delete the Shop completly.'
@@ -769,7 +779,7 @@ Messages:
     body: '&6ID&7: &f%id% &7- &6Owner&7: &f%owner%'
     footer: '&6&m                                                  '
     hover: '&6Click for more Information'
-    couldntFind: '&cCouldnt find any Shops.'
+    couldntFind: '&cCouldn''t find any Shops.'
     notOwned: 'Not owned'
   #Hotelroom Messages
   hotelDatabaseEntryMissing: '&cCouldnt find Hotelroom in the Database.'
@@ -867,7 +877,7 @@ Messages:
     body: '&6ID&7: &f%id% &7- &6Owner&7: &f%owner%'
     footer: '&6&m                                                  '
     hover: '&6Click for more Information'
-    couldntFind: '&cCouldnt find any Hotels.'
+    couldntFind: '&cCouldn''t find any Hotels.'
     notOwned: 'Not owned'
 
   #Do NOT touch

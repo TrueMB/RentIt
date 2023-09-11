@@ -23,6 +23,10 @@ public class AdminGUI {
 		if(changeSizeItemSlot >= 0)
 			inv.setItem(changeSizeItemSlot, instance.getMethodes().getGUIItem("shopAdmin", "changeSizeItem", shopId));
 		
+		int changeMaxSiteItemSlot = instance.manageFile().getInt("GUI.shopAdmin.items.changeMaxSiteItem.slot") - 1;
+		if(changeMaxSiteItemSlot >= 0)
+			inv.setItem(changeMaxSiteItemSlot, instance.getMethodes().getGUIItem("shopAdmin", "changeMaxSiteItem", shopId));
+		
 		int changeAliasItemSlot = instance.manageFile().getInt("GUI.shopAdmin.items.changeAliasItem.slot") - 1;
 		if(changeAliasItemSlot >= 0)
 			inv.setItem(changeAliasItemSlot, instance.getMethodes().getGUIItem("shopAdmin", "changeAliasItem", shopId));

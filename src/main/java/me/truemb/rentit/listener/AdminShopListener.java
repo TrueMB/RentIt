@@ -103,7 +103,10 @@ public class AdminShopListener implements Listener {
 				this.instance.getMethodes().setPrice(p, RentTypes.SHOP, catID, text);
 			} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeSizeItem"))) {
 				// PLAYER WANTS TO CHANGE SHOP SIZE
-				this.instance.getMethodes().setSize(p, shopId, catID, text);
+				this.instance.getMethodes().setSize(p, catID, text);
+			} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeMaxSiteItem"))) {
+				// PLAYER WANTS TO CHANGE SHOP SIZE
+				this.instance.getMethodes().setMaxSite(p, catID, text);
 			} else if (this.instance.getMethodes().removeIDKeyFromItem(item).isSimilar(this.instance.getMethodes().getGUIItem("shopAdmin", "changeAliasItem"))) {
 				// PLAYER WANTS TO CHANGE THE ALIAS
 				text = text.substring(0, text.length() > 100 ? 100 : text.length());

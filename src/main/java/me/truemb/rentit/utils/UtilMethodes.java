@@ -213,6 +213,16 @@ public class UtilMethodes {
 		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() == null && rentType.getCatID() == catId).collect(Collectors.toList());
 	}
 	
+	public Collection<RentTypeHandler> getRentTypesOfCategory(RentTypes type, int catId) {
+
+		if(!this.instance.rentTypeHandlers.containsKey(type))
+			return Collections.emptyList();
+
+		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
+		
+		return typeHash.values().stream().filter(rentType -> rentType.getCatID() == catId).collect(Collectors.toList());
+	}
+	
 	public Collection<RentTypeHandler> getFreeRentTypes(RentTypes type) {
 
 		if(!this.instance.rentTypeHandlers.containsKey(type))
@@ -425,7 +435,7 @@ public class UtilMethodes {
 
 	}
 
-	public void setSize(Player p, int catID, int shopId, String arg) {
+	public void setSize(Player p, int catID, String arg) {
 
 		int size = 0;
 
@@ -458,21 +468,64 @@ public class UtilMethodes {
 		}
 
 		// UPDATE INVENTORY TO SIZE
-		RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
-
-		if (rentHandler == null) {
-			p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
-			return;
+		for(RentTypeHandler shops : this.getRentTypesOfCategory(RentTypes.SHOP, catID)) {
+			shops.resetInventories(); //Deletes the Inventories, so that the new Size will be used
+			this.instance.getShopsInvSQL().setupShopInventories(shops); // Load the Shop Inventory again with the correct size
 		}
-		
-		rentHandler.resetInventories(); //Deletes the Inventories, so that the new Size will be used
-		this.instance.getShopsInvSQL().setupShopInventories(rentHandler); // Load the Shop Inventory again with the correct size
 		
 	    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
 		this.updateAllSigns(RentTypes.SHOP, catID);
 		p.sendMessage(this.instance.getMessage("shopSizeChanged")
 				.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+				.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
+				.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
+
+	}
+
+	public void setMaxSite(Player p, int catID, String arg) {
+
+		int maxSite = 1;
+
+		try {
+			maxSite = Integer.parseInt(arg);
+		} catch (NumberFormatException ex) {
+			p.sendMessage(this.instance.getMessage("notANumber"));
+			return;
+		}
+
+
+		boolean success = catID > 0;
+		CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, catID);
+		
+		if (success) {
+			
+			if (maxSite < 1) {
+				p.sendMessage(this.instance.getMessage("shopMaxSiteInvalid"));
+				return;
+			}
+			
+			if (catHandler != null)
+				catHandler.setMaxSite(maxSite);
+
+			this.instance.getCategorySQL().setMaxSite(catID, maxSite);
+			
+		}else {
+			p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
+			return;
+		}
+
+		// UPDATE INVENTORY TO SIZE
+		for(RentTypeHandler shops : this.getRentTypesOfCategory(RentTypes.SHOP, catID)) {
+			shops.resetInventories(); //Deletes the Inventories, so that the new Size will be used
+			this.instance.getShopsInvSQL().setupShopInventories(shops); // Load the Shop Inventory again with the correct size
+		}
+		
+	    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+
+		this.updateAllSigns(RentTypes.SHOP, catID);
+		p.sendMessage(this.instance.getMessage("shopMaxSiteChanged")
+				.replaceAll("(?i)%" + "maxSite" + "%", String.valueOf(maxSite))
 				.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catID))
 				.replaceAll("(?i)%" + "catAlias" + "%", catAlias));
 
