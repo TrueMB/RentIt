@@ -255,6 +255,9 @@ public class ShopListener implements Listener {
 
 			NumberFormat formatter = new DecimalFormat("#0.00");
 
+			if (this.checkSpecialItem(p, item))
+				return;
+
 			// Player selling to owner
 			if (e.isLeftClick() && !ownerUUID.equals(uuid)) {
 

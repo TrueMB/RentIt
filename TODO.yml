@@ -1,15 +1,13 @@
-Player buys item and removes it from shop -> Updates Inventory all items after to the new positions
-Same for player removing an item from the shop 
-
-
 - Category Info
-- /shop setMaxSite 
 
 
 TODO:
 - Search menu doesn't show shop and back doesn't work
 - automatically go one site before, if shop site is empty
-- Buy Shop return button doesnt work
 - Test buying items
 - shop setSize doesn't update Shop Size and also shows second site, if empty (after reload works)
 - items being added on the second site, even if first site is empty
+
+DONE:
+- /shop setMaxSite 
+- Buy Shop return button doesnt work
