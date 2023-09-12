@@ -761,7 +761,7 @@ Messages:
     - '&6Players can sell Items, until the Chest is full. So if you want only one item of a kind, put 63 of the same in the chest and fill the rest with another Material.'
     - '&6Dont forget about your rent time and enough money. Normally it will pay the rent automaticly, so be sure always have enough money. Even if you are not on the Server!'
   shopInfo:
-    - '&6&m                  &6[ &f&lSHOP Info &6]&6&m                  '
+    - '&6&m                  &6[ &f&lShop Info &6]&6&m                  '
     - '&6Shop ID&7: &f%shopId% &8(%alias%)'
     - '&6Category&7: &f%catId% &8(%catAlias%)'
     - ''
@@ -774,6 +774,15 @@ Messages:
     - '&6Inventory Sites&7: &f%sites%'
     - '&6Rent time&7: &f%time%'
     - '&6Doors closed&7: &f%doorStatus%'
+  shopCategoryInfo:
+    - '&6&m                  &6[ &f&lShop Category Info &6]&6&m                  '
+    - '&6Category&7: &f%catId% &8(%catAlias%)'
+    - '&6Shop Amount using this Category&7: &f%catShopAmount%'
+    - ''
+    - '&6Price&7: &f%price%'
+    - '&6Inventory Size&7: &f%size%'
+    - '&6Inventory Sites&7: &f%sites%'
+    - '&6Rent time&7: &f%time%'
   shopList:
     header: '&6&m                  &6[ &f&lSHOP List &6]&6&m                  '
     body: '&6ID&7: &f%id% &7- &6Owner&7: &f%owner%'
@@ -872,6 +881,13 @@ Messages:
     - '&6Price&7: &f%price%'
     - '&6Rent time&7: &f%time%'
     - '&6Doors closed&7: &f%doorStatus%'
+  hotelCategoryInfo:
+    - '&6&m                  &6[ &f&lShop Category Info &6]&6&m                  '
+    - '&6Category&7: &f%catId% &8(%catAlias%)'
+    - '&6Shop Amount using this Category&7: &f%catHotelAmount%'
+    - ''
+    - '&6Price&7: &f%price%'
+    - '&6Rent time&7: &f%time%'
   hotelList:
     header: '&6&m                  &6[ &f&lHOTEL List &6]&6&m                  '
     body: '&6ID&7: &f%id% &7- &6Owner&7: &f%owner%'

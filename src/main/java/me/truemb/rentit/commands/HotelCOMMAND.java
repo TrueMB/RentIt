@@ -50,28 +50,29 @@ public class HotelCOMMAND extends BukkitCommand {
 		super("hotel", "Hotel Main Command", null, plugin.manageFile().getStringList("Options.commands.hotel.aliases"));
 		this.instance = plugin;
 
-		subCommands.add("users");
-		subCommands.add("permissions");
-		subCommands.add("setPermission");
-		subCommands.add("buy");
-		subCommands.add("resign");
-		subCommands.add("help");
+		this.subCommands.add("users");
+		this.subCommands.add("permissions");
+		this.subCommands.add("setPermission");
+		this.subCommands.add("buy");
+		this.subCommands.add("resign");
+		this.subCommands.add("help");
 
-		adminSubCommands.add("createCat");
-		adminSubCommands.add("deleteCat");
-		adminSubCommands.add("setAliasCat");
-		adminSubCommands.add("listCat");
-		adminSubCommands.add("setArea");
-		adminSubCommands.add("setAlias");
-		adminSubCommands.add("reset");
-		adminSubCommands.add("delete");
-		adminSubCommands.add("updateBackup");
-		adminSubCommands.add("info");
-		adminSubCommands.add("door");
-		adminSubCommands.add("rollback");
-		adminSubCommands.add("setTime");
-		adminSubCommands.add("setPrice");
-		adminSubCommands.add("list");
+		this.adminSubCommands.add("createCat");
+		this.adminSubCommands.add("deleteCat");
+		this.adminSubCommands.add("setAliasCat");
+		this.adminSubCommands.add("listCat");
+		this.adminSubCommands.add("setArea");
+		this.adminSubCommands.add("setAlias");
+		this.adminSubCommands.add("reset");
+		this.adminSubCommands.add("delete");
+		this.adminSubCommands.add("updateBackup");
+		this.adminSubCommands.add("info");
+		this.adminSubCommands.add("catInfo");
+		this.adminSubCommands.add("door");
+		this.adminSubCommands.add("rollback");
+		this.adminSubCommands.add("setTime");
+		this.adminSubCommands.add("setPrice");
+		this.adminSubCommands.add("list");
 		
 		
 		//DISABLED COMMANDS
@@ -514,6 +515,28 @@ public class HotelCOMMAND extends BukkitCommand {
 						}
 					}
 				});
+				return true;
+
+			} else if (args[0].equalsIgnoreCase("catInfo")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "catInfo")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "catInfo")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+				
+				int catId = Integer.parseInt(args[1]);
+
+				this.sendCategoryInfo(p, catId);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("info")) {
@@ -1232,6 +1255,32 @@ public class HotelCOMMAND extends BukkitCommand {
 		return true;
 	}
 
+	private boolean sendCategoryInfo(Player p, int catId) {
+
+		CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, catId);
+
+		if (catHandler == null)
+			return false;
+		
+		double costs = catHandler.getPrice();
+		String time = catHandler.getTime();
+		
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+	    
+	    int amount = this.instance.getMethodes().getRentTypesOfCategory(this.type, catId).size();
+
+		for (String s : this.instance.manageFile().getStringList("Messages.hotelCategoryInfo")) {
+			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
+					.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+					.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
+					.replaceAll("(?i)%" + "time" + "%", time)
+					.replaceAll("(?i)%" + "catHotelAmount" + "%", String.valueOf(amount))
+			);
+		}
+		return true;
+	}
+	
 	private void sendHotelInfo(Player p, int hotelId) {
 
 		RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);

@@ -1,6 +1,3 @@
-- Category Info
-
-
 TODO:
 - Search menu doesn't show shop and back doesn't work
 - automatically go one site before, if shop site is empty
@@ -10,4 +7,5 @@ TODO:
 
 DONE:
 - /shop setMaxSite 
+- Category Info
 - Buy Shop return button doesnt work

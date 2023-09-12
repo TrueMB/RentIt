@@ -82,6 +82,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		this.adminSubCommands.add("delete");
 		this.adminSubCommands.add("updateBackup");
 		this.adminSubCommands.add("info");
+		this.adminSubCommands.add("catInfo");
 		this.adminSubCommands.add("door");
 		this.adminSubCommands.add("rollback");
 		this.adminSubCommands.add("setTime");
@@ -731,6 +732,28 @@ public class ShopCOMMAND extends BukkitCommand {
 						}
 					}
 				});
+				return true;
+
+			} else if (args[0].equalsIgnoreCase("catInfo")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "catInfo")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "catInfo")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+				
+				int catId = Integer.parseInt(args[1]);
+
+				this.sendCategoryInfo(p, catId);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setAliasCat")) {
@@ -1939,6 +1962,36 @@ public class ShopCOMMAND extends BukkitCommand {
 		for (String s : this.instance.manageFile().getStringList("Messages." + path)) {
 			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s)));
 		}
+	}
+
+	private boolean sendCategoryInfo(Player p, int catId) {
+
+		CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, catId);
+
+		if (catHandler == null)
+			return false;
+		
+		double costs = catHandler.getPrice();
+		int size = catHandler.getSize();
+		int maxSites = catHandler.getMaxSite();
+		String time = catHandler.getTime();
+		
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+
+	    int amount = this.instance.getMethodes().getRentTypesOfCategory(this.type, catId).size();
+	    
+		for (String s : this.instance.manageFile().getStringList("Messages.shopCategoryInfo")) {
+			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
+					.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
+					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+					.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
+					.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+					.replaceAll("(?i)%" + "sites" + "%", String.valueOf(maxSites))
+					.replaceAll("(?i)%" + "time" + "%", time)
+					.replaceAll("(?i)%" + "catShopAmount" + "%", String.valueOf(amount))
+			);
+		}
+		return true;
 	}
 
 	private void sendShopInfo(Player p, int shopId) {
