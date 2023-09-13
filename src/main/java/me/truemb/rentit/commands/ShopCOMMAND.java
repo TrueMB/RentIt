@@ -2211,7 +2211,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 			}
 
-		}else if(args.length == 2 && args[0].equalsIgnoreCase("search")) {
+		}else if(args.length == 2 && (args[0].equalsIgnoreCase("search") || args[0].equalsIgnoreCase("buyitem"))) {
 			for(Material m : Material.values())
 				if(m.toString().toLowerCase().contains(args[1].toLowerCase()))
 					list.add(m.toString());

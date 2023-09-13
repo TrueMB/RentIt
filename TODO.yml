@@ -3,9 +3,8 @@ TODO:
 - Test buying items
 - shop setSize doesn't update Shop Size and also shows second site, if empty (after reload works)
 - items being added on the second site, even if first site is empty
+- Gui Items missing? (Might be only for new loading. On create they exists)
+- Changing Max Site results in items not being added in first inventory and GUI Items are removeable
 
 DONE:
 - /shop setMaxSite 
-- Category Info
-- Buy Shop return button doesnt work
-- automatically go one site before, if shop site is empty
