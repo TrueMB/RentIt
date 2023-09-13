@@ -387,6 +387,8 @@ public class ShopListener implements Listener {
 	}
 
 	private void moveItems(InventoryClickEvent e, RentTypeHandler rentHandler, ShopInventoryType type) {
+		Player p = (Player) e.getWhoClicked();
+		
 		CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, rentHandler.getCatID());
 		if (catHandler == null)
 			return;
@@ -417,6 +419,14 @@ public class ShopListener implements Listener {
 		
 		if (multiSite && counter <= 1 && last > 1) {
 			rentHandler.setInventory(type, last, null);
+			
+			if(lastInv.equals(e.getInventory())) {
+				this.instance.getShopInvBuilder(p.getUniqueId()).beforeSite();
+				
+				rentHandler.setInventory(type, last, null);
+				this.instance.getShopsInvSQL().updateInventory(rentHandler.getID(), ShopInventoryType.SELL, last, null);
+			}
+			
 			if (last - 1 >= 1) {
 				Inventory buttonInv = rentHandler.getInventory(type, last - 1);
 				int slot = buttonInv.getSize() - 1;
