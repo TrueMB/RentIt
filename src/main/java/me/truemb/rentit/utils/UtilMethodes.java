@@ -15,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -27,7 +26,6 @@ import com.sk89q.worldedit.regions.Region;
 
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;
-import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PermissionsHandler;
 import me.truemb.rentit.handler.PlayerHandler;
@@ -574,6 +572,7 @@ public class UtilMethodes {
 		}
 
 		// UPDATE INVENTORY TO SIZE
+		//TODO Remove Inventories, if to many for the next set Value
 		for(RentTypeHandler shops : this.getRentTypesOfCategory(RentTypes.SHOP, catID)) {
 			shops.resetInventories(); //Deletes the Inventories, so that the new Size will be used
 			this.instance.getShopsInvSQL().setupShopInventories(shops); // Load the Shop Inventory again with the correct size

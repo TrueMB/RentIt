@@ -753,7 +753,12 @@ public class ShopCOMMAND extends BukkitCommand {
 				
 				int catId = Integer.parseInt(args[1]);
 
-				this.sendCategoryInfo(p, catId);
+				boolean success = this.sendCategoryInfo(p, catId);
+				
+				if(!success) {
+					p.sendMessage(this.instance.getMessage("categoryError"));
+					return true;
+				}
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("setAliasCat")) {
