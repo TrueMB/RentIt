@@ -15,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -26,6 +27,7 @@ import com.sk89q.worldedit.regions.Region;
 
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.Settings;
+import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PermissionsHandler;
 import me.truemb.rentit.handler.PlayerHandler;
@@ -436,7 +438,8 @@ public class UtilMethodes {
 	}
 
 	public void setSize(Player p, int catID, String arg) {
-
+		
+		int oldSize = 0;
 		int size = 0;
 
 		try {
@@ -446,32 +449,87 @@ public class UtilMethodes {
 			return;
 		}
 
-
-		boolean success = catID > 0;
 		CategoryHandler catHandler = this.instance.getMethodes().getCategory(RentTypes.SHOP, catID);
 		
-		if (success) {
-			
-			if (size < 0 || size % 9 > 0 || size > 54 || catHandler.getMaxSite() > 1 && size > 45) {
-				p.sendMessage(this.instance.getMessage("shopSizeNotValid"));
-				return;
-			}
-			
-			if (catHandler != null)
-				catHandler.setSize(size);
-
-			this.instance.getCategorySQL().setSize(catID, size);
-			
-		}else {
+		if (catHandler == null) {
 			p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 			return;
 		}
-
-		// UPDATE INVENTORY TO SIZE
-		for(RentTypeHandler shops : this.getRentTypesOfCategory(RentTypes.SHOP, catID)) {
-			shops.resetInventories(); //Deletes the Inventories, so that the new Size will be used
-			this.instance.getShopsInvSQL().setupShopInventories(shops); // Load the Shop Inventory again with the correct size
+			
+		if (size < 0 || size % 9 > 0 || size > 54 || catHandler.getMaxSite() > 1 && size > 45) {
+			p.sendMessage(this.instance.getMessage("shopSizeNotValid"));
+			return;
 		}
+			
+		oldSize = (Integer) catHandler.getSize();
+		catHandler.setSize(size);
+		
+		this.instance.getCategorySQL().setSize(catID, size);
+		
+		Collection<RentTypeHandler> shops = this.getRentTypesOfCategory(RentTypes.SHOP, catID);
+		
+		/*TEST - Needs to ignore gui items and set them himself?
+		if(oldSize > size) {
+			//TODO Check if every Item has an Inventory Slot
+		}else {
+			//TODO Move Items from the next Site to the site before, if space
+			shops.forEach(shop -> {
+				Collection<Inventory> sellInventories = shop.getInventories(ShopInventoryType.SELL);
+				Collection<Inventory> buyInventories = shop.getInventories(ShopInventoryType.BUY);
+				
+				Inventory currentSellInv = null;
+				int freeSellSlots;
+				int sellSite = 1;
+				for(Inventory inv : sellInventories) {
+					
+					//Set the first Inventory, only multi site Shops can pass that
+					if(currentSellInv == null) {
+						currentSellInv = inv;
+						continue;
+					}
+					
+					freeSellSlots = 0;
+					for(int i = 0; i < currentSellInv.getSize(); i++) {
+						ItemStack item = currentSellInv.getItem(i);
+						if(item == null || item.getType() == Material.AIR) {
+							freeSellSlots++;
+						}
+					}
+					
+					for(ItemStack items : inv.getContents()) {
+						if(items != null && items.getType() != Material.AIR && !items.getItemMeta().getPersistentDataContainer().has(this.instance.guiItem, PersistentDataType.STRING)) {
+							if(freeSellSlots > 0) {
+								//Add Item to Inventory before the current
+								freeSellSlots--;
+								for(int i = 0; i < currentSellInv.getSize(); i++) {
+									ItemStack item = currentSellInv.getItem(i);
+									if(item == null || item.getType() == Material.AIR) {
+										currentSellInv.setItem(i, items);
+									}
+								}
+								
+								if(freeSellSlots == 0) {
+									this.instance.getShopsInvSQL().updateInventory(shop.getID(), ShopInventoryType.SELL, sellSite, currentSellInv.getContents());
+									currentSellInv = inv;
+									freeSellSlots = 0;
+									sellSite++;
+								}
+							}else {
+								//TODO Move all Items to first position. There might have changed some
+							}
+						}
+					}
+				}
+				
+				
+			});
+		}
+		*/
+		// UPDATE INVENTORY TO SIZE
+		shops.forEach(shop -> {
+			shop.resetInventories(); //Deletes the Inventories, so that the new Size will be used
+			this.instance.getShopsInvSQL().setupShopInventories(shop); // Load the Shop Inventory again with the correct size
+		});
 		
 	    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
