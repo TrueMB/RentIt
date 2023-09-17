@@ -3,8 +3,11 @@ TODO:
 - Test buying items
 - shop setSize doesn't update Shop Size and also shows second site, if empty (after reload works)
 - items being added on the second site, even if first site is empty
-- Gui Items missing? (Might be only for new loading. On create they exists)
+- Gui Items missing? (Might be only for new loading. On create they exists) (Only if one site? Then there shouldnt be any)
 - Changing Max Site results in items not being added in first inventory and GUI Items are removeable
+- Changing Size to a smaller size? (Removes gui row)
+
+- Cleanup Task, which scans the Shop Inventories for null sell and buy?
 
 DONE:
 - /shop setMaxSite 

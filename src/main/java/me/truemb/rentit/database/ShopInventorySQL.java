@@ -5,8 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import me.truemb.rentit.database.connector.AsyncSQL;
 import me.truemb.rentit.enums.RentTypes;
@@ -98,8 +100,69 @@ public class ShopInventorySQL {
 						String sellInvS = rs.getString("sellInv");
 						String buyInvS = rs.getString("buyInv");
 						
+						CategoryHandler catHandler = instance.getMethodes().getCategory(RentTypes.SHOP, handler.getCatID());
+						
+						boolean skipSellInv = false;
+						boolean skipBuyInv = false;
+						
 						ItemStack[] sellContents = sellInvS != null && !sellInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(sellInvS) : null;
 						ItemStack[] buyContents = buyInvS != null && !buyInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInvS) : null;
+
+						//Add Items one site before, if still space
+						if(catHandler != null && catHandler.getMaxSite() > 1) {
+							
+							//Sell Inventory
+							if(sellInv != null && sellContents != null) {
+								ItemStack[] sellContentsClone = sellContents.clone();
+								outer: for(int i = 0; i < sellContentsClone.length; i++) {
+									ItemStack item = sellContentsClone[i];
+									if(item != null && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+										boolean foundFreeSlot = false;
+										for(int slot = 0; slot < sellInv.getSize() - 9; slot++) {
+											ItemStack temp = sellInv.getItem(slot);
+												
+											if(temp == null || temp.getType() == Material.AIR) {
+												sellInv.setItem(slot, item);
+												foundFreeSlot = true;
+												break;
+											}
+										}
+											
+										if(!foundFreeSlot) {
+											skipSellInv = true;
+											sellContents = null;
+											break outer;
+										}
+									}
+								}
+							}
+							
+							//Buy Inventory
+							if(buyInv != null && buyContents != null) {
+								ItemStack[] buyContentsClone = buyContents.clone();
+								outer: for(int i = 0; i < buyContentsClone.length; i++) {
+									ItemStack item = buyContentsClone[i];
+									if(item != null && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+										boolean foundFreeSlot = false;
+										for(int slot = 0; slot < buyInv.getSize() - 9; slot++) {
+											ItemStack temp = buyInv.getItem(slot);
+												
+											if(temp == null || temp.getType() == Material.AIR) {
+												buyInv.setItem(slot, item);
+												foundFreeSlot = true;
+												break;
+											}
+										}
+
+										if(!foundFreeSlot) {
+											skipBuyInv = true;
+											buyContents = null;
+											break outer;
+										}
+									}
+								}
+							}
+						}
 						
 						//Adding next Site Button
 						if(sellInv != null && sellContents != null)
@@ -108,14 +171,18 @@ public class ShopInventorySQL {
 						if(buyInv != null && buyContents != null)
 							buyInv.setItem(buyInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
 						
-						ShopInventoryBuilder sellBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.SELL);
-						sellBuilder.setSite(site);
-						sellInv = UserShopGUI.getInventory(instance, sellBuilder);
-						
-						ShopInventoryBuilder buyBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.BUY);
-						buyBuilder.setSite(site);
-						buyInv = UserShopGUI.getInventory(instance, buyBuilder);
+						if(!skipSellInv) {
+							ShopInventoryBuilder sellBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.SELL);
+							sellBuilder.setSite(site);
+							sellInv = UserShopGUI.getInventory(instance, sellBuilder);
+						}
 
+						if(!skipBuyInv) {
+							ShopInventoryBuilder buyBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.BUY);
+							buyBuilder.setSite(site);
+							buyInv = UserShopGUI.getInventory(instance, buyBuilder);
+						}
+						
 						//Adding before Site Button
 						if(sellInv != null && site > 1)
 							sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
@@ -123,9 +190,8 @@ public class ShopInventorySQL {
 						if(buyInv != null && site > 1)
 							buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
 						
-						CategoryHandler catHandler = instance.getMethodes().getCategory(RentTypes.SHOP, handler.getCatID());
-						
-						if(catHandler.getMaxSite() > 1) {
+						//Sets the items to the new Site Inventory
+						if(catHandler != null && catHandler.getMaxSite() > 1) {
 							if(sellContents != null)
 								for(int i = 0; i < sellInv.getSize(); i++)
 									if(sellContents.length > i)
