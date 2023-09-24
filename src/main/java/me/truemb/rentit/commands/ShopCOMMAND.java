@@ -2055,12 +2055,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		
 		item = ShopItemManager.createShopItem(this.instance, item, rentHandler.getID(), price); // UPDATED ITEM WITH PRICE IN IT
 
-		int site = rentHandler.getInventories(shopInvType).size();
 		boolean multiSite = catHandler.getMaxSite() > 1;
-		if(site > catHandler.getMaxSite())
-			site = catHandler.getMaxSite();
-		
-		Inventory currentLastInv = rentHandler.getInventory(shopInvType, site);
 
 		//Check if Item is already in the Shop
 		for(Inventory inventories : rentHandler.getInventories(shopInvType)) {
@@ -2077,50 +2072,72 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 			}
 		}
-
-		int used = 0;
-		for (int i = 0; i < currentLastInv.getSize() - (multiSite ? 9 : 0); i++) {
-			ItemStack items = currentLastInv.getItem(i);
-			if (items != null && items.getType() != Material.AIR) {
-				used++;
+		
+		//Inventory currentLastInv = rentHandler.getInventory(shopInvType, site);
+		int invAmount = rentHandler.getInventories(shopInvType).size();
+		Inventory inventoryForItem = null;
+		int site = 1;
+		
+		outer: for(int invSite = 1; invSite <= invAmount; invSite++) {
+			Inventory invs = rentHandler.getInventory(shopInvType, invSite);
+			if(invs == null) continue;
+			
+			//Declare how much space is on every inventory
+			for (int i = 0; i < invs.getSize() - (multiSite ? 9 : 0); i++) {
+				ItemStack items = invs.getItem(i);
+				if (items == null || items.getType() == Material.AIR) {
+					
+					//Found Inventory with space and use it for the new Item
+					inventoryForItem = invs;
+					site = invSite;
+					
+					Inventory beforeInv = rentHandler.getInventory(shopInvType, invSite - 1);
+					if(i == 0 && beforeInv != null) {
+						beforeInv.setItem(beforeInv.getSize() - 1, this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", rentHandler.getID()));
+					}
+					break outer;
+				}
 			}
 		}
 		
 
-		if (used >= currentLastInv.getSize() - (multiSite ? 9 : 0)) {
+		if (inventoryForItem == null) {
 			if(site >= catHandler.getMaxSite()) {
 				p.sendMessage(this.instance.getMessage("shopInvFull"));
 				return;
 			}else {
 				//Site is full but a new one can be created
-			    currentLastInv.setItem(currentLastInv.getSize() - 1, this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", rentHandler.getID()));
+				int lastSite = rentHandler.getInventories(shopInvType).size();
+				Inventory lastInventory = rentHandler.getInventory(shopInvType, lastSite);
+				lastInventory.setItem(lastInventory.getSize() - 1, this.instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", rentHandler.getID()));
 			    ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler, shopInvType);
-			    site++;
-			    builder.setSite(site);
+			    lastSite++;
+			    builder.setSite(lastSite);
 
 			    //New last Inventory
-			    currentLastInv = UserShopGUI.getInventory(this.instance, builder);
+			    inventoryForItem = UserShopGUI.getInventory(this.instance, builder);
 			}
 		}
 		
 		//Add the Item to the Shop
-		currentLastInv.addItem(item);
+		inventoryForItem.addItem(item);
 
 		//Remove the multi Site Row, so that this is not in the Database
+		
 		ItemStack[] content = null;
 		if(multiSite) {
-			content = new ItemStack[currentLastInv.getSize() - 9];
+			content = new ItemStack[inventoryForItem.getSize() - 9];
 			
 			for(int i = 0; i < content.length; i++)
-				content[i] = currentLastInv.getContents()[i];
+				content[i] = inventoryForItem.getContents()[i];
 		} else
-			content = currentLastInv.getContents();
+			content = inventoryForItem.getContents();
 		
 
 		//Remove item if the player wants to sell it in the Shop
 		if(shopInvType == ShopInventoryType.SELL)
 			p.getInventory().setItemInMainHand(null);
-
+		
 		this.instance.getShopsInvSQL().updateInventory(rentHandler.getID(), shopInvType, site, content); // DATABASE UPDATE
 		
 		String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());

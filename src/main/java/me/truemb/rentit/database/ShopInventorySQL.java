@@ -109,40 +109,45 @@ public class ShopInventorySQL {
 						ItemStack[] buyContents = buyInvS != null && !buyInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInvS) : null;
 
 						//Add Items one site before, if still space
-						if(catHandler != null && catHandler.getMaxSite() > 1) {
-							
+						if(catHandler != null) {
 							//Sell Inventory
 							if(sellInv != null && sellContents != null) {
 								ItemStack[] sellContentsClone = sellContents.clone();
+								skipSellInv = true; //Items getting checked, if there is still space in the inventory before
+								
 								outer: for(int i = 0; i < sellContentsClone.length; i++) {
 									ItemStack item = sellContentsClone[i];
-									if(item != null && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+									if(item != null && item.getType() != Material.AIR && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+										
 										boolean foundFreeSlot = false;
 										for(int slot = 0; slot < sellInv.getSize() - 9; slot++) {
 											ItemStack temp = sellInv.getItem(slot);
-												
+											
 											if(temp == null || temp.getType() == Material.AIR) {
 												sellInv.setItem(slot, item);
+												sellContents[i] = null; //Removes the Items from the next Site
 												foundFreeSlot = true;
-												break;
+												break; //Move to next Item
 											}
 										}
 											
 										if(!foundFreeSlot) {
-											skipSellInv = true;
-											sellContents = null;
+											skipSellInv = false;
 											break outer;
 										}
-									}
+									}else
+										sellContents[i] = null; //Could be guiItem -> remove
 								}
 							}
 							
 							//Buy Inventory
 							if(buyInv != null && buyContents != null) {
 								ItemStack[] buyContentsClone = buyContents.clone();
+								skipBuyInv = true; //Items getting checked, if there is still space in the inventory before
+								
 								outer: for(int i = 0; i < buyContentsClone.length; i++) {
 									ItemStack item = buyContentsClone[i];
-									if(item != null && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+									if(item != null && item.getType() != Material.AIR && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
 										boolean foundFreeSlot = false;
 										for(int slot = 0; slot < buyInv.getSize() - 9; slot++) {
 											ItemStack temp = buyInv.getItem(slot);
@@ -155,11 +160,11 @@ public class ShopInventorySQL {
 										}
 
 										if(!foundFreeSlot) {
-											skipBuyInv = true;
-											buyContents = null;
+											skipBuyInv = false;
 											break outer;
 										}
-									}
+									}else
+										buyContents[i] = null; //Could be guiItem -> remove
 								}
 							}
 						}
@@ -191,21 +196,30 @@ public class ShopInventorySQL {
 							buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
 						
 						//Sets the items to the new Site Inventory
-						if(catHandler != null && catHandler.getMaxSite() > 1) {
-							if(sellContents != null)
-								for(int i = 0; i < sellInv.getSize(); i++)
-									if(sellContents.length > i)
-										sellInv.setItem(i, sellContents[i]);
-							
-							if(buyContents != null)
-								for(int i = 0; i < buyInv.getSize(); i++)
-									if(buyContents.length > i)
-										buyInv.setItem(i, buyContents[i]);
-						}else {
-							if(sellContents != null)
-								sellInv.setContents(sellContents);
-							if(buyContents != null)
-								buyInv.setContents(buyContents);
+						if(catHandler != null) {
+							if(catHandler.getMaxSite() > 1) {
+								if(sellContents != null)
+									for(int i = 0; i < sellInv.getSize(); i++)
+										if(sellContents.length > i) {
+											ItemStack temp = sellContents[i];
+											if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+												sellInv.setItem(i, temp);
+											}
+										}
+								
+								if(buyContents != null)
+									for(int i = 0; i < buyInv.getSize(); i++)
+										if(buyContents.length > i) {
+											ItemStack temp = buyContents[i];
+											if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING))
+												buyInv.setItem(i, temp);
+										}
+							}else {
+								if(sellContents != null)
+									sellInv.setContents(sellContents);
+								if(buyContents != null)
+									buyInv.setContents(buyContents);
+							}
 						}
 						
 						handler.setInventory(ShopInventoryType.SELL, site, sellInv);
