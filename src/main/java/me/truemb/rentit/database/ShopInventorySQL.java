@@ -169,31 +169,43 @@ public class ShopInventorySQL {
 							}
 						}
 						
-						//Adding next Site Button
-						if(sellInv != null && sellContents != null)
-							sellInv.setItem(sellInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
-						
-						if(buyInv != null && buyContents != null)
-							buyInv.setItem(buyInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
 						
 						if(!skipSellInv) {
+							
+							//Adding next Site Button
+							if(sellInv != null && sellContents != null)
+								sellInv.setItem(sellInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
+							
+							//Creating a new Shop Site
 							ShopInventoryBuilder sellBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.SELL);
 							sellBuilder.setSite(site);
 							sellInv = UserShopGUI.getInventory(instance, sellBuilder);
+							
+							handler.setInventory(ShopInventoryType.SELL, site, sellInv);
+							
+							//Adding before Site Button
+							if(sellInv != null && site > 1)
+								sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
 						}
 
 						if(!skipBuyInv) {
+
+							//Adding next Site Button
+							if(buyInv != null && buyContents != null)
+								buyInv.setItem(buyInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
+
+							//Creating a new Shop Site
 							ShopInventoryBuilder buyBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.BUY);
 							buyBuilder.setSite(site);
 							buyInv = UserShopGUI.getInventory(instance, buyBuilder);
+
+							handler.setInventory(ShopInventoryType.BUY, site, buyInv);
+							
+							//Adding before Site Button
+							if(buyInv != null && site > 1)
+								buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
 						}
 						
-						//Adding before Site Button
-						if(sellInv != null && site > 1)
-							sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
-						
-						if(buyInv != null && site > 1)
-							buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
 						
 						//Sets the items to the new Site Inventory
 						if(catHandler != null) {
@@ -221,9 +233,6 @@ public class ShopInventorySQL {
 									buyInv.setContents(buyContents);
 							}
 						}
-						
-						handler.setInventory(ShopInventoryType.SELL, site, sellInv);
-						handler.setInventory(ShopInventoryType.BUY, site, buyInv);
 					}
 					
 				} catch (SQLException | IOException e) {
