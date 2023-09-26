@@ -572,7 +572,6 @@ public class UtilMethodes {
 		}
 
 		// UPDATE INVENTORY TO SIZE
-		//TODO Remove Inventories, if to many for the next set Value
 		for(RentTypeHandler shops : this.getRentTypesOfCategory(RentTypes.SHOP, catID)) {
 			shops.resetInventories(); //Deletes the Inventories, so that the new Size will be used
 			this.instance.getShopsInvSQL().setupShopInventories(shops); // Load the Shop Inventory again with the correct size

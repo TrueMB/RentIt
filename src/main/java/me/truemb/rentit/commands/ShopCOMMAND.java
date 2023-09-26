@@ -1556,7 +1556,7 @@ public class ShopCOMMAND extends BukkitCommand {
 							if(content != null && content.getType() == m) {
 								ItemMeta contentMeta = content.getItemMeta();
 								if (!contentMeta.getPersistentDataContainer().has(this.instance.guiItem, PersistentDataType.STRING)) {
-									System.out.println(contentMeta.getPersistentDataContainer().getKeys());
+									//System.out.println(contentMeta.getPersistentDataContainer().getKeys());
 									foundAmount++;
 								}
 							}

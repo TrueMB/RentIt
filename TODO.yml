@@ -1,5 +1,4 @@
 TODO:
-- Search menu doesn't back doesn't work
 - Test buying items
 - shop setSize breaks the gui items and is removing/not showing some items
 - Changing Max Site results in items not being added in first inventory and GUI Items are removeable

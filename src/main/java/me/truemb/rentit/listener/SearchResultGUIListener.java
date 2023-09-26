@@ -62,7 +62,7 @@ public class SearchResultGUIListener implements Listener{
 				return;
 			}
 			
-			if(item.isSimilar(this.instance.getMethodes().getGUIItem("owningList", "backItem"))) {
+			if(item.isSimilar(this.instance.getMethodes().getGUIItem("searchInventory", "backItem"))) {
 				
 				p.closeInventory();
 				
