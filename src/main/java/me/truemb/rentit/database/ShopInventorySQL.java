@@ -172,6 +172,10 @@ public class ShopInventorySQL {
 						
 						if(!skipSellInv) {
 							
+							//Max Site was reached. Stop getting more items.
+							if(handler.getInventories(ShopInventoryType.SELL).size() >= catHandler.getMaxSite())
+								return;
+							
 							//Adding next Site Button
 							if(sellInv != null && sellContents != null)
 								sellInv.setItem(sellInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
@@ -190,6 +194,10 @@ public class ShopInventorySQL {
 
 						if(!skipBuyInv) {
 
+							//Max Site was reached. Stop getting more items.
+							if(handler.getInventories(ShopInventoryType.BUY).size() >= catHandler.getMaxSite())
+								return;
+							
 							//Adding next Site Button
 							if(buyInv != null && buyContents != null)
 								buyInv.setItem(buyInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));

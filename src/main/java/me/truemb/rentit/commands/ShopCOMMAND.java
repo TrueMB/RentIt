@@ -2102,7 +2102,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		
 
 		if (inventoryForItem == null) {
-			if(site >= catHandler.getMaxSite()) {
+			if(rentHandler.getInventories(shopInvType).size() >= catHandler.getMaxSite()) {
 				p.sendMessage(this.instance.getMessage("shopInvFull"));
 				return;
 			}else {

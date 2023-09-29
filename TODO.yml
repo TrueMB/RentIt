@@ -3,3 +3,5 @@ TODO:
 - shop setSize breaks the gui items and is removing/not showing some items
 - Changing Max Site results in items not being added in first inventory and GUI Items are removeable
 - Changing Size to a smaller size? (Removes gui row)
+
+- What if player ressizes Shop and adds a new Item. Then the site would save into the database, even the items from another site as well.
