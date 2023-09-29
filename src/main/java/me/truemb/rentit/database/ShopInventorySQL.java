@@ -94,6 +94,9 @@ public class ShopInventorySQL {
 					Inventory sellInv = null;
 					Inventory buyInv = null;
 					
+					int siteSellCounter = 0;
+					int siteBuyCounter = 0;
+					
 					while (rs.next()) {
 						
 						int site = rs.getInt("site");
@@ -120,7 +123,7 @@ public class ShopInventorySQL {
 									if(item != null && item.getType() != Material.AIR && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
 										
 										boolean foundFreeSlot = false;
-										for(int slot = 0; slot < sellInv.getSize() - 9; slot++) {
+										for(int slot = 0; slot < (catHandler.getMaxSite() > 1 ? sellInv.getSize() - 9 : sellInv.getSize()); slot++) {
 											ItemStack temp = sellInv.getItem(slot);
 											
 											if(temp == null || temp.getType() == Material.AIR) {
@@ -149,7 +152,7 @@ public class ShopInventorySQL {
 									ItemStack item = buyContentsClone[i];
 									if(item != null && item.getType() != Material.AIR && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
 										boolean foundFreeSlot = false;
-										for(int slot = 0; slot < buyInv.getSize() - 9; slot++) {
+										for(int slot = 0; slot < (catHandler.getMaxSite() > 1 ? buyInv.getSize() - 9 : buyInv.getSize()); slot++) {
 											ItemStack temp = buyInv.getItem(slot);
 												
 											if(temp == null || temp.getType() == Material.AIR) {
@@ -169,12 +172,8 @@ public class ShopInventorySQL {
 							}
 						}
 						
-						
-						if(!skipSellInv) {
-							
-							//Max Site was reached. Stop getting more items.
-							if(handler.getInventories(ShopInventoryType.SELL).size() >= catHandler.getMaxSite())
-								return;
+						if(!skipSellInv && siteSellCounter < catHandler.getMaxSite()) {
+							siteSellCounter++;
 							
 							//Adding next Site Button
 							if(sellInv != null && sellContents != null)
@@ -190,13 +189,28 @@ public class ShopInventorySQL {
 							//Adding before Site Button
 							if(sellInv != null && site > 1)
 								sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
+							
+
+							//Sets the items to the new Site Inventory
+							if(catHandler != null) {
+								if(catHandler.getMaxSite() > 1) {
+									if(sellContents != null)
+										for(int i = 0; i < sellInv.getSize() - 9; i++)
+											if(sellContents.length > i) {
+												ItemStack temp = sellContents[i];
+												if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+													sellInv.setItem(i, temp);
+												}
+											}
+								}else {
+									if(sellContents != null)
+										sellInv.setContents(sellContents);
+								}
+							}
 						}
 
-						if(!skipBuyInv) {
-
-							//Max Site was reached. Stop getting more items.
-							if(handler.getInventories(ShopInventoryType.BUY).size() >= catHandler.getMaxSite())
-								return;
+						if(!skipBuyInv && siteBuyCounter < catHandler.getMaxSite()) {
+							siteBuyCounter++;
 							
 							//Adding next Site Button
 							if(buyInv != null && buyContents != null)
@@ -212,33 +226,23 @@ public class ShopInventorySQL {
 							//Adding before Site Button
 							if(buyInv != null && site > 1)
 								buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
-						}
-						
-						
-						//Sets the items to the new Site Inventory
-						if(catHandler != null) {
-							if(catHandler.getMaxSite() > 1) {
-								if(sellContents != null)
-									for(int i = 0; i < sellInv.getSize(); i++)
-										if(sellContents.length > i) {
-											ItemStack temp = sellContents[i];
-											if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
-												sellInv.setItem(i, temp);
+							
+
+							//Sets the items to the new Site Inventory
+							if(catHandler != null) {
+								if(catHandler.getMaxSite() > 1) {
+									
+									if(buyContents != null)
+										for(int i = 0; i < buyInv.getSize() - 9; i++)
+											if(buyContents.length > i) {
+												ItemStack temp = buyContents[i];
+												if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING))
+													buyInv.setItem(i, temp);
 											}
-										}
-								
-								if(buyContents != null)
-									for(int i = 0; i < buyInv.getSize(); i++)
-										if(buyContents.length > i) {
-											ItemStack temp = buyContents[i];
-											if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING))
-												buyInv.setItem(i, temp);
-										}
-							}else {
-								if(sellContents != null)
-									sellInv.setContents(sellContents);
-								if(buyContents != null)
-									buyInv.setContents(buyContents);
+								}else {
+									if(buyContents != null)
+										buyInv.setContents(buyContents);
+								}
 							}
 						}
 					}
