@@ -437,7 +437,6 @@ public class UtilMethodes {
 
 	public void setSize(Player p, int catID, String arg) {
 		
-		int oldSize = 0;
 		int size = 0;
 
 		try {
@@ -459,70 +458,12 @@ public class UtilMethodes {
 			return;
 		}
 			
-		oldSize = (Integer) catHandler.getSize();
 		catHandler.setSize(size);
 		
 		this.instance.getCategorySQL().setSize(catID, size);
 		
 		Collection<RentTypeHandler> shops = this.getRentTypesOfCategory(RentTypes.SHOP, catID);
 		
-		/*TEST - Needs to ignore gui items and set them himself?
-		if(oldSize > size) {
-			//TODO Check if every Item has an Inventory Slot
-		}else {
-			//TODO Move Items from the next Site to the site before, if space
-			shops.forEach(shop -> {
-				Collection<Inventory> sellInventories = shop.getInventories(ShopInventoryType.SELL);
-				Collection<Inventory> buyInventories = shop.getInventories(ShopInventoryType.BUY);
-				
-				Inventory currentSellInv = null;
-				int freeSellSlots;
-				int sellSite = 1;
-				for(Inventory inv : sellInventories) {
-					
-					//Set the first Inventory, only multi site Shops can pass that
-					if(currentSellInv == null) {
-						currentSellInv = inv;
-						continue;
-					}
-					
-					freeSellSlots = 0;
-					for(int i = 0; i < currentSellInv.getSize(); i++) {
-						ItemStack item = currentSellInv.getItem(i);
-						if(item == null || item.getType() == Material.AIR) {
-							freeSellSlots++;
-						}
-					}
-					
-					for(ItemStack items : inv.getContents()) {
-						if(items != null && items.getType() != Material.AIR && !items.getItemMeta().getPersistentDataContainer().has(this.instance.guiItem, PersistentDataType.STRING)) {
-							if(freeSellSlots > 0) {
-								//Add Item to Inventory before the current
-								freeSellSlots--;
-								for(int i = 0; i < currentSellInv.getSize(); i++) {
-									ItemStack item = currentSellInv.getItem(i);
-									if(item == null || item.getType() == Material.AIR) {
-										currentSellInv.setItem(i, items);
-									}
-								}
-								
-								if(freeSellSlots == 0) {
-									this.instance.getShopsInvSQL().updateInventory(shop.getID(), ShopInventoryType.SELL, sellSite, currentSellInv.getContents());
-									currentSellInv = inv;
-									freeSellSlots = 0;
-									sellSite++;
-								}
-							}else {
-								//TODO Move all Items to first position. There might have changed some
-							}
-						}
-					}
-				}
-				
-				
-			});
-		}
-		*/
 		// UPDATE INVENTORY TO SIZE
 		shops.forEach(shop -> {
 			shop.resetInventories(); //Deletes the Inventories, so that the new Size will be used

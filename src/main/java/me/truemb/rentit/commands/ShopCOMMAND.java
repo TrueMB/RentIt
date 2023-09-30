@@ -2076,7 +2076,6 @@ public class ShopCOMMAND extends BukkitCommand {
 		//Inventory currentLastInv = rentHandler.getInventory(shopInvType, site);
 		int invAmount = rentHandler.getInventories(shopInvType).size();
 		Inventory inventoryForItem = null;
-		int site = 1;
 		
 		outer: for(int invSite = 1; invSite <= invAmount; invSite++) {
 			Inventory invs = rentHandler.getInventory(shopInvType, invSite);
@@ -2089,7 +2088,6 @@ public class ShopCOMMAND extends BukkitCommand {
 					
 					//Found Inventory with space and use it for the new Item
 					inventoryForItem = invs;
-					site = invSite;
 					
 					Inventory beforeInv = rentHandler.getInventory(shopInvType, invSite - 1);
 					if(i == 0 && beforeInv != null) {
@@ -2121,24 +2119,14 @@ public class ShopCOMMAND extends BukkitCommand {
 		
 		//Add the Item to the Shop
 		inventoryForItem.addItem(item);
-
-		//Remove the multi Site Row, so that this is not in the Database
-		
-		ItemStack[] content = null;
-		if(multiSite) {
-			content = new ItemStack[inventoryForItem.getSize() - 9];
-			
-			for(int i = 0; i < content.length; i++)
-				content[i] = inventoryForItem.getContents()[i];
-		} else
-			content = inventoryForItem.getContents();
 		
 
 		//Remove item if the player wants to sell it in the Shop
 		if(shopInvType == ShopInventoryType.SELL)
 			p.getInventory().setItemInMainHand(null);
 		
-		this.instance.getShopsInvSQL().updateInventory(rentHandler.getID(), shopInvType, site, content); // DATABASE UPDATE
+		//Update all sites -> prevents wrong items, if size was changed
+		this.instance.getShopsInvSQL().updateInventories(rentHandler.getID(), shopInvType); // DATABASE UPDATE
 		
 		String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
 		String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());

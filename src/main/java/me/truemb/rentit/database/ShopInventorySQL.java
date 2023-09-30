@@ -69,16 +69,46 @@ public class ShopInventorySQL {
 		sql.queryUpdate("UPDATE " + sql.t_shop_inv_new + " SET sellInv = null, buyInv = null WHERE ID='" + shopId + "';");
 	}
 	
-	public void updateInventory(int shopId, ShopInventoryType type, int site, ItemStack[] contents){
+	public void resetInventories(int shopId, ShopInventoryType type){
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		String contentsS = contents != null ? InventoryUtils.itemStackArrayToBase64(contents) : null;
+		sql.queryUpdate("UPDATE " + sql.t_shop_inv_new + " SET " + type.toString().toLowerCase() + "Inv = null WHERE ID='" + shopId + "';");
+	}
+	
+	public void updateInventories(int shopId, ShopInventoryType type){
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		
+		RentTypeHandler handler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
+		
+		if(handler == null) 
+			return;
 
-		if(sql.isSqlLite()) //SQLLITE
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + (type == ShopInventoryType.SELL ? contentsS : null) + "', '" + (type == ShopInventoryType.BUY ? contentsS : null) + "') "
-					+ "ON CONFLICT(ID, site) DO UPDATE SET " + type.toString().toLowerCase() + "Inv='" + contentsS + "';");
-		else //MYSQL
-			sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + (type == ShopInventoryType.SELL ? contentsS : null) + "', '" + (type == ShopInventoryType.BUY ? contentsS : null) + "') "
-					+ "ON DUPLICATE KEY UPDATE " + type.toString().toLowerCase() + "Inv='" + contentsS + "';");
+		boolean multiSite = this.instance.getMethodes().getCategory(RentTypes.SHOP, handler.getCatID()).getMaxSite() > 1;
+		this.resetInventories(shopId, type);
+
+		int site = 0;
+		for(Inventory invs : handler.getInventories(type)) {
+			site++;
+			
+			//Remove GUI Items from Inventory
+			ItemStack[] contents = null;
+			if(multiSite) {
+				contents = new ItemStack[invs.getSize() - 9];
+				
+				for(int i = 0; i < contents.length; i++)
+					contents[i] = invs.getContents()[i];
+			} else
+				contents = invs.getContents();
+			
+			
+			String contentsS = contents != null ? InventoryUtils.itemStackArrayToBase64(contents) : null;
+	
+			if(sql.isSqlLite()) //SQLLITE
+				sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + (type == ShopInventoryType.SELL ? contentsS : null) + "', '" + (type == ShopInventoryType.BUY ? contentsS : null) + "') "
+						+ "ON CONFLICT(ID, site) DO UPDATE SET " + type.toString().toLowerCase() + "Inv='" + contentsS + "';");
+			else //MYSQL
+				sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + (type == ShopInventoryType.SELL ? contentsS : null) + "', '" + (type == ShopInventoryType.BUY ? contentsS : null) + "') "
+						+ "ON DUPLICATE KEY UPDATE " + type.toString().toLowerCase() + "Inv='" + contentsS + "';");
+		}
 	}
 	
 	public void setupShopInventories(RentTypeHandler handler) {
@@ -99,7 +129,7 @@ public class ShopInventorySQL {
 					
 					while (rs.next()) {
 						
-						int site = rs.getInt("site");
+						//int site = rs.getInt("site");
 						String sellInvS = rs.getString("sellInv");
 						String buyInvS = rs.getString("buyInv");
 						
@@ -171,77 +201,79 @@ public class ShopInventorySQL {
 								}
 							}
 						}
-						
-						if(!skipSellInv && siteSellCounter < catHandler.getMaxSite()) {
-							siteSellCounter++;
-							
-							//Adding next Site Button
-							if(sellInv != null && sellContents != null)
-								sellInv.setItem(sellInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
-							
-							//Creating a new Shop Site
-							ShopInventoryBuilder sellBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.SELL);
-							sellBuilder.setSite(site);
-							sellInv = UserShopGUI.getInventory(instance, sellBuilder);
-							
-							handler.setInventory(ShopInventoryType.SELL, site, sellInv);
-							
-							//Adding before Site Button
-							if(sellInv != null && site > 1)
-								sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
-							
 
-							//Sets the items to the new Site Inventory
-							if(catHandler != null) {
-								if(catHandler.getMaxSite() > 1) {
-									if(sellContents != null)
-										for(int i = 0; i < sellInv.getSize() - 9; i++)
+						if(!skipSellInv && siteSellCounter < catHandler.getMaxSite()) {
+							if(sellContents != null) {
+								siteSellCounter++;
+								
+								//Adding next Site Button
+								if(sellInv != null)
+									sellInv.setItem(sellInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
+								
+								//Creating a new Shop Site
+								ShopInventoryBuilder sellBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.SELL);
+								sellBuilder.setSite(siteSellCounter);
+								sellInv = UserShopGUI.getInventory(instance, sellBuilder);
+								
+								handler.setInventory(ShopInventoryType.SELL, siteSellCounter, sellInv);
+								
+								//Adding before Site Button
+								if(sellInv != null && siteSellCounter > 1)
+									sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
+								
+	
+								//Sets the items to the new Site Inventory
+								if(catHandler != null) {
+									if(catHandler.getMaxSite() > 1) {
+										for(int i = 0; i < sellInv.getSize() - 9; i++) {
 											if(sellContents.length > i) {
 												ItemStack temp = sellContents[i];
 												if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
 													sellInv.setItem(i, temp);
 												}
 											}
-								}else {
-									if(sellContents != null)
+										}
+									}else {
 										sellInv.setContents(sellContents);
+									}
 								}
 							}
 						}
 
 						if(!skipBuyInv && siteBuyCounter < catHandler.getMaxSite()) {
-							siteBuyCounter++;
-							
-							//Adding next Site Button
-							if(buyInv != null && buyContents != null)
-								buyInv.setItem(buyInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
-
-							//Creating a new Shop Site
-							ShopInventoryBuilder buyBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.BUY);
-							buyBuilder.setSite(site);
-							buyInv = UserShopGUI.getInventory(instance, buyBuilder);
-
-							handler.setInventory(ShopInventoryType.BUY, site, buyInv);
-							
-							//Adding before Site Button
-							if(buyInv != null && site > 1)
-								buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
-							
-
-							//Sets the items to the new Site Inventory
-							if(catHandler != null) {
-								if(catHandler.getMaxSite() > 1) {
-									
-									if(buyContents != null)
-										for(int i = 0; i < buyInv.getSize() - 9; i++)
+							if(buyContents != null) {
+								siteBuyCounter++;
+								
+								//Adding next Site Button
+								if(buyInv != null)
+									buyInv.setItem(buyInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
+	
+								//Creating a new Shop Site
+								ShopInventoryBuilder buyBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.BUY);
+								buyBuilder.setSite(siteBuyCounter);
+								buyInv = UserShopGUI.getInventory(instance, buyBuilder);
+	
+								handler.setInventory(ShopInventoryType.BUY, siteBuyCounter, buyInv);
+								
+								//Adding before Site Button
+								if(buyInv != null && siteBuyCounter > 1)
+									buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
+								
+	
+								//Sets the items to the new Site Inventory
+								if(catHandler != null) {
+									if(catHandler.getMaxSite() > 1) {
+										for(int i = 0; i < buyInv.getSize() - 9; i++) {
 											if(buyContents.length > i) {
 												ItemStack temp = buyContents[i];
-												if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING))
+												if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
 													buyInv.setItem(i, temp);
+												}
 											}
-								}else {
-									if(buyContents != null)
+										}
+									}else {
 										buyInv.setContents(buyContents);
+									}
 								}
 							}
 						}

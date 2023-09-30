@@ -78,7 +78,6 @@ public class ShopListener implements Listener {
 
 			UUID ownerUUID = rentHandler.getOwnerUUID();
 			OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
-			Inventory inv = e.getClickedInventory();
 
 			NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -145,8 +144,6 @@ public class ShopListener implements Listener {
 
 				p.getInventory().addItem(copyItem); // GIVES BUYER THE ITEM
 
-				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
-
 				if (this.instance.getChestsUtils().checkChestsInArea(shopId, copyItem)) {
 					// LOOKS IN NEARBY CHESTS
 					this.instance.getChestsUtils().removeItemFromChestsInArea(shopId, copyItem);
@@ -161,7 +158,7 @@ public class ShopListener implements Listener {
 			    } 
 
 				// UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
-				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.SELL, site, inv.getContents());
+				this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.SELL);
 
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
@@ -205,8 +202,7 @@ public class ShopListener implements Listener {
 		        this.moveItems(e, rentHandler, ShopInventoryType.SELL);
 				p.getInventory().addItem(copyItem);
 
-				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
-				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.SELL, site, inv.getContents()); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
+				this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.SELL); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
 
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
@@ -251,7 +247,6 @@ public class ShopListener implements Listener {
 
 			UUID ownerUUID = rentHandler.getOwnerUUID();
 			OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
-			Inventory inv = e.getClickedInventory();
 
 			NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -325,8 +320,7 @@ public class ShopListener implements Listener {
 				this.instance.getEconomySystem().deposit(p, price); // REMVOES THE MONEY FROM THE BUYER
 				this.instance.getEconomySystem().withdraw(owner, price); // GIVE SHOPOWNER THE MONEY
 
-				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
-				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
+				this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.BUY);
 
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
@@ -370,8 +364,7 @@ public class ShopListener implements Listener {
 		        this.moveItems(e, rentHandler, ShopInventoryType.BUY);
 				p.getInventory().addItem(copyItem);
 
-				int site = this.instance.getShopInvBuilder(ownerUUID).getSite();
-				this.instance.getShopsInvSQL().updateInventory(shopId, ShopInventoryType.BUY, site, inv.getContents());
+				this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.BUY);
 
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
@@ -414,7 +407,7 @@ public class ShopListener implements Listener {
 			if (lastItem != null)
 				lastInv.setItem(lastItemSlot, null);
 
-			this.instance.getShopsInvSQL().updateInventory(rentHandler.getID(), ShopInventoryType.SELL, last, lastInv.getContents());
+			this.instance.getShopsInvSQL().updateInventories(rentHandler.getID(), ShopInventoryType.SELL);
 		}
 		
 		if (multiSite && counter <= 1 && last > 1) {
@@ -424,7 +417,7 @@ public class ShopListener implements Listener {
 				this.instance.getShopInvBuilder(p.getUniqueId()).beforeSite();
 				
 				rentHandler.setInventory(type, last, null);
-				this.instance.getShopsInvSQL().updateInventory(rentHandler.getID(), ShopInventoryType.SELL, last, null);
+				this.instance.getShopsInvSQL().updateInventories(rentHandler.getID(), ShopInventoryType.SELL);
 			}
 			
 			if (last - 1 >= 1) {
