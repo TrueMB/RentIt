@@ -1,6 +1,5 @@
 TODO:
 - Test buying items
-- Changing Size to a smaller size? (Removes gui row)
 
 - What happens with not added Items, which are still in the database (Needs to get added to rollbackup, if no space left)
   Otherwise they will be overwritten

@@ -129,7 +129,6 @@ public class ShopInventorySQL {
 					
 					while (rs.next()) {
 						
-						//int site = rs.getInt("site");
 						String sellInvS = rs.getString("sellInv");
 						String buyInvS = rs.getString("buyInv");
 						
@@ -221,20 +220,51 @@ public class ShopInventorySQL {
 								if(sellInv != null && siteSellCounter > 1)
 									sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
 								
-	
+
 								//Sets the items to the new Site Inventory
 								if(catHandler != null) {
-									if(catHandler.getMaxSite() > 1) {
-										for(int i = 0; i < sellInv.getSize() - 9; i++) {
-											if(sellContents.length > i) {
-												ItemStack temp = sellContents[i];
-												if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
-													sellInv.setItem(i, temp);
+									outer: for(int i = 0; i < sellContents.length; i++) {
+										if(sellContents.length > i) {
+											ItemStack item = sellContents[i];
+											if(item != null && item.getType() != Material.AIR && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+												for(int slot = 0; slot < (catHandler.getMaxSite() > 1 ? sellInv.getSize() - 9 : sellInv.getSize()); slot++) {
+													ItemStack temp = sellInv.getItem(slot);
+														
+													if(temp == null || temp.getType() == Material.AIR) {
+														sellInv.setItem(slot, item);
+														continue outer;
+													}
+												}
+												
+												//Items left, create another site inventory
+												if(siteSellCounter < catHandler.getMaxSite()) {
+													siteSellCounter++;
+													System.out.println("Another Inventory");
+													
+													//Adding next Site Button
+													if(sellInv != null)
+														sellInv.setItem(sellInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
+													
+													//Creating a new Shop Site
+													sellBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.SELL);
+													sellBuilder.setSite(siteSellCounter);
+													sellInv = UserShopGUI.getInventory(instance, sellBuilder);
+													
+													handler.setInventory(ShopInventoryType.SELL, siteSellCounter, sellInv);
+													
+													//Adding before Site Button
+													if(sellInv != null && siteSellCounter > 1)
+														sellInv.setItem(sellInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
+													
+													//It's definitely the first item
+													sellInv.setItem(0, item);
+													
+													//After this the new Inventory was created and it continues with the other items
+												}else {
+													//TODO Add it to Backup (Only for the Sell Shop)
 												}
 											}
 										}
-									}else {
-										sellInv.setContents(sellContents);
 									}
 								}
 							}
@@ -262,17 +292,46 @@ public class ShopInventorySQL {
 	
 								//Sets the items to the new Site Inventory
 								if(catHandler != null) {
-									if(catHandler.getMaxSite() > 1) {
-										for(int i = 0; i < buyInv.getSize() - 9; i++) {
-											if(buyContents.length > i) {
-												ItemStack temp = buyContents[i];
-												if(temp != null && !temp.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
-													buyInv.setItem(i, temp);
+									outer: for(int i = 0; i < (catHandler.getMaxSite() > 1 ? buyInv.getSize() - 9 : buyInv.getSize()); i++) {
+										if(buyContents.length > i) {
+											ItemStack item = buyContents[i];
+											if(item != null && item.getType() != Material.AIR && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+
+												for(int slot = 0; slot < (catHandler.getMaxSite() > 1 ? buyInv.getSize() - 9 : buyInv.getSize()); slot++) {
+													ItemStack temp = buyInv.getItem(slot);
+														
+													if(temp == null || temp.getType() == Material.AIR) {
+														buyInv.setItem(slot, item);
+														continue outer;
+													}
+												}
+												
+
+												if(siteBuyCounter < catHandler.getMaxSite()) {
+													siteBuyCounter++;
+													
+													//Adding next Site Button
+													if(buyInv != null)
+														buyInv.setItem(buyInv.getSize() - 1, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", id));
+						
+													//Creating a new Shop Site
+													buyBuilder = new ShopInventoryBuilder(null, handler, ShopInventoryType.BUY);
+													buyBuilder.setSite(siteBuyCounter);
+													buyInv = UserShopGUI.getInventory(instance, buyBuilder);
+						
+													handler.setInventory(ShopInventoryType.BUY, siteBuyCounter, buyInv);
+													
+													//Adding before Site Button
+													if(buyInv != null && siteBuyCounter > 1)
+														buyInv.setItem(buyInv.getSize() - 9, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", id));
+
+													//It's definitely the first item
+													buyInv.setItem(0, item);
+													
+													//After this the new Inventory was created and it continues with the other items
 												}
 											}
 										}
-									}else {
-										buyInv.setContents(buyContents);
 									}
 								}
 							}
