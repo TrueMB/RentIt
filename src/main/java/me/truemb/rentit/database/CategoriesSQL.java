@@ -133,6 +133,8 @@ public class CategoriesSQL {
 								handler.setSize(size);
 								
 								int maxSite = rs.getInt("maxSite");
+								if(maxSite <= 0)
+									maxSite = 1;
 								handler.setMaxSite(maxSite);
 							}
 							

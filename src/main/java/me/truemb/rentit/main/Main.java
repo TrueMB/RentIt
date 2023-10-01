@@ -584,12 +584,12 @@ public class Main extends JavaPlugin {
 		this.getLogger().info("{SQL} starting SQL . . .");
 		try {
 			this.sql = new AsyncSQL(this);
+			this.catSQL = new CategoriesSQL(this);
 			this.hotelsSQL = new HotelsSQL(this);
 			this.shopsSQL = new ShopsSQL(this);
-			this.shopInvSQL = new ShopInventorySQL(this);
 			this.permsSQL = new PermissionsSQL(this);
-			this.catSQL = new CategoriesSQL(this);
 			this.psettingSQL = new PlayerSettingsSQL(this);
+			this.shopInvSQL = new ShopInventorySQL(this);
 
 			this.isSystemRunningOkay = true; //STOP PLUGIN HERE
 			this.getLogger().info("{SQL} successfully connected to Database.");

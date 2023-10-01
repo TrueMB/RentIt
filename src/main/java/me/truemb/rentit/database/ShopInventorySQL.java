@@ -271,7 +271,8 @@ public class ShopInventorySQL {
 														ItemStack[] backupItems = new ItemStack[sellContents.length - i];
 														for(int pos = 0; i < sellContents.length; pos++) {
 															ItemStack backupItem = sellContents[i];
-															backupItems[pos] = ShopItemManager.removeShopItem(instance, backupItem);
+															if(backupItem != null)
+																backupItems[pos] = ShopItemManager.removeShopItem(instance, backupItem);
 															i++;
 														}
 														instance.getShopCacheFileManager().addShopBackup(handler.getOwnerUUID(), id, backupItems);
@@ -289,7 +290,8 @@ public class ShopInventorySQL {
 								ItemStack[] backupItems = new ItemStack[sellContents.length];
 								for(int pos = 0; pos < sellContents.length; pos++) {
 									ItemStack backupItem = sellContents[pos];
-									backupItems[pos] = ShopItemManager.removeShopItem(instance, backupItem);
+									if(backupItem != null)
+										backupItems[pos] = ShopItemManager.removeShopItem(instance, backupItem);
 								}
 								instance.getShopCacheFileManager().addShopBackup(handler.getOwnerUUID(), id, backupItems);
 							}

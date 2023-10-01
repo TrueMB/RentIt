@@ -102,12 +102,12 @@ public class DatabaseConnector {
 		try {
 			if (this.conn == null || !this.conn.isValid(10) || this.conn.isClosed())
 				openConnection();
-		} catch (Exception e) {
+		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void openConnection() throws Exception {
+	public void openConnection() throws ClassNotFoundException, SQLException {
 		String driverS = this.driver.getDriverClass();
 		if(driverS != null)
 			Class.forName(driverS);
