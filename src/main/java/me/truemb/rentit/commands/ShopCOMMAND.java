@@ -652,10 +652,12 @@ public class ShopCOMMAND extends BukkitCommand {
 				
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 				
+				/*
 				if(rentHandler.getOwnerUUID() != null && rentHandler.getOwnerUUID().equals(uuid)) {
 					p.sendMessage(this.instance.getMessage("shopStillOwning"));
 					return true;
 				}
+				*/
 				
 				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler, ShopInventoryType.ROLLBACK);
 				
@@ -1223,10 +1225,12 @@ public class ShopCOMMAND extends BukkitCommand {
 				
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 				
+				/*
 				if(rentHandler.getOwnerUUID() != null && rentHandler.getOwnerUUID().equals(uuidTarget)) {
 					p.sendMessage(this.instance.getMessage("shopStillOwning"));
 					return true;
 				}
+				*/
 
 				ShopInventoryBuilder builder = new ShopInventoryBuilder(p, rentHandler, ShopInventoryType.ROLLBACK).setTarget(uuidTarget);
 				

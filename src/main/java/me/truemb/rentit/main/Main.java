@@ -20,6 +20,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -54,6 +55,7 @@ import me.truemb.rentit.economy.EconomySystem;
 import me.truemb.rentit.economy.PlayerPointsEconomy;
 import me.truemb.rentit.economy.VaultEconomy;
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.filemanager.AreaFileManager;
 import me.truemb.rentit.filemanager.DoorFileManager;
 import me.truemb.rentit.filemanager.NPCFileManager;
@@ -268,13 +270,23 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		
-		if(this.rentTypeHandlers.get(RentTypes.SHOP) != null) {
-			for(RentTypeHandler shopHandler : this.rentTypeHandlers.get(RentTypes.SHOP).values()) {
-				HashMap<UUID, List<Inventory>> rollbackHash = shopHandler.getRollbackInventories();
-				
-				//SAVE INVENTORIES IN THE FILE
-				for(UUID uuid : rollbackHash.keySet())
-					this.getShopCacheFileManager().updateShopBackup(uuid, shopHandler.getID(), rollbackHash.get(uuid));
+		for(Player all : Bukkit.getOnlinePlayers()) {
+			UUID uuid = all.getUniqueId();
+			
+			ShopInventoryBuilder builder = this.getShopInvBuilder(uuid);
+			
+			//Check if Inventory is a Rollback Inventory
+			if(builder == null || builder.getType() != ShopInventoryType.ROLLBACK)
+				continue;
+			
+			RentTypeHandler handler = builder.getShopHandler();
+
+			HashMap<UUID, List<Inventory>> rollbackHash = handler.getRollbackInventories();
+			
+			//SAVE INVENTORIES IN THE FILE
+			List<Inventory> inventories = rollbackHash.get(uuid);
+			if(inventories != null) {
+				this.getShopCacheFileManager().updateShopBackup(uuid, handler.getID(), rollbackHash.get(uuid));
 			}
 		}
 		
