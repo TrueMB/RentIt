@@ -889,7 +889,7 @@ Messages:
     - '&6Price&7: &f%price%'
     - '&6Rent time&7: &f%time%'
   hotelList:
-    header: '&6&m          '&6[ &f&lHOTEL List &6]&6&m          ''
+    header: '&6&m          &6[ &f&lHOTEL List &6]&6&m          '
     body: '&6ID&7: &f%id% &7- &6Owner&7: &f%owner%'
     footer: '&6&m                                                  '
     hover: '&6Click for more Information'
