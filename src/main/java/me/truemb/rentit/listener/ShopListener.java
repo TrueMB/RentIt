@@ -362,7 +362,6 @@ public class ShopListener implements Listener {
 				}
 
 		        this.moveItems(e, rentHandler, ShopInventoryType.BUY);
-				p.getInventory().addItem(copyItem);
 
 				this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.BUY);
 
