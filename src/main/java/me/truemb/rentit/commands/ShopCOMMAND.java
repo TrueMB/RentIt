@@ -2237,7 +2237,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				list.add("close");
 			}
 			
-		}else if(args.length > 2 && args[0].equalsIgnoreCase("setPermission")) {
+		}else if(args.length >= 2 && (args[0].equalsIgnoreCase("setPermission") || args[0].equalsIgnoreCase("rollback"))) {
 			if(args.length == 2) {
 				
 				for(Player all : Bukkit.getOnlinePlayers())

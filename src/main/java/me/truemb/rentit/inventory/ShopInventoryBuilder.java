@@ -81,6 +81,10 @@ public class ShopInventoryBuilder {
 		return this.type;
 	}
 	
+	public UUID getTarget() {
+		return this.targetUUID;
+	}
+	
 	public Inventory getCurrentInventory() {
 		if(this.type == ShopInventoryType.ROLLBACK) {
 			return this.shopHandler.getRollbackInventory(this.targetUUID != null ? this.targetUUID : this.player.getUniqueId(), this.currentSite);

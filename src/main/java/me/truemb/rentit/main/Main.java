@@ -406,10 +406,13 @@ public class Main extends JavaPlugin {
 	}
 
 	private void initHandlers() {
+		Main plugin = this;
 		//First load the categories. They are needed for the Shops/Hotelrooms
 		this.getCategorySQL().setupCategories(b -> {
-			this.getShopsSQL().setupShops();
-			this.getHotelsSQL().setupHotels();
+			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+				this.getShopsSQL().setupShops();
+				this.getHotelsSQL().setupHotels();
+			}, 10);
 		});
 	}
 	

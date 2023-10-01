@@ -1,5 +1,5 @@
 TODO:
 - Test buying items
 
-- What happens with not added Items, which are still in the database (Needs to get added to rollbackup, if no space left)
-  Otherwise they will be overwritten
+- 1. picking last item
+  2. moves item before to the same positon

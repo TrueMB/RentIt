@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.UUID;
 
 import me.truemb.rentit.utils.chests.SupportedChest;
+
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -48,17 +50,26 @@ public class ShopCacheFileManager {
 	private YamlConfiguration getConfig() {
 		return this.config;
 	}
-
+	
 	public void createShopBackup(UUID uuid, int id) {
-		
-		YamlConfiguration cfg = this.getConfig();
 
-		List<SupportedChest> chests = this.instance.getChestsUtils().getShopChests(id);
+		RentTypeHandler handler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
+		List<Player> players = new ArrayList<>();
+		if(handler != null)
+			players = handler.closeRollbackInventories(uuid);
 		
-		String basicPath = String.valueOf(id) + "." + uuid.toString();
+		List<SupportedChest> chests = this.instance.getChestsUtils().getShopChests(id);
+
+		YamlConfiguration cfg = this.getConfig();
+		String basicPath = String.valueOf(id) + "." + uuid.toString() + ".";
+
+		int pos = 0;
+		while(cfg.isSet(basicPath + pos))
+			pos++;
 		
 		for(int i = 0; i < chests.size(); i++) {
-			cfg.set(basicPath + "." + i, InventoryUtils.itemStackArrayToBase64(chests.get(i).getAllItems().toArray(ItemStack[]::new)));
+			cfg.set(basicPath + pos, InventoryUtils.itemStackArrayToBase64(chests.get(i).getAllItems().toArray(ItemStack[]::new)));
+			pos++;
 		}
 		
 		RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
@@ -79,7 +90,8 @@ public class ShopCacheFileManager {
 					}
 				}
 				
-				cfg.set(basicPath + "." + String.valueOf(chests.size() + i), InventoryUtils.itemStackArrayToBase64(sellItems));
+				cfg.set(basicPath + "." + pos, InventoryUtils.itemStackArrayToBase64(sellItems));
+				pos++;
 			}
 		}
 		try {
@@ -87,6 +99,34 @@ public class ShopCacheFileManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		if(handler != null)
+			handler.reopenRollbackInventories(players, uuid);
+	}
+
+	public void addShopBackup(UUID uuid, int id, ItemStack[] content) {
+		RentTypeHandler handler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, id);
+		List<Player> players = new ArrayList<>();
+		if(handler != null)
+			players = handler.closeRollbackInventories(uuid);
+		
+		YamlConfiguration cfg = this.getConfig();
+		String basicPath = String.valueOf(id) + "." + uuid.toString() + ".";
+		
+		int i = 0;
+		while(cfg.isSet(basicPath + i))
+			i++;
+		
+		cfg.set(basicPath + i, InventoryUtils.itemStackArrayToBase64(content));
+		
+		try {
+			cfg.save(this.file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if(handler != null)
+			handler.reopenRollbackInventories(players, uuid);
 	}
 	
 	public void updateShopBackup(UUID uuid, int id, List<Inventory> inventories) {

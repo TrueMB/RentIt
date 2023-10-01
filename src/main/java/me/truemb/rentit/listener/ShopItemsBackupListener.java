@@ -12,9 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import me.truemb.rentit.enums.ShopInventoryType;
@@ -84,6 +82,23 @@ public class ShopItemsBackupListener implements Listener {
 			}else if(isBeforeItem) {
 				this.instance.getShopInvBuilder(uuid).beforeSite();
 			}
+		}else {
+			ShopInventoryBuilder builder = this.instance.getShopInvBuilder(uuid);
+			
+			//Check if Inventory is a Rollback Inventory
+			if(builder == null || builder.getType() != ShopInventoryType.ROLLBACK)
+				return;
+			
+			RentTypeHandler handler = builder.getShopHandler();
+			UUID targetUUID = builder.getTarget() != null ? builder.getTarget() : uuid;
+
+			HashMap<UUID, List<Inventory>> rollbackHash = handler.getRollbackInventories();
+			
+			//SAVE INVENTORIES IN THE FILE
+			List<Inventory> inventories = rollbackHash.get(targetUUID);
+			if(inventories != null) {
+				instance.getShopCacheFileManager().updateShopBackup(targetUUID, handler.getID(), rollbackHash.get(targetUUID));
+			}
 		}
 	}
 	
@@ -95,55 +110,6 @@ public class ShopItemsBackupListener implements Listener {
 			return;
 		
 		e.setCancelled(true);
-	}
-	
-	@EventHandler
-	public void onClose(InventoryCloseEvent e) {
-		
-		Player p = (Player) e.getPlayer();
-		UUID uuid = p.getUniqueId();
-		
-		if(e.getView().getTitle() == null || !e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.rollback.displayName"))))
-			return;
-		
-		ShopInventoryBuilder builder = this.instance.getShopInvBuilder(uuid);
-		
-		//Check if Inventory is a Rollback Inventory
-		if(builder == null || builder.getType() != ShopInventoryType.ROLLBACK)
-			return;
-		
-		RentTypeHandler handler = builder.getShopHandler();
-
-		HashMap<UUID, List<Inventory>> rollbackHash = handler.getRollbackInventories();
-		
-		//SAVE INVENTORIES IN THE FILE
-		List<Inventory> inventories = rollbackHash.get(uuid);
-		if(inventories != null) {
-			instance.getShopCacheFileManager().updateShopBackup(uuid, handler.getID(), rollbackHash.get(uuid));
-		}
-	}
-	
-	@EventHandler
-	public void onLeave(PlayerQuitEvent e) {
-		
-		Player p = e.getPlayer();
-		UUID uuid = p.getUniqueId();
-		
-		ShopInventoryBuilder builder = this.instance.getShopInvBuilder(uuid);
-		
-		//Check if Inventory is a Rollback Inventory
-		if(builder == null || builder.getType() != ShopInventoryType.ROLLBACK)
-			return;
-		
-		RentTypeHandler handler = builder.getShopHandler();
-
-		HashMap<UUID, List<Inventory>> rollbackHash = handler.getRollbackInventories();
-		
-		//SAVE INVENTORIES IN THE FILE
-		List<Inventory> inventories = rollbackHash.get(uuid);
-		if(inventories != null) {
-			instance.getShopCacheFileManager().updateShopBackup(uuid, handler.getID(), rollbackHash.get(uuid));
-		}
 	}
 
 }

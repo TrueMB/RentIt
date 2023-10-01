@@ -1,6 +1,7 @@
 package me.truemb.rentit.handler;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -241,6 +242,35 @@ public class RentTypeHandler {
 	
 	public HashMap<UUID, List<Inventory>> getRollbackInventories(){
 		return this.rollbackInv;
+	}
+	
+	public List<Player> closeRollbackInventories(UUID uuid) {
+		//Contains the players, which had the Rollback Inv opened
+		List<Player> players = new ArrayList<>();
+		
+		if(this.rollbackInv.get(uuid) != null) {
+			for(Inventory invs : this.rollbackInv.get(uuid)) {
+				for(HumanEntity entities : new ArrayList<>(invs.getViewers())) {
+					if(entities instanceof Player) {
+						Player p = (Player) entities;
+						players.add(p);
+						Bukkit.getScheduler().runTask(this.instance, () -> p.closeInventory());
+					}
+				}
+			}
+		}
+		return players;
+	}
+	
+	public void reopenRollbackInventories(List<Player> players, UUID uuid) {
+
+		this.rollbackInv.put(uuid, RollbackGUI.getRollbackInventories(this.instance, uuid, this.id));
+
+		if(this.rollbackInv.get(uuid).size() > 0) {
+			for(Player all : players) {
+				Bukkit.getScheduler().runTask(this.instance, () -> all.openInventory(this.rollbackInv.get(uuid).get(0)));
+			}
+		}
 	}
 
 	/**
