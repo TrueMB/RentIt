@@ -60,20 +60,20 @@ dependencies {
     library 'mysql:mysql-connector-java:8.0.33'
     library 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
     
-    api 'net.wesjd:anvilgui:1.6.6-SNAPSHOT'
-    api 'org.bstats:bstats-bukkit:3.0.0'
-    api 'com.jeff_media:SpigotUpdateChecker:3.0.0'
-    api 'com.google.code.gson:gson:2.10'
+    api 'net.wesjd:anvilgui:1.9.0-SNAPSHOT'
+    api 'org.bstats:bstats-bukkit:3.0.2'
+    api 'com.jeff_media:SpigotUpdateChecker:3.0.3'
+    api 'com.google.code.gson:gson:2.10.1'
     
     compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.14-SNAPSHOT'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.1.0-SNAPSHOT'
     compileOnly 'com.github.DeadSilenceIV:AdvancedChestsAPI:3.2-BETA'
-    compileOnly 'org.black_ixx:playerpoints:3.2.5'
-    compileOnly 'me.clip:placeholderapi:2.11.2'
+    compileOnly 'org.black_ixx:playerpoints:3.2.6'
+    compileOnly 'me.clip:placeholderapi:2.11.4'
     compileOnly 'net.luckperms:api:5.4'
-    compileOnly 'com.acrobot.chestshop:chestshop:3.12' //ChestShopAPI
+    compileOnly 'com.acrobot.chestshop:chestshop:3.12.2' //ChestShopAPI
     
     compileOnly ('net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT') {
         exclude group: '*', module: '*'
