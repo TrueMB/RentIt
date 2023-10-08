@@ -3,10 +3,14 @@ package me.truemb.rentit.main;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -592,9 +596,34 @@ public class Main extends JavaPlugin {
 			this.shopInvSQL = new ShopInventorySQL(this);
 
 			this.isSystemRunningOkay = true; //STOP PLUGIN HERE
+			
+			// Reconnect Method
+			Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+				if(this.sql == null)
+					return;
+							
+				Connection conn = this.sql.getDatabaseConnector().getConnection();
+				try {
+					if (conn == null || !conn.isValid(10) || conn.isClosed()) {
+						this.sql.getDatabaseConnector().openConnection();
+						this.getLogger().info("Reconnected the Database Connection");
+					}else {
+						this.sql.prepareStatement("SELECT 1;", new Consumer<ResultSet>() {
+										
+							@Override
+							public void accept(ResultSet rs) {
+								//Nothing, just a Database Ping
+							}
+						});
+					}
+				} catch (SQLException | ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}, 20 * 60 * 20, 20 * 60 * 20);
+						
 			this.getLogger().info("{SQL} successfully connected to Database.");
 		} catch (Exception e) {
-			this.getLogger().warning("{SQL} Failed to start MySql (" + e.getMessage() + ")");
+			this.getLogger().warning("{SQL} Failed to start SQL (" + e.getMessage() + ")");
 			this.isSystemRunningOkay = false; //STOP PLUGIN HERE
 		}
 	}
