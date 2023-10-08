@@ -279,7 +279,7 @@ public class HotelAreaListener implements Listener {
 				return;
 			
 			//Is Chest from ChestShop? If yes, then allow the usage
-			if(this.instance.getChestShopApi().isShopChest(b))
+			if(this.instance.getChestShopApi() != null && this.instance.getChestShopApi().isShopChest(b))
 				return;
 		    
 			if(!p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.chests")) 
