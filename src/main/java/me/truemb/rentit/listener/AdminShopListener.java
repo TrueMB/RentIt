@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,7 +39,7 @@ public class AdminShopListener implements Listener {
 		if (e.getClickedInventory() == null)
 			return;
 
-		if (!e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopAdmin.displayName"))))
+		if (!e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.shopAdmin.displayName"))))
 			return;
 
 		e.setCancelled(true);
@@ -137,11 +136,11 @@ public class AdminShopListener implements Listener {
 		ItemStack acceptItem = new ItemStack(Material.valueOf(this.instance.manageFile().getString("GUI.anvil.acceptItem.type").toUpperCase()));
 
 		ItemMeta acceptItemMeta = acceptItem.getItemMeta();
-		acceptItemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+		acceptItemMeta.setDisplayName(this.instance.translateHexColorCodes(displayName));
 
 		List<String> lore = new ArrayList<>();
 		for (String s : instance.manageFile().getStringList("GUI.anvil.acceptItem.lore")) {
-			lore.add(ChatColor.translateAlternateColorCodes('&', s));
+			lore.add(this.instance.translateHexColorCodes(s));
 		}
 		acceptItemMeta.setLore(lore);
 		acceptItem.setItemMeta(acceptItemMeta);

@@ -1,7 +1,6 @@
 package me.truemb.rentit.gui;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -53,7 +52,7 @@ public class UserShopGUI {
 		
 		//Inventory not found
 		if(inv == null) {
-			inv = Bukkit.createInventory(null, size + (multiSite ? 9 : 0), ChatColor.translateAlternateColorCodes('&', title));
+			inv = Bukkit.createInventory(null, size + (multiSite ? 9 : 0), instance.translateHexColorCodes(title));
 			rentHandler.setInventory(builder.getType(), site, inv); //Links the Inventory; No need to wait for items, since no player could have opened the Inventory
 		}
 		

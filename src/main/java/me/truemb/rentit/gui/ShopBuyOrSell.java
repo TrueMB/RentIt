@@ -1,7 +1,6 @@
 package me.truemb.rentit.gui;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import me.truemb.rentit.main.Main;
 
@@ -9,7 +8,7 @@ public class ShopBuyOrSell {
 	
 	public static Inventory getSelectInv(Main instance, int shopId) {
 		
-		Inventory inv = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopBuyOrSell.displayName")));
+		Inventory inv = Bukkit.createInventory(null, 9, instance.translateHexColorCodes(instance.manageFile().getString("GUI.shopBuyOrSell.displayName")));
 		
 		int sellItemSlot = instance.manageFile().getInt("GUI.shopBuyOrSell.items.sellItem.slot") - 1;
 		if(sellItemSlot >= 0)

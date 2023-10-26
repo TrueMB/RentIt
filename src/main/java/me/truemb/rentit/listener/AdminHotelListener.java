@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,7 +38,7 @@ public class AdminHotelListener implements Listener {
 		if (e.getClickedInventory() == null)
 			return;
 
-		if (!e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.hotelAdmin.displayName"))))
+		if (!e.getView().getTitle().equalsIgnoreCase(instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.hotelAdmin.displayName"))))
 			return;
 
 		e.setCancelled(true);
@@ -130,11 +129,11 @@ public class AdminHotelListener implements Listener {
 		ItemStack acceptItem = new ItemStack(Material.valueOf(this.instance.manageFile().getString("GUI.anvil.acceptItem.type").toUpperCase()));
 
 		ItemMeta acceptItemMeta = acceptItem.getItemMeta();
-		acceptItemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+		acceptItemMeta.setDisplayName(instance.translateHexColorCodes(displayName));
 
 		List<String> lore = new ArrayList<>();
 		for (String s : instance.manageFile().getStringList("GUI.anvil.acceptItem.lore")) {
-			lore.add(ChatColor.translateAlternateColorCodes('&', s));
+			lore.add(instance.translateHexColorCodes(s));
 		}
 		acceptItemMeta.setLore(lore);
 		acceptItem.setItemMeta(acceptItemMeta);

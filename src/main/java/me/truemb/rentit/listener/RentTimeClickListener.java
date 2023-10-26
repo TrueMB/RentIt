@@ -3,7 +3,6 @@ package me.truemb.rentit.listener;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -40,7 +39,7 @@ public class RentTimeClickListener implements Listener{
 
         Player p = (Player) e.getWhoClicked();
         
-		if(e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameShopRentSettings")))) {
+		if(e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.shopUser.displayNameShopRentSettings")))) {
 			
 			e.setCancelled(true);
 	        
@@ -156,7 +155,7 @@ public class RentTimeClickListener implements Listener{
 				p.closeInventory();
 				p.openInventory(UserListGUI.getListGUI(this.instance, RentTypes.SHOP, p.getUniqueId(), 1));
 			}
-		}else if(e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopUser.displayNameHotelRentSettings")))) {
+		}else if(e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.shopUser.displayNameHotelRentSettings")))) {
 			
 			e.setCancelled(true);
 	        

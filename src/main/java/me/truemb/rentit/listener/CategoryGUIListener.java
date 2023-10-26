@@ -2,7 +2,6 @@ package me.truemb.rentit.listener;
 
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -42,7 +41,7 @@ public class CategoryGUIListener implements Listener {
 		}
 
 		//SHOWS ALL SHOP CATEGORIES
-		if (e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.categoryShop.displayName")))) {
+		if (e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.categoryShop.displayName")))) {
 
 			e.setCancelled(true);
 
@@ -77,7 +76,7 @@ public class CategoryGUIListener implements Listener {
 			return;
 			
 		//SHOWS ALL HOTEL CATEGORIES
-		}else if (e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.categoryHotel.displayName")))) {
+		}else if (e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.categoryHotel.displayName")))) {
 
 			e.setCancelled(true);
 
@@ -113,7 +112,7 @@ public class CategoryGUIListener implements Listener {
 			return;
 			
 		//SHOWS ALL SHOPS FROM A CATEGORIES
-		}else if (e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.categorySub.displayNameShop")))) {
+		}else if (e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.categorySub.displayNameShop")))) {
 
 			e.setCancelled(true);
 
@@ -195,7 +194,7 @@ public class CategoryGUIListener implements Listener {
 			}
 			
 		//SHOWS ALL HOTELS FROM A CATEGORIES
-		}else if (e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.categorySub.displayNameHotel")))) {
+		}else if (e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.categorySub.displayNameHotel")))) {
 
 			e.setCancelled(true);
 

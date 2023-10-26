@@ -2,7 +2,6 @@ package me.truemb.rentit.listener;
 
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -39,7 +38,7 @@ public class ShopBuyOrSellListener implements Listener{
         Player p = (Player) e.getWhoClicked();
         UUID uuid = p.getUniqueId();
         
-		if(e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopBuyOrSell.displayName")))) {
+		if(e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(instance.manageFile().getString("GUI.shopBuyOrSell.displayName")))) {
 
 			e.setCancelled(true);
 			

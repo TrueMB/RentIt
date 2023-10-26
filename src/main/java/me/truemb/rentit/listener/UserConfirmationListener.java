@@ -38,7 +38,7 @@ public class UserConfirmationListener implements Listener {
         Player p = (Player) e.getWhoClicked();
         UUID uuid = p.getUniqueId();
         
-        if(e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.shopConfirmation.displayName")))) {
+        if(e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.shopConfirmation.displayName")))) {
           
 	        e.setCancelled(true);
 	        
@@ -156,7 +156,7 @@ public class UserConfirmationListener implements Listener {
 	            return;
 	        	
 	        }
-        }else if(e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.hotelConfirmation.displayName")))) {
+        }else if(e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.hotelConfirmation.displayName")))) {
             
   	        e.setCancelled(true);
   	        

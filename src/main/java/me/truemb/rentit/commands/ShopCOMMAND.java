@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -621,7 +620,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				BookMeta meta = (BookMeta) item.getItemMeta();
 				
 				for(String content : this.instance.manageFile().getStringList("Messages.shopHelpBook")) {
-					meta.addPage(ChatColor.translateAlternateColorCodes('&', content.replace("\\n", "\n")));
+					meta.addPage(this.instance.translateHexColorCodes(content.replace("\\n", "\n")));
 				}
 				meta.setAuthor(this.instance.getDescription().getAuthors().get(0));
 				meta.setTitle(this.instance.getDescription().getName());
@@ -1970,7 +1969,7 @@ public class ShopCOMMAND extends BukkitCommand {
 
 	private void sendHelp(Player p, String path) {
 		for (String s : this.instance.manageFile().getStringList("Messages." + path)) {
-			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s)));
+			p.sendMessage(this.instance.translateHexColorCodes(s));
 		}
 	}
 
@@ -1991,7 +1990,7 @@ public class ShopCOMMAND extends BukkitCommand {
 	    int amount = this.instance.getMethodes().getRentTypesOfCategory(this.type, catId).size();
 	    
 		for (String s : this.instance.manageFile().getStringList("Messages.shopCategoryInfo")) {
-			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
+			p.sendMessage(this.instance.translateHexColorCodes(s)
 					.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 					.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
@@ -2028,7 +2027,7 @@ public class ShopCOMMAND extends BukkitCommand {
 	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 
 		for (String s : this.instance.manageFile().getStringList("Messages.shopInfo")) {
-			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
+			p.sendMessage(this.instance.translateHexColorCodes(s)
 					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
 					.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
@@ -22,7 +21,7 @@ public class UserConfirmGUI {
 	
 	public static Inventory getShopConfirmationGUI(Main instance, int shopId) {
 		
-		Inventory inv = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopConfirmation.displayName")));
+		Inventory inv = Bukkit.createInventory(null, 9, instance.translateHexColorCodes(instance.manageFile().getString("GUI.shopConfirmation.displayName")));
 		
 		int confirmItemSlot = instance.manageFile().getInt("GUI.shopConfirmation.items.confirmItem.slot") - 1;
 		if(confirmItemSlot >= 0)
@@ -41,7 +40,7 @@ public class UserConfirmGUI {
 	
 	public static Inventory getHotelConfirmationGUI(Main instance, int hotelId) {
 		
-		Inventory inv = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.hotelConfirmation.displayName")));
+		Inventory inv = Bukkit.createInventory(null, 9, instance.translateHexColorCodes(instance.manageFile().getString("GUI.hotelConfirmation.displayName")));
 		
 		int confirmItemSlot = instance.manageFile().getInt("GUI.hotelConfirmation.items.confirmItem.slot") - 1;
 		if(confirmItemSlot >= 0)
@@ -79,7 +78,7 @@ public class UserConfirmGUI {
 	    	    
 		List<String> lore = new ArrayList<>();
 		for(String s : instance.manageFile().getStringList("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.lore")) {
-			lore.add(ChatColor.translateAlternateColorCodes('&', s)
+			lore.add(instance.translateHexColorCodes(s)
 					.replace("%shopId%", String.valueOf(id))
 					.replace("%hotelId%", String.valueOf(id))
 					.replace("%alias%", alias)
@@ -94,7 +93,7 @@ public class UserConfirmGUI {
 		ItemStack infoItem = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.type").toUpperCase()));
 	        
 	    ItemMeta infoItemMeta = infoItem.getItemMeta();
-	    infoItemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.displayName")));
+	    infoItemMeta.setDisplayName(instance.translateHexColorCodes(instance.manageFile().getString("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.displayName")));
 	    
 	    infoItemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
 		

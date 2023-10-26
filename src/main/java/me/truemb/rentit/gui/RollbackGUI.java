@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -39,7 +38,7 @@ public class RollbackGUI {
 							inv.setItem(53, instance.getMethodes().getGUIItem("rollback", "nextSiteItem", shopId, site));
 						
 						//CREATE A NEW ONE (Next Site/First Site)
-						inv = Bukkit.createInventory(null, 54, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.rollback.displayName")));
+						inv = Bukkit.createInventory(null, 54, instance.translateHexColorCodes(instance.manageFile().getString("GUI.rollback.displayName")));
 						//ADD INVENTORY TO LIST
 						inventories.add(inv);
 						
@@ -62,7 +61,7 @@ public class RollbackGUI {
 		
 		// Add at least one Inventory, even if it is empty
 		if(inventories.size() == 0)
-			inventories.add(Bukkit.createInventory(null, 54, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.rollback.displayName"))));
+			inventories.add(Bukkit.createInventory(null, 54, instance.translateHexColorCodes(instance.manageFile().getString("GUI.rollback.displayName"))));
 		
 		return inventories;
 		

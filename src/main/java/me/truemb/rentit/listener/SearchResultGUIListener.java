@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -46,7 +45,7 @@ public class SearchResultGUIListener implements Listener{
         Inventory inv = e.getClickedInventory();
         ItemStack item = e.getCurrentItem();
         
-		if(e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.searchInventory.displayName")))) {
+		if(e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.searchInventory.displayName")))) {
 			
 			e.setCancelled(true);
 	        

@@ -1,7 +1,6 @@
 package me.truemb.rentit.gui;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import me.truemb.rentit.main.Main;
 
@@ -9,7 +8,7 @@ public class AdminGUI {
 	
 	public static Inventory getAdminShopGui(Main instance, int shopId) {
 		
-		Inventory inv = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopAdmin.displayName")));
+		Inventory inv = Bukkit.createInventory(null, 9, instance.translateHexColorCodes(instance.manageFile().getString("GUI.shopAdmin.displayName")));
 		
 		int changeTimeItemSlot = instance.manageFile().getInt("GUI.shopAdmin.items.changeTimeItem.slot") - 1;
 		if(changeTimeItemSlot >= 0)
@@ -41,7 +40,7 @@ public class AdminGUI {
 	
 	public static Inventory getAdminHotelGui(Main instance, int hotelId) {
 		
-		Inventory inv = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.hotelAdmin.displayName")));
+		Inventory inv = Bukkit.createInventory(null, 9, instance.translateHexColorCodes(instance.manageFile().getString("GUI.hotelAdmin.displayName")));
 
 		int changeTimeItemSlot = instance.manageFile().getInt("GUI.hotelAdmin.items.changeTimeItem.slot") - 1;
 		if(changeTimeItemSlot >= 0)

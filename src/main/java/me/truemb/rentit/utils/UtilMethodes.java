@@ -10,7 +10,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
@@ -52,11 +51,11 @@ public class UtilMethodes {
 	public ItemStack getGUIItem(String subGUI, String itemName, int id, int site) {
 		ItemStack item = new ItemStack(Material.valueOf(this.instance.manageFile().getString("GUI." + subGUI + ".items." + itemName + ".type")));
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI." + subGUI + ".items." + itemName + ".displayName")));
+		meta.setDisplayName(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI." + subGUI + ".items." + itemName + ".displayName")));
 
 		List<String> lore = new ArrayList<>();
 		for (String s : instance.manageFile().getStringList("GUI." + subGUI + ".items." + itemName + ".lore")) {
-			lore.add(ChatColor.translateAlternateColorCodes('&', s));
+			lore.add(this.instance.translateHexColorCodes(s));
 		}
 
 		meta.getPersistentDataContainer().set(this.instance.guiItem, PersistentDataType.STRING, "true");
@@ -329,7 +328,7 @@ public class UtilMethodes {
 					if (owner == null) {
 						// ZU MIETEN
 						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.sellShopSign.line" + i)
+							s.setLine(i - 1, instance.translateHexColorCodes(instance.manageFile().getString("Options.shop.sign.sellShopSign.line" + i)
 									.replaceAll("(?i)%" + "time" + "%", time)
 									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
 									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price)))
@@ -342,7 +341,7 @@ public class UtilMethodes {
 					} else {
 						// BEREITS VERMIETET
 						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.boughtShopSign.line" + i)
+							s.setLine(i - 1, instance.translateHexColorCodes(instance.manageFile().getString("Options.shop.sign.boughtShopSign.line" + i)
 									.replaceAll("(?i)%" + "time" + "%", time)
 									.replaceAll("(?i)%" + "owner" + "%", owner)
 									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
@@ -359,7 +358,7 @@ public class UtilMethodes {
 					if (owner == null) {
 						// ZU MIETEN
 						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.sellHotelSign.line" + i)
+							s.setLine(i - 1, instance.translateHexColorCodes(instance.manageFile().getString("Options.shop.sign.sellHotelSign.line" + i)
 									.replaceAll("(?i)%" + "time" + "%", time)
 									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
 									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price)))
@@ -371,7 +370,7 @@ public class UtilMethodes {
 					} else {
 						// BEREITS VERMIETET
 						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("Options.shop.sign.boughtHotelSign.line" + i)
+							s.setLine(i - 1, instance.translateHexColorCodes(instance.manageFile().getString("Options.shop.sign.boughtHotelSign.line" + i)
 									.replaceAll("(?i)%" + "time" + "%", time)
 									.replaceAll("(?i)%" + "owner" + "%", owner)
 									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
@@ -588,9 +587,9 @@ public class UtilMethodes {
 			
 			TextComponent component = new TextComponent(this.instance.getMessage(path + ".body")
 					.replaceAll("(?i)%" + "id" + "%", id)
-					.replaceAll("(?i)%" + "owner" + "%", handler.getOwnerName() == null ? ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("Messages." + path + ".notOwned")) : handler.getOwnerName()));
+					.replaceAll("(?i)%" + "owner" + "%", handler.getOwnerName() == null ? this.instance.translateHexColorCodes(this.instance.manageFile().getString("Messages." + path + ".notOwned")) : handler.getOwnerName()));
 			
-			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("Messages." + path + ".hover")))));
+			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(this.instance.translateHexColorCodes(this.instance.manageFile().getString("Messages." + path + ".hover")))));
 			component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + type.toString().toLowerCase() + " info " + id));
 
 			p.spigot().sendMessage(component);

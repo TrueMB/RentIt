@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
@@ -93,7 +92,7 @@ public class ShopFileManager {
 	public Inventory getShopInvAdmin(String shopname, boolean shopLore) {
 		YamlConfiguration cfg = this.getConfig();
 		
-		String title = ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("Options.vshop." + shopname + ".customName"));
+		String title = this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.vshop." + shopname + ".customName"));
 		Inventory inv = Bukkit.createInventory(null, 27, title);
 		
 		for(int i = 0; i < inv.getSize(); i++) {
@@ -106,7 +105,7 @@ public class ShopFileManager {
 					List<String> lore = new ArrayList<>();
 					
 					for(String s : this.instance.manageFile().getStringList("Options.shopSettings.shopItem.lore"))
-						lore.add(ChatColor.translateAlternateColorCodes('&', s
+						lore.add(this.instance.translateHexColorCodes(s
 								.replace("%buyAmount%", String.valueOf(costs)))
 								.replace("%sellAmount%", String.valueOf(costs / 100 * this.instance.manageFile().getInt("Options.shopSettings.sellPercent"))));
 					meta.setLore(lore);

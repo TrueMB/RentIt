@@ -3,7 +3,6 @@ package me.truemb.rentit.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -22,7 +21,7 @@ public class ShopItemManager {
 		if(lore == null)
 			lore = new ArrayList<>();
 
-		lore.add(ChatColor.translateAlternateColorCodes('&', plugin.manageFile().getString("GUI.ShopBuyAndSell.loreSellItemPrice"))
+		lore.add(plugin.translateHexColorCodes(plugin.manageFile().getString("GUI.ShopBuyAndSell.loreSellItemPrice"))
 				.replace("%price%", UtilitiesAPI.getHumanReadablePriceFromNumber(price)));
 		
 		NamespacedKey key = new NamespacedKey(plugin, "price");
@@ -73,7 +72,7 @@ public class ShopItemManager {
 		if(lore == null)
 			lore = new ArrayList<>();
 		
-		lore.set(lore.size() - 1, ChatColor.translateAlternateColorCodes('&', plugin.manageFile().getString("GUI.ShopBuyAndSell.loreSellItemPrice"))
+		lore.set(lore.size() - 1, plugin.translateHexColorCodes(plugin.manageFile().getString("GUI.ShopBuyAndSell.loreSellItemPrice"))
 				.replace("%price%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))); //USER DISPLAY PRICE
 		
 		NamespacedKey key = new NamespacedKey(plugin, "price");

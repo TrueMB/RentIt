@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
@@ -31,7 +30,7 @@ public class UserRentGUI {
 		if (rentHandler == null)
 			return null;
 		
-		Inventory inv = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser." + String.valueOf(type.equals(RentTypes.SHOP) ? "displayNameShopRentSettings" : "displayNameHotelRentSettings"))));
+		Inventory inv = Bukkit.createInventory(null, 9, instance.translateHexColorCodes(instance.manageFile().getString("GUI.shopUser." + String.valueOf(type.equals(RentTypes.SHOP) ? "displayNameShopRentSettings" : "displayNameHotelRentSettings"))));
 		
 		int schedulerActiveItemSlot = instance.manageFile().getInt("GUI.shopUser.items.schedulerActiveItem.slot") - 1;
 		int schedulerDeactiveItemSlot = instance.manageFile().getInt("GUI.shopUser.items.schedulerDeactiveItem.slot") - 1;
@@ -83,7 +82,7 @@ public class UserRentGUI {
 	    
 		List<String> lore = new ArrayList<>();
 		for(String s : instance.manageFile().getStringList("GUI.shopUser.items.shopInfoItem.lore")) {
-			lore.add(ChatColor.translateAlternateColorCodes('&', s)
+			lore.add(instance.translateHexColorCodes(s)
 					.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
 					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
 					.replaceAll("(?i)%" + "alias" + "%", alias)
@@ -100,7 +99,7 @@ public class UserRentGUI {
 		ItemStack infoItem = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.shopUser.items.shopInfoItem.type").toUpperCase()));
 	        
 	    ItemMeta infoItemMeta = infoItem.getItemMeta();
-	    infoItemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.shopUser.items.shopInfoItem.displayName")));
+	    infoItemMeta.setDisplayName(instance.translateHexColorCodes(instance.manageFile().getString("GUI.shopUser.items.shopInfoItem.displayName")));
 	    
 	    infoItemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
 		

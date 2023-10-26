@@ -422,8 +422,7 @@ public class Main extends JavaPlugin {
 	
 	//CONFIG
 	public String getMessage(String path) {
-		String s = this.manageFile().getString("Messages.prefix") + " " + this.manageFile().getString("Messages." + path);
-		return ChatColor.translateAlternateColorCodes('&', this.translateHexColorCodes(s));
+		return this.translateHexColorCodes(this.manageFile().getString("Messages.prefix") + " " + this.manageFile().getString("Messages." + path));
 	}
 
 	public String translateHexColorCodes(String message){

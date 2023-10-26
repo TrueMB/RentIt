@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
@@ -24,7 +23,7 @@ public class CategoryGUI {
 	public static Inventory getCategoryGUI(Main instance, RentTypes type) {
 
 		String typeS = StringUtils.capitalize(type.toString().toLowerCase());
-		Inventory inv = Bukkit.createInventory(null, instance.manageFile().getInt("GUI.category" + typeS + ".invSize"), ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.category" + typeS + ".displayName")));
+		Inventory inv = Bukkit.createInventory(null, instance.manageFile().getInt("GUI.category" + typeS + ".invSize"), instance.translateHexColorCodes(instance.manageFile().getString("GUI.category" + typeS + ".displayName")));
 
 		for (String itemPath : instance.manageFile().getConfigurationSection("GUI.category" + typeS + ".items").getKeys(false)) {
 			int slot = instance.manageFile().getInt("GUI.category" + typeS + ".items." + itemPath + ".slot") - 1;
@@ -39,7 +38,7 @@ public class CategoryGUI {
 
 		String typeS = StringUtils.capitalize(type.toString().toLowerCase());
 
-		Inventory inv = Bukkit.createInventory(null, 18, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.categorySub.displayName" + typeS)));
+		Inventory inv = Bukkit.createInventory(null, 18, instance.translateHexColorCodes(instance.manageFile().getString("GUI.categorySub.displayName" + typeS)));
 
 		HashMap<Integer, RentTypeHandler> hash = new HashMap<>();
 		if(instance.rentTypeHandlers.containsKey(type))
@@ -103,7 +102,7 @@ public class CategoryGUI {
 		
 		for(String s : instance.manageFile().getStringList("GUI.categorySub.items." + type.toString().toLowerCase() + "ListItem.lore")) {
 
-			lore.add(ChatColor.translateAlternateColorCodes('&', s)
+			lore.add(instance.translateHexColorCodes(s)
 					.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
 					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
 					.replaceAll("(?i)%" + "alias" + "%", alias)
@@ -116,7 +115,7 @@ public class CategoryGUI {
 		ItemStack item = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.categorySub.items." + type.toString().toLowerCase() + "ListItem.type").toUpperCase()));
 	        
 	    ItemMeta itemMeta = item.getItemMeta();
-	    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.categorySub.items." + type.toString().toLowerCase() + "ListItem.displayName")
+	    itemMeta.setDisplayName(instance.translateHexColorCodes(instance.manageFile().getString("GUI.categorySub.items." + type.toString().toLowerCase() + "ListItem.displayName")
 				.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
 				.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
 				.replaceAll("(?i)%" + "alias" + "%", alias)

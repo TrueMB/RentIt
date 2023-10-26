@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
@@ -28,7 +27,7 @@ public class SearchResultGUI {
 		if (playerHandler == null)
 			return null;
 		
-		Inventory inv = Bukkit.createInventory(null, 18, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.searchInventory.displayName")));
+		Inventory inv = Bukkit.createInventory(null, 18, instance.translateHexColorCodes(instance.manageFile().getString("GUI.searchInventory.displayName")));
 		
 		int size = ids.size();
 				
@@ -76,7 +75,7 @@ public class SearchResultGUI {
 		ItemStack item = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.searchInventory.items.shopItem.type").toUpperCase()));
 	        
 	    ItemMeta itemMeta = item.getItemMeta();
-	    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.searchInventory.items.shopItem.displayName")
+	    itemMeta.setDisplayName(instance.translateHexColorCodes(instance.manageFile().getString("GUI.searchInventory.items.shopItem.displayName")
 				.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
 				.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
 				.replaceAll("(?i)%" + "alias" + "%", alias)
@@ -87,7 +86,7 @@ public class SearchResultGUI {
 		List<String> lore = new ArrayList<>();
 		
 		for(String s : instance.manageFile().getStringList("GUI.searchInventory.items.shopItem.lore")) {
-			lore.add(ChatColor.translateAlternateColorCodes('&', s)
+			lore.add(instance.translateHexColorCodes(s)
 					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
 					.replaceAll("(?i)%" + "alias" + "%", alias)
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)

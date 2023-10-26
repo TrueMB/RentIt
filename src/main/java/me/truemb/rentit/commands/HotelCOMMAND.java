@@ -36,7 +36,6 @@ import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.PlayerManager;
 import me.truemb.rentit.utils.UtilitiesAPI;
-import net.md_5.bungee.api.ChatColor;
 
 public class HotelCOMMAND extends BukkitCommand {
 
@@ -438,7 +437,7 @@ public class HotelCOMMAND extends BukkitCommand {
 				BookMeta meta = (BookMeta) item.getItemMeta();
 				
 				for(String content : this.instance.manageFile().getStringList("Messages.hotelHelpBook")) {
-					meta.addPage(ChatColor.translateAlternateColorCodes('&', content.replace("\\n", "\n")));
+					meta.addPage(this.instance.translateHexColorCodes(content.replace("\\n", "\n")));
 				}
 
 				meta.setAuthor(this.instance.getDescription().getAuthors().get(0));
@@ -1275,7 +1274,7 @@ public class HotelCOMMAND extends BukkitCommand {
 	    int amount = this.instance.getMethodes().getRentTypesOfCategory(this.type, catId).size();
 
 		for (String s : this.instance.manageFile().getStringList("Messages.hotelCategoryInfo")) {
-			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
+			p.sendMessage(this.instance.translateHexColorCodes(s)
 					.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
 					.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
 					.replaceAll("(?i)%" + "price" + "%", String.valueOf(costs))
@@ -1313,7 +1312,7 @@ public class HotelCOMMAND extends BukkitCommand {
 		String owner = rentHandler.getOwnerName();
 
 		for (String s : this.instance.manageFile().getStringList("Messages.hotelInfo")) {
-			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s))
+			p.sendMessage(this.instance.translateHexColorCodes(s)
 					.replaceAll("(?i)%" + "hotelid" + "%", String.valueOf(hotelId))
 					.replaceAll("(?i)%" + "catId" + "%", String.valueOf(catHandler.getCatID()))
 					.replaceAll("(?i)%" + "alias" + "%", alias)
@@ -1334,7 +1333,7 @@ public class HotelCOMMAND extends BukkitCommand {
 
 	private void sendHelp(Player p, String path) {
 		for (String s : this.instance.manageFile().getStringList("Messages." + path)) {
-			p.sendMessage(ChatColor.translateAlternateColorCodes('&', this.instance.translateHexColorCodes(s)));
+			p.sendMessage(this.instance.translateHexColorCodes(s));
 		}
 	}
 	

@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
@@ -29,7 +28,7 @@ public class UserListGUI {
 		if (playerHandler == null)
 			return null;
 		
-		Inventory inv = Bukkit.createInventory(null, 18, ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.owningList.displayName" + StringUtils.capitalize(type.toString().toLowerCase()) + "List")));
+		Inventory inv = Bukkit.createInventory(null, 18, instance.translateHexColorCodes(instance.manageFile().getString("GUI.owningList.displayName" + StringUtils.capitalize(type.toString().toLowerCase()) + "List")));
 		
 		List<Integer> ids = playerHandler.getOwningList(type);
 		
@@ -79,7 +78,7 @@ public class UserListGUI {
 		ItemStack item = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI.owningList.items." + type.toString().toLowerCase() + "ListItem.type").toUpperCase()));
 	        
 	    ItemMeta itemMeta = item.getItemMeta();
-	    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', instance.manageFile().getString("GUI.owningList.items." + type.toString().toLowerCase() + "ListItem.displayName")
+	    itemMeta.setDisplayName(instance.translateHexColorCodes(instance.manageFile().getString("GUI.owningList.items." + type.toString().toLowerCase() + "ListItem.displayName")
 				.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
 				.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
 				.replaceAll("(?i)%" + "alias" + "%", alias)
@@ -90,7 +89,7 @@ public class UserListGUI {
 		List<String> lore = new ArrayList<>();
 		
 		for(String s : instance.manageFile().getStringList("GUI.owningList.items." + type.toString().toLowerCase() + "ListItem.lore")) {
-			lore.add(ChatColor.translateAlternateColorCodes('&', s)
+			lore.add(instance.translateHexColorCodes(s)
 					.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(id))
 					.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(id))
 					.replaceAll("(?i)%" + "alias" + "%", alias)

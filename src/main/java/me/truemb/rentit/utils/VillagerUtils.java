@@ -3,7 +3,6 @@ package me.truemb.rentit.utils;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
@@ -68,7 +67,7 @@ public class VillagerUtils {
 		//v.setMetadata("shopname", new FixedMetadataValue(this.instance, type));
 		
 		
-		String customName = ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName : this.instance.manageFile().getString("Options.displayNameColor") + playerName);
+		String customName = this.instance.translateHexColorCodes(this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName : this.instance.manageFile().getString("Options.displayNameColor") + playerName);
 		
 		v.setCustomName(customName);
 		v.setCustomNameVisible(true);

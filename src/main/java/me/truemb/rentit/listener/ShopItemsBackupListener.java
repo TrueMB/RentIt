@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,7 +34,7 @@ public class ShopItemsBackupListener implements Listener {
 		Player p = (Player) e.getWhoClicked();
 		UUID uuid = p.getUniqueId();
 		
-		if(e.getView().getTitle() == null || !e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.rollback.displayName"))))
+		if(e.getView().getTitle() == null || !e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.rollback.displayName"))))
 			return;
 		
 		ItemStack item = e.getCurrentItem();
@@ -106,7 +105,7 @@ public class ShopItemsBackupListener implements Listener {
 	@EventHandler
 	public void onRollbackGUIDrag(InventoryDragEvent e) {
 		
-		if(e.getView().getTitle() == null || !e.getView().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.rollback.displayName"))))
+		if(e.getView().getTitle() == null || !e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.rollback.displayName"))))
 			return;
 		
 		e.setCancelled(true);
