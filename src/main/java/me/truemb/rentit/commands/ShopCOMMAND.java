@@ -568,7 +568,7 @@ public class ShopCOMMAND extends BukkitCommand {
 								permissions = permissions.substring(2);
 
 								p.sendMessage(instance.getMessage("userPermission")
-										.replaceAll("(?i)%" + "player" + "%", ingameName)
+										.replaceAll("(?i)%" + "player" + "%", ingameName != null ? ingameName : "")
 										.replaceAll("(?i)%" + "permissions" + "%", permissions));
 							}
 							return;
@@ -1476,7 +1476,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					p.sendMessage(this.instance.getMessage("notInShop"));
 					return true;
 				}
-
+				
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 
 				if (rentHandler == null) {
@@ -1624,12 +1624,13 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				if (Material.matchMaterial(args[1].toUpperCase()) == null) {
+				Material m = Material.getMaterial(args[1].toUpperCase());
+
+				if (m == null || m == Material.AIR) {
 					p.sendMessage(this.instance.getMessage("notAMaterial"));
 					return true;
 				}
-
-				Material m = Material.getMaterial(args[1].toUpperCase());
+				
 				double price = 0D;
 
 				try {
