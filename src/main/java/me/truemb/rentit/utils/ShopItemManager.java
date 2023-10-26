@@ -1,7 +1,5 @@
 package me.truemb.rentit.utils;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +15,6 @@ import me.truemb.rentit.main.Main;
 public class ShopItemManager {
 	
 	public static ItemStack createShopItem(Main plugin, ItemStack item, int shopId, double price) {
-
-		NumberFormat formatter = new DecimalFormat("#0.00"); 
 		
 		ItemMeta meta = item.getItemMeta();
 		List<String> lore = meta.getLore();
@@ -27,7 +23,7 @@ public class ShopItemManager {
 			lore = new ArrayList<>();
 
 		lore.add(ChatColor.translateAlternateColorCodes('&', plugin.manageFile().getString("GUI.ShopBuyAndSell.loreSellItemPrice"))
-				.replace("%price%", String.valueOf(formatter.format(price))));
+				.replace("%price%", UtilitiesAPI.getHumanReadablePriceFromNumber(price)));
 		
 		NamespacedKey key = new NamespacedKey(plugin, "price");
 		meta.getPersistentDataContainer().set(key, PersistentDataType.DOUBLE, price);
@@ -78,7 +74,7 @@ public class ShopItemManager {
 			lore = new ArrayList<>();
 		
 		lore.set(lore.size() - 1, ChatColor.translateAlternateColorCodes('&', plugin.manageFile().getString("GUI.ShopBuyAndSell.loreSellItemPrice"))
-				.replace("%price%", String.valueOf(UtilitiesAPI.getHumanReadablePriceFromNumber(price)))); //USER DISPLAY PRICE
+				.replace("%price%", UtilitiesAPI.getHumanReadablePriceFromNumber(price))); //USER DISPLAY PRICE
 		
 		NamespacedKey key = new NamespacedKey(plugin, "price");
 		PersistentDataContainer container = meta.getPersistentDataContainer();
