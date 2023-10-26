@@ -661,6 +661,7 @@ Messages:
   shopNoItemInMainHand: '&cYou got no Item in your Hand.'
   shopItemAdded: '&6You added &f%amount%x %itemname% &6for &f%price% &6to your Shop.'
   shopItemRemoved: '&6You removed &f%amount%x %itemname% &6from Shop.'
+  shopPriceInvalid: '&cThe price is invalid.'
   shopAlreadyBought: '&cThe Shop is already owned.'
   shopNotBought: '&cThe Shop wasnt bought yet.'
   notInShop: '&cYou are in no Shop.'

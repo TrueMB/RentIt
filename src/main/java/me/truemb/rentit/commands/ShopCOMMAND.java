@@ -2058,6 +2058,11 @@ public class ShopCOMMAND extends BukkitCommand {
 			}
 		}
 		
+		if(price < 0) {
+			p.sendMessage(this.instance.getMessage("shopPriceInvalid"));
+			return;
+		}
+		
 		item = ShopItemManager.createShopItem(this.instance, item, rentHandler.getID(), price); // UPDATED ITEM WITH PRICE IN IT
 
 		boolean multiSite = catHandler.getMaxSite() > 1;
