@@ -206,11 +206,17 @@ public class AreaFileManager {
 	public BlockVector3 getMinBlockpoint(RentTypes type, int id) {
 		String path = type.toString().toUpperCase() + "." + id;
 		
+		if(!this.config.isSet(path))
+			return null;
+		
 		return BlockVector3.at(this.config.getInt(path + ".Min.X"), this.config.getInt(path + ".Min.Y"), this.config.getInt(path + ".Min.Z"));
 	}
 	
 	public BlockVector3 getMaxBlockpoint(RentTypes type, int id) {
 		String path = type.toString().toUpperCase() + "." + id;
+		
+		if(!this.config.isSet(path))
+			return null;
 		
 		return BlockVector3.at(this.config.getInt(path + ".Max.X"), this.config.getInt(path + ".Max.Y"), this.config.getInt(path + ".Max.Z"));
 	}

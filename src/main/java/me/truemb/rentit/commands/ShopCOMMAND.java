@@ -333,47 +333,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
-					if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
-						if (this.instance.getNpcUtils().isNPCSpawned(shopId)) {
-							// SHOP IS OWNED AND NPC SPAWNED
-							this.instance.getNpcUtils().destroyNPC(shopId);
-							this.instance.getNPCFileManager().removeNPCinConfig(shopId);
-						}
-					}else {
-						if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
-							this.instance.getVillagerUtils().destroyVillager(shopId);
-							this.instance.getNPCFileManager().removeNPCinConfig(shopId);
-						}
-					}
-				}
-
-				UUID ownerUUID = rentHandler.getOwnerUUID();
-				
-				if(ownerUUID != null)
-					this.instance.getShopCacheFileManager().createShopBackup(ownerUUID, shopId);
-
-				BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
-				BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
-				this.instance.getBackupManager().paste(this.type, shopId, min, max, p.getWorld(), false);
-				this.instance.getBackupManager().deleteSchem(this.type, shopId);
-				this.instance.getMethodes().deleteType(this.type, shopId);
-				this.instance.getMethodes().deleteArea(p, this.type, shopId);
-				this.instance.getMethodes().deleteSigns(this.type, shopId);
-				this.instance.getMethodes().clearPlayersFromRegion(this.type, shopId, p.getWorld());
-
-				this.instance.getAreaFileManager().unsetDoorClosed(this.type, shopId);
-				this.instance.getDoorFileManager().clearDoors(this.type, shopId);
-				
-				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
-				
-			    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
-			    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-
-				p.sendMessage(this.instance.getMessage("shopDeleted")
-						.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
-						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-						.replaceAll("(?i)%" + "alias" + "%", alias));
+				this.deleteShop(p, rentHandler);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("info")) {
@@ -733,6 +693,35 @@ public class ShopCOMMAND extends BukkitCommand {
 						}
 					}
 				});
+				return true;
+
+			} else if (args[0].equalsIgnoreCase("delete")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "delete")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "delete")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+
+				int shopId = Integer.parseInt(args[1]);
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+				
+				if (shopId < 0) {
+					// PLAYER NOT IN SHOP AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("shopIdNotValid"));
+					return true;
+				}
+				
+				this.deleteShop(p, rentHandler);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("catInfo")) {
@@ -1965,6 +1954,56 @@ public class ShopCOMMAND extends BukkitCommand {
 			this.sendHelp(p, "shopUserHelp");
 
 		return true;
+	}
+
+	private void deleteShop(Player p, RentTypeHandler rentHandler) {
+
+		int shopId = rentHandler.getID();
+		
+		if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
+			if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
+				if (this.instance.getNpcUtils().isNPCSpawned(shopId)) {
+					// SHOP IS OWNED AND NPC SPAWNED
+					this.instance.getNpcUtils().destroyNPC(shopId);
+					this.instance.getNPCFileManager().removeNPCinConfig(shopId);
+				}
+			}else {
+				if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
+					this.instance.getVillagerUtils().destroyVillager(shopId);
+					this.instance.getNPCFileManager().removeNPCinConfig(shopId);
+				}
+			}
+		}
+
+		UUID ownerUUID = rentHandler.getOwnerUUID();
+		
+		if(ownerUUID != null)
+			this.instance.getShopCacheFileManager().createShopBackup(ownerUUID, shopId);
+
+		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, shopId);
+		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, shopId);
+		if(min != null && max != null)
+			this.instance.getBackupManager().paste(this.type, shopId, min, max, p.getWorld(), false);
+		
+		this.instance.getBackupManager().deleteSchem(this.type, shopId);
+		this.instance.getMethodes().deleteType(this.type, shopId);
+		this.instance.getMethodes().deleteArea(p, this.type, shopId);
+		this.instance.getMethodes().deleteSigns(this.type, shopId);
+		this.instance.getMethodes().clearPlayersFromRegion(this.type, shopId, p.getWorld());
+
+		this.instance.getAreaFileManager().unsetDoorClosed(this.type, shopId);
+		this.instance.getDoorFileManager().clearDoors(this.type, shopId);
+		
+		CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+		
+	    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+	    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+
+		p.sendMessage(this.instance.getMessage("shopDeleted")
+				.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+				.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+				.replaceAll("(?i)%" + "alias" + "%", alias));
+		
 	}
 
 	private void sendHelp(Player p, String path) {

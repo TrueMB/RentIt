@@ -68,7 +68,7 @@ public class ShopCacheFileManager {
 			pos++;
 		
 		for(int i = 0; i < chests.size(); i++) {
-			cfg.set(basicPath + pos, InventoryUtils.itemStackArrayToBase64(chests.get(i).getAllItems().toArray(ItemStack[]::new)));
+			cfg.set(basicPath + pos, InventoryUtils.itemStackArrayToBase64((ItemStack[]) chests.get(i).getAllItems().toArray()));
 			pos++;
 		}
 		

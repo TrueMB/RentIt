@@ -8,6 +8,7 @@ import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AdvancedChestsChest extends SupportedChest {
     private final AdvancedChest<?, ?> chest;
@@ -44,7 +45,7 @@ public class AdvancedChestsChest extends SupportedChest {
                         .flatMap((chestPage) -> Arrays.stream(chestPage.getItems())
                                 .filter(item -> item instanceof ItemStack)
                                 .map(o -> (ItemStack) o))
-                        .toList();
+                        .collect(Collectors.toList());
     }
 
     @Override

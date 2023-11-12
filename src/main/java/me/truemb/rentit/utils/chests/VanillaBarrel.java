@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class VanillaBarrel extends SupportedChest {
     private final Inventory inventory;
@@ -52,6 +53,6 @@ public class VanillaBarrel extends SupportedChest {
 
     @Override
     public List<ItemStack> getAllItems() {
-        return Arrays.stream(this.inventory.getContents()).toList();
+        return Arrays.stream(this.inventory.getContents()).collect(Collectors.toList());
     }
 }

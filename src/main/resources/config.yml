@@ -633,13 +633,14 @@ Messages:
   doorCommandDisabled: '&cSorry, but this command doesnt work here.'
   maxExtendedReached: '&cSorry, you cant extend the rent any farther.'
   #Shop Messages
-  shopDatabaseEntryMissing: '&cCouldnt find Shop in the Database. Maybe DB Reset but not the Plugin folder?'
+  shopDatabaseEntryMissing: '&cCouldn''t find Shop in the Database. Maybe DB Reset but not the Plugin folder?'
   shopAreaError: '&4ERROR. &cNo WorldEdit Selection.'
   shopAreaCreated: '&aA Shop with the ID &f%alias% &awas created.'
   shopCitizenCreated: '&aYou set the NPC for the ShopID &f%alias%&a.'
   shopOwnerChanged: '&aShopowner was changed to &f%player% &afrom the Shop &f%alias%&a.'
   shopRentTimeChanged: '&aRent Time was changed to &f%time% &afor Category &f%catAlias%&a.'
   shopPriceChanged: '&aRent Price was changed to &f%price% &afor Category &f%catAlias%&a.'
+  shopIdNotValid: '&4ERROR. &cThe Shop ID wasn''t found'
   shopSizeNotValid: '&4ERROR. &cThe Shop Size hast to be multiplide in 9. (MAX: 54 or 45 if multiple sites)'
   shopSizeNotValidForMultipleSites: '&4ERROR. &cThe Shop can be max 45. The last row is for the skipping the site'
   shopMaxSiteInvalid: '&4ERROR. &cThe Shop max Sites needs to be at least one.'
@@ -898,4 +899,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 20
+ConfigVersion: 21
