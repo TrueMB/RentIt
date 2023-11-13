@@ -788,7 +788,7 @@ Messages:
   shopList:
     header: '&6&m                  &6[ &f&lSHOP List &6]&6&m                  '
     body: '&6ID&7: &f%id% &7- &6Owner&7: &f%owner%'
-    footer: '&6&m                                                  '
+    footer: '&6&m               &6[ &f%site%&7/&f%siteMax% &6]&6&m               '
     hover: '&6Click for more Information'
     couldntFind: '&cCouldn''t find any Shops.'
     notOwned: 'Not owned'
@@ -893,7 +893,7 @@ Messages:
   hotelList:
     header: '&6&m          &6[ &f&lHOTEL List &6]&6&m          '
     body: '&6ID&7: &f%id% &7- &6Owner&7: &f%owner%'
-    footer: '&6&m                                                  '
+    footer: '&6&m               &6[ &f%site%&7/&f%siteMax% &6]&6&m               '
     hover: '&6Click for more Information'
     couldntFind: '&cCouldn''t find any Hotels.'
     notOwned: 'Not owned'

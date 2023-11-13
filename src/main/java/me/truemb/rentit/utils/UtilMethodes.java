@@ -575,11 +575,16 @@ public class UtilMethodes {
 		int start = end - 10;
 		
 		int size = hash.size();
+		int siteMax = hash.size() / 10;
+		if(siteMax <= 0)
+			siteMax = 1;
 		
 		if(end > size) end = size;
 		
 		
-		p.sendMessage(this.instance.getMessage(path + ".header"));
+		p.sendMessage(this.instance.getMessage(path + ".header")
+				.replaceAll("(?i)%" + "site" + "%", String.valueOf(site))
+				.replaceAll("(?i)%" + "siteMax" + "%", String.valueOf(siteMax)));
 		
 		for(int i = start; i < end; i++) {
 			RentTypeHandler handler = hash.get(hash.keySet().toArray()[i]);
@@ -596,7 +601,9 @@ public class UtilMethodes {
 		}
 		
 
-		p.sendMessage(this.instance.getMessage(path + ".footer"));
+		p.sendMessage(this.instance.getMessage(path + ".footer")
+				.replaceAll("(?i)%" + "site" + "%", String.valueOf(site))
+				.replaceAll("(?i)%" + "siteMax" + "%", String.valueOf(siteMax)));
 	}
 
 	public void removeItemFromPlayer(Player p, ItemStack item) {
