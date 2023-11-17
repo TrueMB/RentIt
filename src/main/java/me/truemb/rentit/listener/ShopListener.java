@@ -406,7 +406,7 @@ public class ShopListener implements Listener {
 			if (lastItem != null)
 				lastInv.setItem(lastItemSlot, null);
 
-			this.instance.getShopsInvSQL().updateInventories(rentHandler.getID(), ShopInventoryType.SELL);
+			//this.instance.getShopsInvSQL().updateInventories(rentHandler.getID(), type);
 		}
 		
 		if (multiSite && counter <= 1 && last > 1) {
@@ -416,7 +416,7 @@ public class ShopListener implements Listener {
 				this.instance.getShopInvBuilder(p.getUniqueId()).beforeSite();
 				
 				rentHandler.setInventory(type, last, null);
-				this.instance.getShopsInvSQL().updateInventories(rentHandler.getID(), ShopInventoryType.SELL);
+				//this.instance.getShopsInvSQL().updateInventories(rentHandler.getID(), type);
 			}
 			
 			if (last - 1 >= 1) {
