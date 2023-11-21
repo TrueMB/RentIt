@@ -206,6 +206,8 @@ Permissions:
   sign: 'rentit.sign'
   #Admin Shop Commands
   shop: 'rentit.shop'
+  #Gives you access to the adminshop admin commands. The Player still needs the sellitem permission f.e. 
+  adminshop: 'rentit.adminshop'
   #Build everythere
   build: 'rentit.build'
   #Teleport, even if feature is disabled
@@ -633,6 +635,7 @@ Messages:
   doorCommandDisabled: '&cSorry, but this command doesnt work here.'
   maxExtendedReached: '&cSorry, you cant extend the rent any farther.'
   #Shop Messages
+  adminshopPerm: '&cYou got no Permissions for this Admin Shop.'
   shopDatabaseEntryMissing: '&cCouldn''t find Shop in the Database. Maybe DB Reset but not the Plugin folder?'
   shopAreaError: '&4ERROR. &cNo WorldEdit Selection.'
   shopAreaCreated: '&aA Shop with the ID &f%alias% &awas created.'
