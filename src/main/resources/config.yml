@@ -799,6 +799,7 @@ Messages:
   hotelOwnerChanged: '&aHotelroom owner was changed to &f%player% &afrom the Hotelroom &f%alias%&a.'
   hotelRentTimeChanged: '&aRent Time was changed to &f%time% &afor Category &f%catAlias%&a.'
   hotelPriceChanged: '&aRent Price was changed to &f%price% &afor Category &f%catAlias%&a.'
+  hotelIdNotValid: '&4ERROR. &cThe Hotelroom ID wasn''t found'
   hotelReseted: '&aThe HotelroomID &f%alias% &awas resetet.'
   hotelDeleted: '&aThe HotelroomID &f%alias% &awas deleted.'
   hotelSignCreated: '&aThe Hotelroom Sign for the ID &f%alias% &awas created.'
