@@ -86,6 +86,28 @@ public class HotelsSQL {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		sql.queryUpdate("DELETE FROM " + sql.t_hotels + " WHERE ID='" + hotelId + "'");
 	}
+	
+	public void getNextHotelId(Consumer<Integer> consumer){
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		sql.prepareStatement("SELECT " + (sql.isSqlLite() ? "I" : "") + "IF( EXISTS(SELECT * FROM " + sql.t_hotels + " WHERE ID='1'), (SELECT t1.id+1 as lowestId FROM " + sql.t_hotels + " AS t1 LEFT JOIN " + sql.t_hotels + " AS t2 ON t1.id+1 = t2.id WHERE t2.id IS NULL LIMIT 1), 1) as lowestId LIMIT 1;", new Consumer<ResultSet>() {
+
+			@Override
+			public void accept(ResultSet rs) {
+
+				try {
+					int shopId = 1;
+					while (rs.next()) {
+						shopId = rs.getInt("lowestId");
+						break;
+					}
+					
+					consumer.accept(shopId);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
 	public void setupOwningIds(PlayerHandler playerHandler) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
@@ -171,7 +193,7 @@ public class HotelsSQL {
 								
 						boolean autoPayment = rs.getInt("autoPayment") == 1 ? true : false;
 						
-						RentTypeHandler handler = new RentTypeHandler(instance, type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment);
+						RentTypeHandler handler = new RentTypeHandler(instance, type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment, false);
 						handler.setAlias(alias);
 						
 						HashMap<Integer, RentTypeHandler> hash = new HashMap<>();

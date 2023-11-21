@@ -636,6 +636,7 @@ Messages:
   shopDatabaseEntryMissing: '&cCouldn''t find Shop in the Database. Maybe DB Reset but not the Plugin folder?'
   shopAreaError: '&4ERROR. &cNo WorldEdit Selection.'
   shopAreaCreated: '&aA Shop with the ID &f%alias% &awas created.'
+  shopAdminAreaCreated: '&aAn Admin Shop with the ID &f%alias% &awas created.'
   shopCitizenCreated: '&aYou set the NPC for the ShopID &f%alias%&a.'
   shopOwnerChanged: '&aShopowner was changed to &f%player% &afrom the Shop &f%alias%&a.'
   shopRentTimeChanged: '&aRent Time was changed to &f%time% &afor Category &f%catAlias%&a.'
@@ -900,4 +901,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 21
+ConfigVersion: 22

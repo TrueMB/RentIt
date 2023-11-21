@@ -35,16 +35,23 @@ public class ShopsSQL {
 		this.instance = plugin;
 		AsyncSQL sql = this.instance.getAsyncSQL();
 
-		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shops + " (ID INT PRIMARY KEY, alias VARCHAR(100), ownerUUID VARCHAR(50), ownerName VARCHAR(16), catID INT, nextPayment TIMESTAMP DEFAULT CURRENT_TIMESTAMP, autoPayment TINYINT)");
+		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_shops + " (ID INT PRIMARY KEY, alias VARCHAR(100), ownerUUID VARCHAR(50), ownerName VARCHAR(16), catID INT, nextPayment TIMESTAMP DEFAULT CURRENT_TIMESTAMP, autoPayment TINYINT, admin TINYINT)");
 		
 		//UPDATES
 		sql.addColumn(sql.t_shops, "alias", "VARCHAR(100)");
+		sql.addColumn(sql.t_shops, "admin", "TINYINT"); //Version 2.8.2
 	}
 	
 	public void createShop(int id, int catID){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		sql.queryUpdate("INSERT INTO " + sql.t_shops + " (ID, ownerUUID, ownerName, catID, autoPayment) VALUES ('" + String.valueOf(id) + "','" + null + "', '" + null + "', '" + catID + "', '" + 1 + "')");
+	}
+	
+	public void createAdminShop(int id, int catID){
+		
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		sql.queryUpdate("INSERT INTO " + sql.t_shops + " (ID, ownerUUID, ownerName, catID, autoPayment, admin) VALUES ('" + String.valueOf(id) + "','" + null + "', '" + null + "', '" + catID + "', '" + 1 + "', '" + 1 + "')");
 	}
 
 	public void setOwner(int shopId, UUID ownerUUID, String ownerName, boolean autoPayment){
@@ -87,6 +94,28 @@ public class ShopsSQL {
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		sql.queryUpdate("DELETE FROM " + sql.t_shops + " WHERE ID='" + shopId + "'");
+	}
+	
+	public void getNextShopId(Consumer<Integer> consumer){
+		AsyncSQL sql = this.instance.getAsyncSQL();
+		sql.prepareStatement("SELECT " + (sql.isSqlLite() ? "I" : "") + "IF( EXISTS(SELECT * FROM " + sql.t_shops + " WHERE ID='1'), (SELECT t1.id+1 as lowestId FROM " + sql.t_shops + " AS t1 LEFT JOIN " + sql.t_shops + " AS t2 ON t1.id+1 = t2.id WHERE t2.id IS NULL LIMIT 1), 1) as lowestId LIMIT 1;", new Consumer<ResultSet>() {
+
+			@Override
+			public void accept(ResultSet rs) {
+
+				try {
+					int shopId = 1;
+					while (rs.next()) {
+						shopId = rs.getInt("lowestId");
+						break;
+					}
+					
+					consumer.accept(shopId);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	public void setupOwningIds(PlayerHandler playerHandler) {
@@ -171,7 +200,7 @@ public class ShopsSQL {
 								
 						boolean autoPayment = rs.getInt("autoPayment") == 1 ? true : false;
 						
-						RentTypeHandler handler = new RentTypeHandler(instance, type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment);
+						RentTypeHandler handler = new RentTypeHandler(instance, type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment, false);
 						handler.setAlias(alias);
 						
 						String prefix = ownerUUID != null ? instance.getPermissionsAPI().getPrefix(ownerUUID) : "";

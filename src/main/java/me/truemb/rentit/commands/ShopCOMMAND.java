@@ -658,41 +658,74 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 				
-				AsyncSQL sql = this.instance.getAsyncSQL();
-				sql.prepareStatement("SELECT " + (sql.isSqlLite() ? "I" : "") + "IF( EXISTS(SELECT * FROM " + sql.t_shops + " WHERE ID='1'), (SELECT t1.id+1 as lowestId FROM " + sql.t_shops + " AS t1 LEFT JOIN " + sql.t_shops + " AS t2 ON t1.id+1 = t2.id WHERE t2.id IS NULL LIMIT 1), 1) as lowestId LIMIT 1;", new Consumer<ResultSet>() {
+				this.instance.getShopsSQL().getNextShopId((shopId) -> {
+					boolean success = this.instance.getMethodes().createArea(p, this.type, shopId);
+					RentTypeHandler rentHandler = this.instance.getMethodes().createType(this.type, shopId, catID, false);
 
-					@Override
-					public void accept(ResultSet otherRS) {
-						try {
-							int shopId = 1;
-							while (otherRS.next()) {
-								shopId = otherRS.getInt("lowestId");
-								break;
-							}
+					if (success) {
+						// CREATED
+					    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+					    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					    
+						sender.sendMessage(this.instance.getMessage("shopAreaCreated")
+								.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+								.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+								.replaceAll("(?i)%" + "alias" + "%", alias));
 
-							boolean success = instance.getMethodes().createArea(p, type, shopId);
-							RentTypeHandler rentHandler = instance.getMethodes().createType(type, shopId, catID);
-
-							if (success) {
-								// CREATED
-							    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
-							    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-							    
-								sender.sendMessage(instance.getMessage("shopAreaCreated")
-										.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
-										.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-										.replaceAll("(?i)%" + "alias" + "%", alias));
-
-							} else {
-								// NOTE CREATED
-								sender.sendMessage(instance.getMessage("shopAreaError"));
-							}
-							return;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
+					} else {
+						// NOTE CREATED
+						sender.sendMessage(this.instance.getMessage("shopAreaError"));
 					}
 				});
+				
+				return true;
+
+			} else if (args[0].equalsIgnoreCase("setAdminArea")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setadminarea")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setadminarea")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+
+				int catID = Integer.parseInt(args[1]);
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, catID);
+
+				if (catHandler == null) {
+					p.sendMessage(this.instance.getMessage("categoryError"));
+					return true;
+				}
+				
+				this.instance.getShopsSQL().getNextShopId((shopId) -> {
+					boolean success = this.instance.getMethodes().createArea(p, this.type, shopId);
+					RentTypeHandler rentHandler = this.instance.getMethodes().createType(this.type, shopId, catID, true);
+
+					if (success) {
+						// CREATED
+					    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+					    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					    
+						sender.sendMessage(this.instance.getMessage("shopAdminAreaCreated")
+								.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+								.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+								.replaceAll("(?i)%" + "alias" + "%", alias));
+
+					} else {
+						// NOTE CREATED
+						sender.sendMessage(this.instance.getMessage("shopAreaError"));
+					}
+				});
+				
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("delete")) {

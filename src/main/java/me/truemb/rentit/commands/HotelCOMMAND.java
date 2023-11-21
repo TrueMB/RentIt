@@ -458,42 +458,25 @@ public class HotelCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				AsyncSQL sql = this.instance.getAsyncSQL();
-				                                //NEEDS TO ADD ONE "I" FOR SQLLITE
-				sql.prepareStatement("SELECT " + (sql.isSqlLite() ? "I" : "") + "IF( EXISTS(SELECT * FROM " + sql.t_hotels + " WHERE ID='1'), (SELECT t1.id+1 as lowestId FROM " + sql.t_hotels + " AS t1 LEFT JOIN " + sql.t_hotels + " AS t2 ON t1.id+1 = t2.id WHERE t2.id IS NULL LIMIT 1), 1) as lowestId LIMIT 1;", new Consumer<ResultSet>() {
-
-					@Override
-					public void accept(ResultSet otherRS) {
-						try {
-							int hotelId = 1;
-							
-							while (otherRS.next()) {
-								hotelId = otherRS.getInt("lowestId");
-								break;
-							}
-
-							boolean success = instance.getMethodes().createArea(p, type, hotelId);
-							instance.getMethodes().createType(type, hotelId, catID);
-							if (success) {
-								// CREATED
-								RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(type, hotelId);
-								CategoryHandler catHandler = instance.getMethodes().getCategory(type, rentHandler.getCatID());
-								
-							    String alias = rentHandler != null & rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
-							    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-							    
-								sender.sendMessage(instance.getMessage("hotelAreaCreated")
-										.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
-										.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-										.replaceAll("(?i)%" + "alias" + "%", alias));
-							} else {
-								// NOTE CREATED
-								sender.sendMessage(instance.getMessage("hotelAreaError"));
-							}
-							return;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
+				this.instance.getHotelsSQL().getNextHotelId((hotelId) -> {
+					
+					boolean success = this.instance.getMethodes().createArea(p, this.type, hotelId);
+					this.instance.getMethodes().createType(this.type, hotelId, catID, false);
+					
+					if (success) {
+						// CREATED
+						RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
+						
+					    String alias = rentHandler != null & rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+					    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					    
+						sender.sendMessage(this.instance.getMessage("hotelAreaCreated")
+								.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+								.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+								.replaceAll("(?i)%" + "alias" + "%", alias));
+					} else {
+						// NOTE CREATED
+						sender.sendMessage(instance.getMessage("hotelAreaError"));
 					}
 				});
 				return true;

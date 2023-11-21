@@ -251,10 +251,13 @@ public class UtilMethodes {
 	}
 	// ==========================================================
 
-	public RentTypeHandler createType(RentTypes type, int id, int catID) {
+	public RentTypeHandler createType(RentTypes type, int id, int catID, boolean admin) {
 
 		if (type.equals(RentTypes.SHOP)) {
-			instance.getShopsSQL().createShop(id, catID);
+			if(admin)
+				instance.getShopsSQL().createAdminShop(id, catID);
+			else
+				instance.getShopsSQL().createShop(id, catID);
 		} else if (type.equals(RentTypes.HOTEL)) {
 			instance.getHotelsSQL().createHotel(id, catID);
 		}
@@ -264,7 +267,7 @@ public class UtilMethodes {
 		if (this.instance.rentTypeHandlers.containsKey(type))
 			typeHash = this.instance.rentTypeHandlers.get(type);
 
-		RentTypeHandler typeHandler = new RentTypeHandler(this.instance, type, id, catID, null, null, new Timestamp(System.currentTimeMillis()), true);
+		RentTypeHandler typeHandler = new RentTypeHandler(this.instance, type, id, catID, null, null, new Timestamp(System.currentTimeMillis()), true, admin);
 		typeHash.put(id, typeHandler);
 
 		this.instance.rentTypeHandlers.put(type, typeHash);
