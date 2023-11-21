@@ -189,7 +189,7 @@ public class UtilMethodes {
 
 		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
 
-		return typeHash.values().stream().filter(rentType -> !rentType.isAutoPayment() && rentType.getOwnerUUID() != null && !rentType.isReminded() && rentType.getReminder() != null && rentType.getReminder().getTime() <= System.currentTimeMillis()).collect(Collectors.toList());
+		return typeHash.values().stream().filter(rentType -> !rentType.isAutoPayment() && rentType.getOwnerUUID() != null && !rentType.isAdmin() && !rentType.isReminded() && rentType.getReminder() != null && rentType.getReminder().getTime() <= System.currentTimeMillis()).collect(Collectors.toList());
 	}
 	
 	public Collection<RentTypeHandler> getPaymentsOfRentTypes(RentTypes type) {
@@ -199,7 +199,7 @@ public class UtilMethodes {
 
 		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
 
-		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() != null && rentType.getNextPayment() != null && rentType.getNextPayment().getTime() <= System.currentTimeMillis()).collect(Collectors.toList());
+		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() != null && rentType.getNextPayment() != null && !rentType.isAdmin() && rentType.getNextPayment().getTime() <= System.currentTimeMillis()).collect(Collectors.toList());
 	}
 
 	public Collection<RentTypeHandler> getFreeRentTypesOfCategory(RentTypes type, int catId) {
@@ -209,7 +209,7 @@ public class UtilMethodes {
 
 		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
 		
-		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() == null && rentType.getCatID() == catId).collect(Collectors.toList());
+		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() == null && !rentType.isAdmin() && rentType.getCatID() == catId).collect(Collectors.toList());
 	}
 	
 	public Collection<RentTypeHandler> getRentTypesOfCategory(RentTypes type, int catId) {
@@ -229,7 +229,7 @@ public class UtilMethodes {
 
 		HashMap<Integer, RentTypeHandler> typeHash = this.instance.rentTypeHandlers.get(type);
 
-		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() == null).collect(Collectors.toList());
+		return typeHash.values().stream().filter(rentType -> rentType.getOwnerUUID() == null && !rentType.isAdmin()).collect(Collectors.toList());
 	}
 	
 	public CategoryHandler getCategory(RentTypes type, Integer id) {
