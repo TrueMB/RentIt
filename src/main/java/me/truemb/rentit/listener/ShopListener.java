@@ -275,8 +275,7 @@ public class ShopListener implements Listener {
 						targetItemAmount += items.getAmount();
 
 				if (targetItemAmount <= 0) {
-					p.sendMessage(this.instance.getMessage("notEnoughOwningItems").replaceAll("(?i)%" + "amount" + "%",
-							String.valueOf(1)));
+					p.sendMessage(this.instance.getMessage("notEnoughOwningItems").replaceAll("(?i)%" + "amount" + "%", String.valueOf(1)));
 					return;
 				}
 

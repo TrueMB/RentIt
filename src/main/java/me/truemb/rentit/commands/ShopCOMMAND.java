@@ -146,37 +146,50 @@ public class ShopCOMMAND extends BukkitCommand {
 						p.sendMessage(this.instance.getMessage("categoryError"));
 						return true;
 					}
-					
-		        	boolean allowUsersToMoveNPC = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) 
-		        			? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) : false;
-		        	
-					if((rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) || !allowUsersToMoveNPC) && !this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setnpc")) {
-						p.sendMessage(this.instance.getMessage("perm"));
-						return true;
+
+					if(rentHandler.isAdmin()) {
+						if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+							p.sendMessage(this.instance.getMessage("adminshopPerm"));
+							return true;
+						}
+					}else {
+			        	boolean allowUsersToMoveNPC = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) 
+			        			? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) : false;
+			        	
+						if((rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) || !allowUsersToMoveNPC) && !this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setnpc")) {
+							p.sendMessage(this.instance.getMessage("perm"));
+							return true;
+						}
 					}
 					
 					//SET NPC LOCATION
 					this.instance.getNPCFileManager().setNPCLocForShop(shopId, p.getLocation());
 
-					if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-						if(instance.manageFile().getBoolean("Options.useNPCs")) {
+					if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
+						
+						UUID ownerUUID = rentHandler.getOwnerUUID();
+						OfflinePlayer op = ownerUUID != null ? Bukkit.getOfflinePlayer(ownerUUID) : null;
+						
+						String ownerName = op != null ? op.getName() : "";
+						if(rentHandler.isAdmin())
+							ownerName = this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.adminShopName"));
+						
+						String prefix = ownerUUID != null ? this.instance.getPermissionsAPI().getPrefix(ownerUUID) : "";
+						
+						if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
 							//NPC
 							if(this.instance.getNpcUtils().existsNPCForShop(shopId)) {
 								this.instance.getNpcUtils().moveNPC(shopId, p.getLocation());
 							}else {
 								//CREATE NPC IN CITIZENS DATABASE
 								this.instance.getNpcUtils().createNPC(shopId);
-								UUID ownerUUID = rentHandler.getOwnerUUID();
-								
+
 								//SHOP IS OWNED
-								if(ownerUUID != null) {
-									String ownerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
-									String prefix = this.instance.getPermissionsAPI().getPrefix(ownerUUID);
-									
-									if(instance.getVillagerUtils() != null) {
-										instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, ownerName);
+								if(rentHandler.isAdmin() || ownerUUID != null) {
+									if(this.instance.getVillagerUtils() != null) {
+										this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerName);
 									}else {
-										instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerUUID, ownerName);
+										this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerName);
 									}
 								}
 							}
@@ -186,14 +199,10 @@ public class ShopCOMMAND extends BukkitCommand {
 							if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
 								this.instance.getVillagerUtils().moveVillager(shopId, p.getLocation());
 							}else {
-								UUID ownerUUID = rentHandler.getOwnerUUID();
 								
 								//SHOP IS OWNED
-								if(ownerUUID != null) {
-									String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
-									String prefix = instance.getPermissionsAPI().getPrefix(ownerUUID);
-	
-									this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, playerName);
+								if(rentHandler.isAdmin() || ownerUUID != null) {
+									this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerName);
 								}
 							}
 						}
@@ -610,6 +619,11 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 				
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+				if (rentHandler.isAdmin()) {
+					p.sendMessage(this.instance.getMessage("adminshopNoSupport"));
+					return true;
+				}
 				
 				/*
 				if(rentHandler.getOwnerUUID() != null && rentHandler.getOwnerUUID().equals(uuid)) {
@@ -1133,6 +1147,12 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
+				if (rentHandler.isAdmin()) {
+					p.sendMessage(this.instance.getMessage("adminshopNoSupport"));
+					return true;
+				}
+				
+				String owner = rentHandler.getOwnerName();
 				UUID ownerUUID = rentHandler.getOwnerUUID();
 				if (ownerUUID != null) {
 					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
@@ -1165,13 +1185,6 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				String owner = rentHandler.getOwnerName();
-				UUID uuidOwner = rentHandler.getOwnerUUID();
-				if (uuidOwner != null) {
-					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
-					return true;
-				}
-
 				this.instance.getEconomySystem().withdraw(p, costs);
 
 				this.instance.getAreaFileManager().setOwner(this.type, shopId, uuid);
@@ -1183,12 +1196,12 @@ public class ShopCOMMAND extends BukkitCommand {
 				
 				rentHandler.setOwner(uuid, p.getName());
 				
-				String prefix = instance.getPermissionsAPI().getPrefix(ownerUUID);
-				if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-					if(instance.manageFile().getBoolean("Options.useNPCs")) {
-						instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerUUID, owner);
+				String prefix = this.instance.getPermissionsAPI().getPrefix(ownerUUID);
+				if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
+					if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
+						this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, owner);
 					}else {
-						instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, owner);
+						this.instance.getVillagerUtils().spawnVillager(shopId, prefix, owner);
 					}
 				}
 

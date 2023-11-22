@@ -1,7 +1,6 @@
 package me.truemb.rentit.utils;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -49,7 +48,7 @@ public class VillagerUtils {
 		vil.teleport(loc);
 	}
 
-	public void spawnVillager(int shopId, String prefix, UUID ownerUUID, String playerName) {
+	public void spawnVillager(int shopId, String prefix, String playerName) {
 
 		Location loc = this.instance.getNPCFileManager().getNPCLocForShop(shopId);
 		if (loc == null)
@@ -63,9 +62,6 @@ public class VillagerUtils {
 		v.setCollidable(false); // "
 		v.setGravity(false); //CANT FALL
 		v.setSilent(true); // NO SOUNDS
-		
-		//v.setMetadata("shopname", new FixedMetadataValue(this.instance, type));
-		
 		
 		String customName = this.instance.translateHexColorCodes(this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName : this.instance.manageFile().getString("Options.displayNameColor") + playerName);
 		

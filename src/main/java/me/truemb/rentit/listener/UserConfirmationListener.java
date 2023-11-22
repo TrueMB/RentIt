@@ -94,6 +94,11 @@ public class UserConfirmationListener implements Listener {
 					p.sendMessage(instance.getMessage("categoryError"));
 					return;
 				}
+
+				if (rentHandler.isAdmin()) {
+					p.sendMessage(this.instance.getMessage("adminshopNoSupport"));
+					return;
+				}
 				
 				UUID ownerUUID = rentHandler.getOwnerUUID();
 				if(ownerUUID != null) {
@@ -132,9 +137,9 @@ public class UserConfirmationListener implements Listener {
 					public void run() {
 						if(!instance.manageFile().getBoolean("Options.disableNPC")) {
 							if(instance.getNpcUtils() != null) {
-								instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, rentHandler.getOwnerUUID(), rentHandler.getOwnerName());
+								instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, rentHandler.getOwnerName());
 							}else {
-								instance.getVillagerUtils().spawnVillager(shopId, prefix, rentHandler.getOwnerUUID(), rentHandler.getOwnerName());
+								instance.getVillagerUtils().spawnVillager(shopId, prefix, rentHandler.getOwnerName());
 							}
 						}
 					}

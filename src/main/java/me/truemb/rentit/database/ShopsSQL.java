@@ -213,17 +213,17 @@ public class ShopsSQL {
 						
 						hash.put(id, handler);
 						instance.rentTypeHandlers.put(type, hash);
-						
-						if(ownerUUID != null) {
+
+						if(handler.isAdmin() || ownerUUID != null) {
 							Bukkit.getScheduler().runTask(instance, new Runnable() {
 									
 								@Override
 								public void run() {
 									if(!instance.manageFile().getBoolean("Options.disableNPC")) {
 										if(instance.getVillagerUtils() != null) {
-											instance.getVillagerUtils().spawnVillager(id, prefix, ownerUUID, ownerName);
+											instance.getVillagerUtils().spawnVillager(id, prefix, handler.isAdmin() ? instance.translateHexColorCodes(instance.manageFile().getString("Options.adminShopName")) : ownerName);
 										}else {
-											instance.getNpcUtils().spawnAndEditNPC(id, prefix, ownerUUID, ownerName);
+											instance.getNpcUtils().spawnAndEditNPC(id, prefix, handler.isAdmin() ? instance.translateHexColorCodes(instance.manageFile().getString("Options.adminShopName")) : ownerName);
 										}
 									}
 								}
