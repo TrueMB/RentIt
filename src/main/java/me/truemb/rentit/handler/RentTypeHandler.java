@@ -32,6 +32,8 @@ public class RentTypeHandler {
 	private String alias = null;
 	private int catID = -1;
 	
+	private boolean admin; //Admin Shop?
+	
 	private UUID ownerUUID;
 	private String ownerName;
 	private Timestamp nextPayment;
@@ -46,7 +48,7 @@ public class RentTypeHandler {
 	//Inventory which contains the backed up Items for the different players
 	private HashMap<UUID, List<Inventory>> rollbackInv = new HashMap<>();
 	
-	public RentTypeHandler(Main plugin, RentTypes type, int id, int catID, UUID ownerUUID, String ownerName, Timestamp nextPayment, boolean autoPayment) {
+	public RentTypeHandler(Main plugin, RentTypes type, int id, int catID, UUID ownerUUID, String ownerName, Timestamp nextPayment, boolean autoPayment, boolean admin) {
 		this.instance = plugin;
 		
 		this.type = type;
@@ -56,6 +58,7 @@ public class RentTypeHandler {
 		this.setOwner(ownerUUID, ownerName);
 		this.setAutoPayment(autoPayment);
 		this.setNextPayment(nextPayment);
+		this.setAdmin(admin);
 
 		this.resetInventories();
 	}
@@ -90,7 +93,7 @@ public class RentTypeHandler {
 	}
 
 	public boolean isReminded() {
-		return reminded;
+		return this.reminded;
 	}
 	
 	public boolean isAutoPayment() {
@@ -130,6 +133,14 @@ public class RentTypeHandler {
 
 	public void setReminded(boolean reminded) {
 		this.reminded = reminded;
+	}
+
+	public boolean isAdmin() {
+		return this.admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 
 	//OTHERS
@@ -323,5 +334,4 @@ public class RentTypeHandler {
 		
 		return this.rollbackInv.get(uuid).get(site - 1);
 	}
-
 }

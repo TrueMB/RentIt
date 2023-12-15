@@ -146,37 +146,50 @@ public class ShopCOMMAND extends BukkitCommand {
 						p.sendMessage(this.instance.getMessage("categoryError"));
 						return true;
 					}
-					
-		        	boolean allowUsersToMoveNPC = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) 
-		        			? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) : false;
-		        	
-					if((rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) || !allowUsersToMoveNPC) && !this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setnpc")) {
-						p.sendMessage(this.instance.getMessage("perm"));
-						return true;
+
+					if(rentHandler.isAdmin()) {
+						if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+							p.sendMessage(this.instance.getMessage("adminshopPerm"));
+							return true;
+						}
+					}else {
+			        	boolean allowUsersToMoveNPC = this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) 
+			        			? this.instance.manageFile().getBoolean("Options.categorySettings.ShopCategory." + catHandler.getCatID() + "." + CategorySettings.allowUsersToMoveNPC.toString()) : false;
+			        	
+						if((rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) || !allowUsersToMoveNPC) && !this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setnpc")) {
+							p.sendMessage(this.instance.getMessage("perm"));
+							return true;
+						}
 					}
 					
 					//SET NPC LOCATION
 					this.instance.getNPCFileManager().setNPCLocForShop(shopId, p.getLocation());
 
-					if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-						if(instance.manageFile().getBoolean("Options.useNPCs")) {
+					if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
+						
+						UUID ownerUUID = rentHandler.getOwnerUUID();
+						OfflinePlayer op = ownerUUID != null ? Bukkit.getOfflinePlayer(ownerUUID) : null;
+						
+						String ownerName = op != null ? op.getName() : "";
+						if(rentHandler.isAdmin())
+							ownerName = this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.adminShopName"));
+						
+						String prefix = ownerUUID != null ? this.instance.getPermissionsAPI().getPrefix(ownerUUID) : "";
+						
+						if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
 							//NPC
 							if(this.instance.getNpcUtils().existsNPCForShop(shopId)) {
 								this.instance.getNpcUtils().moveNPC(shopId, p.getLocation());
 							}else {
 								//CREATE NPC IN CITIZENS DATABASE
 								this.instance.getNpcUtils().createNPC(shopId);
-								UUID ownerUUID = rentHandler.getOwnerUUID();
-								
+
 								//SHOP IS OWNED
-								if(ownerUUID != null) {
-									String ownerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
-									String prefix = this.instance.getPermissionsAPI().getPrefix(ownerUUID);
-									
-									if(instance.getVillagerUtils() != null) {
-										instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, ownerName);
+								if(rentHandler.isAdmin() || ownerUUID != null) {
+									if(this.instance.getVillagerUtils() != null) {
+										this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerName);
 									}else {
-										instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerUUID, ownerName);
+										this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerName);
 									}
 								}
 							}
@@ -186,14 +199,10 @@ public class ShopCOMMAND extends BukkitCommand {
 							if(this.instance.getVillagerUtils().isVillagerSpawned(shopId)) {
 								this.instance.getVillagerUtils().moveVillager(shopId, p.getLocation());
 							}else {
-								UUID ownerUUID = rentHandler.getOwnerUUID();
 								
 								//SHOP IS OWNED
-								if(ownerUUID != null) {
-									String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
-									String prefix = instance.getPermissionsAPI().getPrefix(ownerUUID);
-	
-									this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, playerName);
+								if(rentHandler.isAdmin() || ownerUUID != null) {
+									this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerName);
 								}
 							}
 						}
@@ -610,6 +619,11 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 				
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+				if (rentHandler.isAdmin()) {
+					p.sendMessage(this.instance.getMessage("adminshopNoSupport"));
+					return true;
+				}
 				
 				/*
 				if(rentHandler.getOwnerUUID() != null && rentHandler.getOwnerUUID().equals(uuid)) {
@@ -658,41 +672,74 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 				
-				AsyncSQL sql = this.instance.getAsyncSQL();
-				sql.prepareStatement("SELECT " + (sql.isSqlLite() ? "I" : "") + "IF( EXISTS(SELECT * FROM " + sql.t_shops + " WHERE ID='1'), (SELECT t1.id+1 as lowestId FROM " + sql.t_shops + " AS t1 LEFT JOIN " + sql.t_shops + " AS t2 ON t1.id+1 = t2.id WHERE t2.id IS NULL LIMIT 1), 1) as lowestId LIMIT 1;", new Consumer<ResultSet>() {
+				this.instance.getShopsSQL().getNextShopId((shopId) -> {
+					boolean success = this.instance.getMethodes().createArea(p, this.type, shopId);
+					RentTypeHandler rentHandler = this.instance.getMethodes().createType(this.type, shopId, catID, false);
 
-					@Override
-					public void accept(ResultSet otherRS) {
-						try {
-							int shopId = 1;
-							while (otherRS.next()) {
-								shopId = otherRS.getInt("lowestId");
-								break;
-							}
+					if (success) {
+						// CREATED
+					    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+					    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					    
+						sender.sendMessage(this.instance.getMessage("shopAreaCreated")
+								.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+								.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+								.replaceAll("(?i)%" + "alias" + "%", alias));
 
-							boolean success = instance.getMethodes().createArea(p, type, shopId);
-							RentTypeHandler rentHandler = instance.getMethodes().createType(type, shopId, catID);
-
-							if (success) {
-								// CREATED
-							    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
-							    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-							    
-								sender.sendMessage(instance.getMessage("shopAreaCreated")
-										.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
-										.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-										.replaceAll("(?i)%" + "alias" + "%", alias));
-
-							} else {
-								// NOTE CREATED
-								sender.sendMessage(instance.getMessage("shopAreaError"));
-							}
-							return;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
+					} else {
+						// NOTE CREATED
+						sender.sendMessage(this.instance.getMessage("shopAreaError"));
 					}
 				});
+				
+				return true;
+
+			} else if (args[0].equalsIgnoreCase("setAdminArea")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("shop", "setadminarea")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "setadminarea")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+
+				int catID = Integer.parseInt(args[1]);
+
+				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, catID);
+
+				if (catHandler == null) {
+					p.sendMessage(this.instance.getMessage("categoryError"));
+					return true;
+				}
+				
+				this.instance.getShopsSQL().getNextShopId((shopId) -> {
+					boolean success = this.instance.getMethodes().createArea(p, this.type, shopId);
+					RentTypeHandler rentHandler = this.instance.getMethodes().createType(this.type, shopId, catID, true);
+
+					if (success) {
+						// CREATED
+					    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
+					    String catAlias = catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					    
+						sender.sendMessage(this.instance.getMessage("shopAdminAreaCreated")
+								.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(shopId))
+								.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+								.replaceAll("(?i)%" + "alias" + "%", alias));
+
+					} else {
+						// NOTE CREATED
+						sender.sendMessage(this.instance.getMessage("shopAreaError"));
+					}
+				});
+				
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("delete")) {
@@ -1100,6 +1147,12 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
+				if (rentHandler.isAdmin()) {
+					p.sendMessage(this.instance.getMessage("adminshopNoSupport"));
+					return true;
+				}
+				
+				String owner = rentHandler.getOwnerName();
 				UUID ownerUUID = rentHandler.getOwnerUUID();
 				if (ownerUUID != null) {
 					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
@@ -1132,13 +1185,6 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				String owner = rentHandler.getOwnerName();
-				UUID uuidOwner = rentHandler.getOwnerUUID();
-				if (uuidOwner != null) {
-					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
-					return true;
-				}
-
 				this.instance.getEconomySystem().withdraw(p, costs);
 
 				this.instance.getAreaFileManager().setOwner(this.type, shopId, uuid);
@@ -1150,12 +1196,12 @@ public class ShopCOMMAND extends BukkitCommand {
 				
 				rentHandler.setOwner(uuid, p.getName());
 				
-				String prefix = instance.getPermissionsAPI().getPrefix(ownerUUID);
-				if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-					if(instance.manageFile().getBoolean("Options.useNPCs")) {
-						instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerUUID, owner);
+				String prefix = this.instance.getPermissionsAPI().getPrefix(ownerUUID);
+				if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
+					if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
+						this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, owner);
 					}else {
-						instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerUUID, owner);
+						this.instance.getVillagerUtils().spawnVillager(shopId, prefix, owner);
 					}
 				}
 
@@ -1408,7 +1454,19 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Sell")) && !this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+				if (rentHandler == null) {
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
+					return true;
+				}
+
+				if(rentHandler.isAdmin()) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+						p.sendMessage(this.instance.getMessage("adminshopPerm"));
+						return true;
+					}
+				}else if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Sell")) && !this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
 					p.sendMessage(this.instance.getMessage("notShopOwner"));
 					return true;
 				}
@@ -1425,13 +1483,6 @@ public class ShopCOMMAND extends BukkitCommand {
 					price = Double.parseDouble(args[1]);
 				} catch (NumberFormatException ex) {
 					p.sendMessage(this.instance.getMessage("notANumber"));
-					return true;
-				}
-
-				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
-
-				if (rentHandler == null) {
-					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
 
@@ -1452,11 +1503,6 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buyitem")) {
-					p.sendMessage(this.instance.getMessage("perm"));
-					return true;
-				}
-				
 				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
 
 				if (shopId < 0) {
@@ -1471,7 +1517,17 @@ public class ShopCOMMAND extends BukkitCommand {
 					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
 					return true;
 				}
-
+				
+				if(rentHandler.isAdmin()) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+						p.sendMessage(this.instance.getMessage("adminshopPerm"));
+						return true;
+					}
+				}else if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buyitem")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+				
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
@@ -1479,16 +1535,18 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				UUID ownerUUID = rentHandler.getOwnerUUID();
-
-				if (ownerUUID == null) {
-					p.sendMessage(this.instance.getMessage("shopNotBought"));
-					return true;
-				}
-
-				if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Buy")) && !this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
-					p.sendMessage(this.instance.getMessage("notShopOwner"));
-					return true;
+				if(!rentHandler.isAdmin()) {
+					UUID ownerUUID = rentHandler.getOwnerUUID();
+	
+					if (ownerUUID == null) {
+						p.sendMessage(this.instance.getMessage("shopNotBought"));
+						return true;
+					}
+	
+					if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Buy")) && !this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+						p.sendMessage(this.instance.getMessage("notShopOwner"));
+						return true;
+					}
 				}
 
 				ItemStack item = p.getInventory().getItemInMainHand().clone();
@@ -1572,11 +1630,6 @@ public class ShopCOMMAND extends BukkitCommand {
 					sender.sendMessage(this.instance.getMessage("commandDisabled"));
 					return true;
 				}
-
-				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buyitem")) {
-					p.sendMessage(this.instance.getMessage("perm"));
-					return true;
-				}
 				
 				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
 
@@ -1593,6 +1646,16 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
+				if(rentHandler.isAdmin()) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+						p.sendMessage(this.instance.getMessage("adminshopPerm"));
+						return true;
+					}
+				}else if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buyitem")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
@@ -1600,16 +1663,18 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				UUID ownerUUID = rentHandler.getOwnerUUID();
-
-				if (ownerUUID == null) {
-					p.sendMessage(this.instance.getMessage("shopNotBought"));
-					return true;
-				}
-
-				if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Buy")) && !this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
-					p.sendMessage(this.instance.getMessage("notShopOwner"));
-					return true;
+				if(!rentHandler.isAdmin()) {
+					UUID ownerUUID = rentHandler.getOwnerUUID();
+	
+					if (ownerUUID == null) {
+						p.sendMessage(this.instance.getMessage("shopNotBought"));
+						return true;
+					}
+	
+					if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Buy")) && !this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+						p.sendMessage(this.instance.getMessage("notShopOwner"));
+						return true;
+					}
 				}
 
 				Material m = Material.getMaterial(args[1].toUpperCase());
@@ -1808,11 +1873,6 @@ public class ShopCOMMAND extends BukkitCommand {
 					sender.sendMessage(this.instance.getMessage("commandDisabled"));
 					return true;
 				}
-
-				if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buyitem")) {
-					p.sendMessage(this.instance.getMessage("perm"));
-					return true;
-				}
 				
 				int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, p.getLocation());
 
@@ -1829,6 +1889,16 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
+				if(rentHandler.isAdmin()) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+						p.sendMessage(this.instance.getMessage("adminshopPerm"));
+						return true;
+					}
+				}else if (!this.instance.getMethodes().hasPermissionForCommand(p, false, "shop", "buyitem")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
 				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 				if (catHandler == null) {
@@ -1838,14 +1908,16 @@ public class ShopCOMMAND extends BukkitCommand {
 
 				UUID ownerUUID = rentHandler.getOwnerUUID();
 
-				if (ownerUUID == null) {
-					p.sendMessage(this.instance.getMessage("shopNotBought"));
-					return true;
-				}
-
-				if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Buy")) && !this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
-					p.sendMessage(this.instance.getMessage("notShopOwner"));
-					return true;
+				if(!rentHandler.isAdmin()) {
+					if (ownerUUID == null) {
+						p.sendMessage(this.instance.getMessage("shopNotBought"));
+						return true;
+					}
+	
+					if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Buy")) && !this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+						p.sendMessage(this.instance.getMessage("notShopOwner"));
+						return true;
+					}
 				}
 
 				if (Material.matchMaterial(args[1].toUpperCase()) == null) {

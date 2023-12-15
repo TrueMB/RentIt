@@ -81,7 +81,7 @@ public class NPCUtils {
 		npc.teleport(loc, TeleportCause.PLUGIN);
 	}
 	
-	public void spawnAndEditNPC(int shopId, String prefix, UUID ownerUUID, String playerName) {
+	public void spawnAndEditNPC(int shopId, String prefix, String playerName) {
 
 		Location loc = this.instance.getNPCFileManager().getNPCLocForShop(shopId);
 		if (loc == null)

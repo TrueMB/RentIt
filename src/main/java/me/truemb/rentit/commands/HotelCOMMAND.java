@@ -205,28 +205,10 @@ public class HotelCOMMAND extends BukkitCommand {
 				}
 
 				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
-				CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 				
-			    String alias = rentHandler != null && rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
-			    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-			    
-				BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, hotelId);
-				BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, hotelId);
-				this.instance.getBackupManager().paste(this.type, hotelId, min, max, p.getWorld(), false);
-				this.instance.getBackupManager().deleteSchem(this.type, hotelId);
-				this.instance.getMethodes().deleteType(this.type, hotelId);
-				this.instance.getMethodes().deleteArea(p, this.type, hotelId);
-				this.instance.getMethodes().deleteSigns(this.type, hotelId);
-				this.instance.getMethodes().clearPlayersFromRegion(this.type, hotelId, p.getWorld());
-
-				this.instance.getAreaFileManager().unsetDoorClosed(this.type, hotelId);
-				this.instance.getDoorFileManager().clearDoors(this.type, hotelId);
-
-				p.sendMessage(this.instance.getMessage("hotelDeleted")
-						.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
-						.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-						.replaceAll("(?i)%" + "alias" + "%", alias));
+				this.deleteHotel(p, rentHandler);
 				return true;
+				
 			} else if (args[0].equalsIgnoreCase("permissions")) {
 				
 				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "permissions")) {
@@ -476,44 +458,56 @@ public class HotelCOMMAND extends BukkitCommand {
 					return true;
 				}
 
-				AsyncSQL sql = this.instance.getAsyncSQL();
-				                                //NEEDS TO ADD ONE "I" FOR SQLLITE
-				sql.prepareStatement("SELECT " + (sql.isSqlLite() ? "I" : "") + "IF( EXISTS(SELECT * FROM " + sql.t_hotels + " WHERE ID='1'), (SELECT t1.id+1 as lowestId FROM " + sql.t_hotels + " AS t1 LEFT JOIN " + sql.t_hotels + " AS t2 ON t1.id+1 = t2.id WHERE t2.id IS NULL LIMIT 1), 1) as lowestId LIMIT 1;", new Consumer<ResultSet>() {
-
-					@Override
-					public void accept(ResultSet otherRS) {
-						try {
-							int hotelId = 1;
-							
-							while (otherRS.next()) {
-								hotelId = otherRS.getInt("lowestId");
-								break;
-							}
-
-							boolean success = instance.getMethodes().createArea(p, type, hotelId);
-							instance.getMethodes().createType(type, hotelId, catID);
-							if (success) {
-								// CREATED
-								RentTypeHandler rentHandler = instance.getMethodes().getTypeHandler(type, hotelId);
-								CategoryHandler catHandler = instance.getMethodes().getCategory(type, rentHandler.getCatID());
-								
-							    String alias = rentHandler != null & rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
-							    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
-							    
-								sender.sendMessage(instance.getMessage("hotelAreaCreated")
-										.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
-										.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
-										.replaceAll("(?i)%" + "alias" + "%", alias));
-							} else {
-								// NOTE CREATED
-								sender.sendMessage(instance.getMessage("hotelAreaError"));
-							}
-							return;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
+				this.instance.getHotelsSQL().getNextHotelId((hotelId) -> {
+					
+					boolean success = this.instance.getMethodes().createArea(p, this.type, hotelId);
+					this.instance.getMethodes().createType(this.type, hotelId, catID, false);
+					
+					if (success) {
+						// CREATED
+						RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
+						
+					    String alias = rentHandler != null & rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+					    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+					    
+						sender.sendMessage(this.instance.getMessage("hotelAreaCreated")
+								.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+								.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+								.replaceAll("(?i)%" + "alias" + "%", alias));
+					} else {
+						// NOTE CREATED
+						sender.sendMessage(instance.getMessage("hotelAreaError"));
 					}
 				});
+				return true;
+
+			}  else if (args[0].equalsIgnoreCase("delete")) {
+				
+				if(!this.instance.getMethodes().isSubCommandEnabled("hotel", "delete")) {
+					sender.sendMessage(this.instance.getMessage("commandDisabled"));
+					return true;
+				}
+
+				if (!this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "delete")) {
+					p.sendMessage(this.instance.getMessage("perm"));
+					return true;
+				}
+
+				if (!args[1].matches("[0-9]+")) {
+					p.sendMessage(this.instance.getMessage("notANumber"));
+					return true;
+				}
+
+				int hotelId = Integer.parseInt(args[1]);
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
+				
+				if (hotelId < 0) {
+					// PLAYER NOT IN SHOP AREA, CANT FIND ID
+					p.sendMessage(this.instance.getMessage("hotelIdNotValid"));
+					return true;
+				}
+				
+				this.deleteHotel(p, rentHandler);
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("catInfo")) {
@@ -1257,6 +1251,34 @@ public class HotelCOMMAND extends BukkitCommand {
 			this.sendHelp(p, "hotelUserHelp");
 
 		return true;
+	}
+
+	private void deleteHotel(Player p, RentTypeHandler rentHandler) {
+
+		int hotelId = rentHandler.getID();
+		
+		CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
+		
+	    String alias = rentHandler != null && rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(hotelId);
+	    String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
+	    
+		BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, hotelId);
+		BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, hotelId);
+		this.instance.getBackupManager().paste(this.type, hotelId, min, max, p.getWorld(), false);
+		this.instance.getBackupManager().deleteSchem(this.type, hotelId);
+		this.instance.getMethodes().deleteType(this.type, hotelId);
+		this.instance.getMethodes().deleteArea(p, this.type, hotelId);
+		this.instance.getMethodes().deleteSigns(this.type, hotelId);
+		this.instance.getMethodes().clearPlayersFromRegion(this.type, hotelId, p.getWorld());
+
+		this.instance.getAreaFileManager().unsetDoorClosed(this.type, hotelId);
+		this.instance.getDoorFileManager().clearDoors(this.type, hotelId);
+
+		p.sendMessage(this.instance.getMessage("hotelDeleted")
+				.replaceAll("(?i)%" + "hotelId" + "%", String.valueOf(hotelId))
+				.replaceAll("(?i)%" + "catAlias" + "%", catAlias)
+				.replaceAll("(?i)%" + "alias" + "%", alias));
+		
 	}
 
 	private boolean sendCategoryInfo(Player p, int catId) {

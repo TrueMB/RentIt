@@ -62,6 +62,8 @@ Options:
   useDisplayName: false
   #The Colorcode Prefix
   displayNameColor: '&6'
+  #The Admin Shop name
+  adminShopName: '&4&lAdmin Shop'
   #If enabled, every command gets a Permission -> Default: rentit.shop.<subcommand> and rentit.shops / rentit.freeshops -> the same for hotelrooms
   advancedPermissions: false
   #The Prefix of the sign which is needed to create a sign. Doesn't need to be changed, as long no other plugin uses it.
@@ -206,6 +208,8 @@ Permissions:
   sign: 'rentit.sign'
   #Admin Shop Commands
   shop: 'rentit.shop'
+  #Gives you access to the adminshop admin commands. The Player still needs the sellitem permission f.e. 
+  adminshop: 'rentit.adminshop'
   #Build everythere
   build: 'rentit.build'
   #Teleport, even if feature is disabled
@@ -633,9 +637,12 @@ Messages:
   doorCommandDisabled: '&cSorry, but this command doesnt work here.'
   maxExtendedReached: '&cSorry, you cant extend the rent any farther.'
   #Shop Messages
+  adminshopPerm: '&cYou got no Permissions for this Admin Shop.'
+  adminshopNoSupport: '&cThis command doesn''t work for Admin Shops.'
   shopDatabaseEntryMissing: '&cCouldn''t find Shop in the Database. Maybe DB Reset but not the Plugin folder?'
   shopAreaError: '&4ERROR. &cNo WorldEdit Selection.'
   shopAreaCreated: '&aA Shop with the ID &f%alias% &awas created.'
+  shopAdminAreaCreated: '&aAn Admin Shop with the ID &f%alias% &awas created.'
   shopCitizenCreated: '&aYou set the NPC for the ShopID &f%alias%&a.'
   shopOwnerChanged: '&aShopowner was changed to &f%player% &afrom the Shop &f%alias%&a.'
   shopRentTimeChanged: '&aRent Time was changed to &f%time% &afor Category &f%catAlias%&a.'
@@ -799,6 +806,7 @@ Messages:
   hotelOwnerChanged: '&aHotelroom owner was changed to &f%player% &afrom the Hotelroom &f%alias%&a.'
   hotelRentTimeChanged: '&aRent Time was changed to &f%time% &afor Category &f%catAlias%&a.'
   hotelPriceChanged: '&aRent Price was changed to &f%price% &afor Category &f%catAlias%&a.'
+  hotelIdNotValid: '&4ERROR. &cThe Hotelroom ID wasn''t found'
   hotelReseted: '&aThe HotelroomID &f%alias% &awas resetet.'
   hotelDeleted: '&aThe HotelroomID &f%alias% &awas deleted.'
   hotelSignCreated: '&aThe Hotelroom Sign for the ID &f%alias% &awas created.'
@@ -899,4 +907,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 21
+ConfigVersion: 22

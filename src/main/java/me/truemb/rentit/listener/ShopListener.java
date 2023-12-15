@@ -85,7 +85,7 @@ public class ShopListener implements Listener {
 				return;
 
 			// Owner sells Items
-			if (e.isLeftClick() && !ownerUUID.equals(uuid)) {
+			if (e.isLeftClick() && (rentHandler.isAdmin() || !ownerUUID.equals(uuid))) {
 
 				double itemPrice = ShopItemManager.getPriceFromShopItem(this.instance, item);
 				double price;
@@ -140,25 +140,27 @@ public class ShopListener implements Listener {
 					return;
 
 				this.instance.getEconomySystem().withdraw(p, price); // REMVOES THE MONEY FROM THE BUYER
-				this.instance.getEconomySystem().deposit(owner, price); // GIVE SHOPOWNER THE MONEY
-
 				p.getInventory().addItem(copyItem); // GIVES BUYER THE ITEM
+				
+				if(!rentHandler.isAdmin()) {
+					this.instance.getEconomySystem().deposit(owner, price); // GIVE SHOPOWNER THE MONEY
 
-				if (this.instance.getChestsUtils().checkChestsInArea(shopId, copyItem)) {
-					// LOOKS IN NEARBY CHESTS
-					this.instance.getChestsUtils().removeItemFromChestsInArea(shopId, copyItem);
-
-				}else {
-			        item.setAmount(item.getAmount() - amount);
-			        if (item != null && item.getAmount() > 0) {
-			            item = ShopItemManager.editShopItemPrice(this.instance, item, itemPrice - price);
-			        } else {
-			        	this.moveItems(e, rentHandler, ShopInventoryType.SELL);
-			    	} 
-			    } 
-
-				// UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
-				this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.SELL);
+					if (this.instance.getChestsUtils().checkChestsInArea(shopId, copyItem)) {
+						// LOOKS IN NEARBY CHESTS
+						this.instance.getChestsUtils().removeItemFromChestsInArea(shopId, copyItem);
+	
+					}else {
+				        item.setAmount(item.getAmount() - amount);
+				        if (item != null && item.getAmount() > 0) {
+				            item = ShopItemManager.editShopItemPrice(this.instance, item, itemPrice - price);
+				        } else {
+				        	this.moveItems(e, rentHandler, ShopInventoryType.SELL);
+				    	} 
+				    } 
+	
+					// UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
+					this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.SELL);
+				}
 
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
@@ -174,11 +176,16 @@ public class ShopListener implements Listener {
 			} else if (e.isRightClick()) {
 
 				// NO PERMISSIONS TO REMOVE
-				if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
-						this.instance.manageFile().getString("UserPermissions.shop.Sell"))
-						&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
-								this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
-					return;
+				if(rentHandler.isAdmin()) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+						p.sendMessage(this.instance.getMessage("adminshopPerm"));
+						return;
+					}
+				}else {
+					if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Sell"))
+							&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+						return;
+					}
 				}
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
@@ -216,8 +223,7 @@ public class ShopListener implements Listener {
 			}
 
 			// Owner buys Item from Player
-		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&',
-				this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameBuy")))) {
+		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameBuy")))) {
 
 			e.setCancelled(true);
 
@@ -254,7 +260,7 @@ public class ShopListener implements Listener {
 				return;
 
 			// Player selling to owner
-			if (e.isLeftClick() && !ownerUUID.equals(uuid)) {
+			if (e.isLeftClick() && (rentHandler.isAdmin() || !ownerUUID.equals(uuid))) {
 
 				double itemPrice = ShopItemManager.getPriceFromShopItem(this.instance, item);
 				double price;
@@ -269,8 +275,7 @@ public class ShopListener implements Listener {
 						targetItemAmount += items.getAmount();
 
 				if (targetItemAmount <= 0) {
-					p.sendMessage(this.instance.getMessage("notEnoughOwningItems").replaceAll("(?i)%" + "amount" + "%",
-							String.valueOf(1)));
+					p.sendMessage(this.instance.getMessage("notEnoughOwningItems").replaceAll("(?i)%" + "amount" + "%", String.valueOf(1)));
 					return;
 				}
 
@@ -294,17 +299,19 @@ public class ShopListener implements Listener {
 					price = itemPrice / item.getAmount() * targetItemAmount;
 
 				}
-
-				if (!this.instance.getEconomySystem().has(owner, price)) {
-					p.sendMessage(this.instance.getMessage("notEnoughMoneyOwner"));
-					return;
-				}
-
+				
 				copyItem.setAmount(amount); // SETS HOW MUCH THE PLAYER SELLED
 
-				if (!this.instance.getChestsUtils().checkForSpaceInArea(shopId, copyItem)) {
-					p.sendMessage(this.instance.getMessage("notEnoughSpace"));
-					return;
+				if(!rentHandler.isAdmin()) {
+					if (!this.instance.getEconomySystem().has(owner, price)) {
+						p.sendMessage(this.instance.getMessage("notEnoughMoneyOwner"));
+						return;
+					}
+	
+					if (!this.instance.getChestsUtils().checkForSpaceInArea(shopId, copyItem)) {
+						p.sendMessage(this.instance.getMessage("notEnoughSpace"));
+						return;
+					}
 				}
 
 				ItemBuyEvent event = new ItemBuyEvent(p, rentHandler, copyItem, price);
@@ -314,13 +321,15 @@ public class ShopListener implements Listener {
 					return;
 
 				// LOOKS IN NEARBY CHESTS
-				this.instance.getChestsUtils().addItemToChestsInArea(shopId, copyItem);
+				if(!rentHandler.isAdmin()) {
+					this.instance.getChestsUtils().addItemToChestsInArea(shopId, copyItem);
+					this.instance.getEconomySystem().withdraw(owner, price); // GIVE SHOPOWNER THE MONEY
+
+					this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.BUY);
+				}
+
 				this.instance.getMethodes().removeItemFromPlayer(p, copyItem);
-
 				this.instance.getEconomySystem().deposit(p, price); // REMVOES THE MONEY FROM THE BUYER
-				this.instance.getEconomySystem().withdraw(owner, price); // GIVE SHOPOWNER THE MONEY
-
-				this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.BUY);
 
 				String type = StringUtils.capitalize(copyItem.getType().toString());
 				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
@@ -336,11 +345,18 @@ public class ShopListener implements Listener {
 			} else if (e.isRightClick()) {
 
 				// NO PERMISSIONS TO REMOVE
-				if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
-						this.instance.manageFile().getString("UserPermissions.shop.Buy"))
-						&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
-								this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
-					return;
+				if(rentHandler.isAdmin()) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+						p.sendMessage(this.instance.getMessage("adminshopPerm"));
+						return;
+					}
+				}else {
+					if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
+							this.instance.manageFile().getString("UserPermissions.shop.Buy"))
+							&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
+									this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+						return;
+					}
 				}
 
 				ItemStack copyItem = ShopItemManager.removeShopItem(this.instance, item.clone());
