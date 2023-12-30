@@ -159,6 +159,11 @@ Options:
         line2: '&f%owner%s'
         line3: '&6&lShop'
         line4: ''
+      adminShopSign:
+        line1: ''
+        line2: '&f&lAdmin'
+        line3: '&6&lShop'
+        line4: ''
       sellHotelSign:
         line1: '&6Rent &f&lHotelroom'
         line2: '&6Price&7: &f%price%'

@@ -60,7 +60,7 @@ dependencies {
     library 'mysql:mysql-connector-java:8.0.33'
     library 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
     
-    api 'net.wesjd:anvilgui:1.9.0-SNAPSHOT'
+    api 'net.wesjd:anvilgui:1.9.2-SNAPSHOT'
     api 'org.bstats:bstats-bukkit:3.0.2'
     api 'com.jeff_media:SpigotUpdateChecker:3.0.3'
     api 'com.google.code.gson:gson:2.10.1'

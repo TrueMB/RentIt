@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -325,68 +326,29 @@ public class UtilMethodes {
 			
 			@Override
 			public void run() {
+				
+				String path = "Options.shop.sign.";
+					
+				if(type.equals(RentTypes.SHOP) && handler.isAdmin())
+					path += "adminShopSign.";
+				else if(owner == null) 
+					path += "sell" + StringUtils.capitalize(type.toString().toLowerCase()) + "Sign.";
+				else
+					path += "bought" + StringUtils.capitalize(type.toString().toLowerCase()) + "Sign.";
 
-				if (type.equals(RentTypes.SHOP)) {
-
-					if (owner == null) {
-						// ZU MIETEN
-						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, instance.translateHexColorCodes(instance.manageFile().getString("Options.shop.sign.sellShopSign.line" + i)
-									.replaceAll("(?i)%" + "time" + "%", time)
-									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
-									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price)))
-									.replaceAll("(?i)%" + "maxSite" + "%", catHandler != null ? String.valueOf(catHandler.getMaxSite()) : "1")
-									.replaceAll("(?i)%" + "id" + "%", String.valueOf(id))
-									.replaceAll("(?i)%" + "catId" + "%", String.valueOf(handler != null ? String.valueOf(handler.getCatID()) : ""))
-									.replaceAll("(?i)%" + "catAlias" + "%", catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID()))
-									.replaceAll("(?i)%" + "alias" + "%", handler != null && handler.getAlias() != null ? handler.getAlias() : String.valueOf(id)));
-						}
-					} else {
-						// BEREITS VERMIETET
-						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, instance.translateHexColorCodes(instance.manageFile().getString("Options.shop.sign.boughtShopSign.line" + i)
-									.replaceAll("(?i)%" + "time" + "%", time)
-									.replaceAll("(?i)%" + "owner" + "%", owner)
-									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
-									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price)))
-									.replaceAll("(?i)%" + "maxSite" + "%", catHandler != null ? String.valueOf(catHandler.getMaxSite()) : "1")
-									.replaceAll("(?i)%" + "id" + "%", String.valueOf(id))
-									.replaceAll("(?i)%" + "catId" + "%", String.valueOf(handler != null ? String.valueOf(handler.getCatID()) : ""))
-									.replaceAll("(?i)%" + "catAlias" + "%", catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID()))
-									.replaceAll("(?i)%" + "alias" + "%", handler != null && handler.getAlias() != null ? handler.getAlias() : String.valueOf(id)));
-						}
-					}
-				} else if (type.equals(RentTypes.HOTEL)) {
-
-					if (owner == null) {
-						// ZU MIETEN
-						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, instance.translateHexColorCodes(instance.manageFile().getString("Options.shop.sign.sellHotelSign.line" + i)
-									.replaceAll("(?i)%" + "time" + "%", time)
-									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
-									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price)))
-									.replaceAll("(?i)%" + "id" + "%", String.valueOf(id))
-									.replaceAll("(?i)%" + "catId" + "%", String.valueOf(handler != null ? String.valueOf(handler.getCatID()) : ""))
-									.replaceAll("(?i)%" + "catAlias" + "%", catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID()))
-									.replaceAll("(?i)%" + "alias" + "%", handler != null && handler.getAlias() != null ? handler.getAlias() : String.valueOf(id)));
-						}
-					} else {
-						// BEREITS VERMIETET
-						for (int i = 1; i <= 4; i++) {
-							s.setLine(i - 1, instance.translateHexColorCodes(instance.manageFile().getString("Options.shop.sign.boughtHotelSign.line" + i)
-									.replaceAll("(?i)%" + "time" + "%", time)
-									.replaceAll("(?i)%" + "owner" + "%", owner)
-									.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
-									.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price)))
-									.replaceAll("(?i)%" + "id" + "%", String.valueOf(id))
-									.replaceAll("(?i)%" + "catId" + "%", String.valueOf(handler != null ? String.valueOf(handler.getCatID()) : ""))
-									.replaceAll("(?i)%" + "catAlias" + "%", catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID()))
-									.replaceAll("(?i)%" + "alias" + "%", handler != null && handler.getAlias() != null ? handler.getAlias() : String.valueOf(id)));
-						}
-					}
+				for (int i = 1; i <= 4; i++) {
+					s.setLine(i - 1, instance.translateHexColorCodes(instance.manageFile().getString(path + "line" + i)
+							.replaceAll("(?i)%" + "time" + "%", time)
+							.replaceAll("(?i)%" + "owner" + "%", owner != null ? owner : "")
+							.replaceAll("(?i)%" + "size" + "%", String.valueOf(size))
+							.replaceAll("(?i)%" + "price" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price)))
+							.replaceAll("(?i)%" + "maxSite" + "%", catHandler != null ? String.valueOf(catHandler.getMaxSite()) : "1")
+							.replaceAll("(?i)%" + "id" + "%", String.valueOf(id))
+							.replaceAll("(?i)%" + "catId" + "%", String.valueOf(handler != null ? String.valueOf(handler.getCatID()) : ""))
+							.replaceAll("(?i)%" + "catAlias" + "%", catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID()))
+							.replaceAll("(?i)%" + "alias" + "%", handler != null && handler.getAlias() != null ? handler.getAlias() : String.valueOf(id)));
 				}
 				s.update();
-				
 			}
 		});
 
