@@ -42,16 +42,10 @@ public class ShopsSQL {
 		sql.addColumn(sql.t_shops, "admin", "TINYINT"); //Version 2.8.2
 	}
 	
-	public void createShop(int id, int catID){
+	public void createShop(int id, int catID, boolean admin){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("INSERT INTO " + sql.t_shops + " (ID, ownerUUID, ownerName, catID, autoPayment) VALUES ('" + String.valueOf(id) + "','" + null + "', '" + null + "', '" + catID + "', '" + 1 + "')");
-	}
-	
-	public void createAdminShop(int id, int catID){
-		
-		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("INSERT INTO " + sql.t_shops + " (ID, ownerUUID, ownerName, catID, autoPayment, admin) VALUES ('" + String.valueOf(id) + "','" + null + "', '" + null + "', '" + catID + "', '" + 1 + "', '" + 1 + "')");
+		sql.queryUpdate("INSERT INTO " + sql.t_shops + " (ID, ownerUUID, ownerName, catID, autoPayment, admin) VALUES ('" + String.valueOf(id) + "','" + null + "', '" + null + "', '" + catID + "', '" + 1 + "', '" + (admin ? 1 : 0) + "')");
 	}
 
 	public void setOwner(int shopId, UUID ownerUUID, String ownerName, boolean autoPayment){
@@ -199,8 +193,9 @@ public class ShopsSQL {
 						Timestamp nextPayment = new Timestamp(nextPaymentDay.getTime());
 								
 						boolean autoPayment = rs.getInt("autoPayment") == 1 ? true : false;
+						boolean admin = rs.getInt("admin") == 1 ? true : false;
 						
-						RentTypeHandler handler = new RentTypeHandler(instance, type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment, false);
+						RentTypeHandler handler = new RentTypeHandler(instance, type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment, admin);
 						handler.setAlias(alias);
 						
 						String prefix = ownerUUID != null ? instance.getPermissionsAPI().getPrefix(ownerUUID) : "";

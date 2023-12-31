@@ -77,7 +77,7 @@ public class ShopListener implements Listener {
 				return;
 
 			UUID ownerUUID = rentHandler.getOwnerUUID();
-			OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
+			OfflinePlayer owner = ownerUUID != null ? Bukkit.getOfflinePlayer(ownerUUID) : null;
 
 			NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -177,7 +177,8 @@ public class ShopListener implements Listener {
 
 				// NO PERMISSIONS TO REMOVE
 				if(rentHandler.isAdmin()) {
-					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
+					if(!p.hasPermission(adminShopPerm)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return;
 					}
@@ -252,7 +253,7 @@ public class ShopListener implements Listener {
 				return;
 
 			UUID ownerUUID = rentHandler.getOwnerUUID();
-			OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
+			OfflinePlayer owner = ownerUUID != null ? Bukkit.getOfflinePlayer(ownerUUID) : null;
 
 			NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -346,7 +347,8 @@ public class ShopListener implements Listener {
 
 				// NO PERMISSIONS TO REMOVE
 				if(rentHandler.isAdmin()) {
-					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
+					if(!p.hasPermission(adminShopPerm)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return;
 					}

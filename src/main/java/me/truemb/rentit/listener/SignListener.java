@@ -238,6 +238,9 @@ public class SignListener implements Listener{
 				if (rentHandler == null)
 					return;
 
+				if (rentHandler.isAdmin())
+					return;
+
 				UUID uuid = rentHandler.getOwnerUUID();
 				if(uuid == null) {
 					

@@ -76,6 +76,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		this.adminSubCommands.add("listCat");
 		this.adminSubCommands.add("setNPC");
 		this.adminSubCommands.add("setArea");
+		this.adminSubCommands.add("setAdminArea");
 		this.adminSubCommands.add("setAlias");
 		this.adminSubCommands.add("reset");
 		this.adminSubCommands.add("delete");
@@ -148,7 +149,8 @@ public class ShopCOMMAND extends BukkitCommand {
 					}
 
 					if(rentHandler.isAdmin()) {
-						if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+						String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
+						if(!p.hasPermission(adminShopPerm)) {
 							p.sendMessage(this.instance.getMessage("adminshopPerm"));
 							return true;
 						}
@@ -1462,7 +1464,8 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 
 				if(rentHandler.isAdmin()) {
-					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
+					if(!p.hasPermission(adminShopPerm)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return true;
 					}
@@ -1519,7 +1522,8 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 				
 				if(rentHandler.isAdmin()) {
-					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
+					if(!p.hasPermission(adminShopPerm)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return true;
 					}
@@ -1647,7 +1651,8 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 
 				if(rentHandler.isAdmin()) {
-					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
+					if(!p.hasPermission(adminShopPerm)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return true;
 					}
@@ -1890,7 +1895,8 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 
 				if(rentHandler.isAdmin()) {
-					if(!this.instance.getMethodes().hasPermissionForCommand(p, false, "adminshop", null)) {
+					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
+					if(!p.hasPermission(adminShopPerm)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return true;
 					}

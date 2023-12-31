@@ -255,12 +255,9 @@ public class UtilMethodes {
 	public RentTypeHandler createType(RentTypes type, int id, int catID, boolean admin) {
 
 		if (type.equals(RentTypes.SHOP)) {
-			if(admin)
-				instance.getShopsSQL().createAdminShop(id, catID);
-			else
-				instance.getShopsSQL().createShop(id, catID);
+			this.instance.getShopsSQL().createShop(id, catID, admin);
 		} else if (type.equals(RentTypes.HOTEL)) {
-			instance.getHotelsSQL().createHotel(id, catID);
+			this.instance.getHotelsSQL().createHotel(id, catID);
 		}
 
 		// ADD HANDLER
