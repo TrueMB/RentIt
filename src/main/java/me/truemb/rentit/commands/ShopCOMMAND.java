@@ -149,8 +149,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					}
 
 					if(rentHandler.isAdmin()) {
-						String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
-						if(!p.hasPermission(adminShopPerm)) {
+						if(!this.instance.getMethodes().hasPermissionForCommand(p, true, "adminshop", null)) {
 							p.sendMessage(this.instance.getMessage("adminshopPerm"));
 							return true;
 						}
@@ -1464,8 +1463,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 
 				if(rentHandler.isAdmin()) {
-					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
-					if(!p.hasPermission(adminShopPerm)) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, true, "adminshop", null)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return true;
 					}
@@ -1522,8 +1520,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 				
 				if(rentHandler.isAdmin()) {
-					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
-					if(!p.hasPermission(adminShopPerm)) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, true, "adminshop", null)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return true;
 					}
@@ -1651,8 +1648,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 
 				if(rentHandler.isAdmin()) {
-					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
-					if(!p.hasPermission(adminShopPerm)) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, true, "adminshop", null)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return true;
 					}
@@ -1895,8 +1891,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				}
 
 				if(rentHandler.isAdmin()) {
-					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
-					if(!p.hasPermission(adminShopPerm)) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, true, "adminshop", null)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return true;
 					}

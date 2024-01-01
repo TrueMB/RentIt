@@ -177,8 +177,7 @@ public class ShopListener implements Listener {
 
 				// NO PERMISSIONS TO REMOVE
 				if(rentHandler.isAdmin()) {
-					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
-					if(!p.hasPermission(adminShopPerm)) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, true, "adminshop", null)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return;
 					}
@@ -347,8 +346,7 @@ public class ShopListener implements Listener {
 
 				// NO PERMISSIONS TO REMOVE
 				if(rentHandler.isAdmin()) {
-					String adminShopPerm = this.instance.manageFile().getString("Permissions.adminshop");
-					if(!p.hasPermission(adminShopPerm)) {
+					if(!this.instance.getMethodes().hasPermissionForCommand(p, true, "adminshop", null)) {
 						p.sendMessage(this.instance.getMessage("adminshopPerm"));
 						return;
 					}
