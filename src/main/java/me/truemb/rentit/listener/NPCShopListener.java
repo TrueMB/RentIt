@@ -43,7 +43,7 @@ public class NPCShopListener implements Listener{
 		Player p = e.getClicker();
 		NPC npc = e.getNPC();
 
-		if (npc.getEntity().hasMetadata("shopid")) {
+		if (npc.getEntity() != null && npc.getEntity().hasMetadata("shopid")) {
 			int shopId = npc.getEntity().getMetadata("shopid").get(0).asInt();
 			p.openInventory(ShopBuyOrSell.getSelectInv(this.instance, shopId));
 		}
