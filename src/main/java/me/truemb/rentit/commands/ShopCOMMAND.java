@@ -55,8 +55,8 @@ public class ShopCOMMAND extends BukkitCommand {
 
 	private RentTypes type = RentTypes.SHOP;
 
-	public ShopCOMMAND(Main plugin) {
-		super("shop", "Shop Main Command", null, plugin.manageFile().getStringList("Options.commands.shop.aliases"));
+	public ShopCOMMAND(Main plugin, String cmd) {
+		super(cmd, "Shop Main Command", null, plugin.manageFile().getStringList("Options.commands.shop.aliases"));
 		this.instance = plugin;
 
 		this.subCommands.add("noinfo");

@@ -235,22 +235,22 @@ public class Main extends JavaPlugin {
 
 			//COMMANDS
 			if(!this.manageFile().getBoolean("Options.commands.shop.disabled"))
-				commandMap.register(this.getDescription().getName(), new ShopCOMMAND(this));
+				commandMap.register(this.getDescription().getName(), new ShopCOMMAND(this, this.getMainCommand("shop")));
 			
 			if(!this.manageFile().getBoolean("Options.commands.hotel.disabled"))
-				commandMap.register(this.getDescription().getName(), new HotelCOMMAND(this));
+				commandMap.register(this.getDescription().getName(), new HotelCOMMAND(this, this.getMainCommand("hotel")));
 			
 			if(!this.manageFile().getBoolean("Options.commands.shops.disabled"))
-				commandMap.register(this.getDescription().getName(), new ShopsCOMMAND(this));
+				commandMap.register(this.getDescription().getName(), new ShopsCOMMAND(this, this.getMainCommand("shops")));
 			
 			if(!this.manageFile().getBoolean("Options.commands.hotels.disabled"))
-				commandMap.register(this.getDescription().getName(), new HotelsCOMMAND(this));
+				commandMap.register(this.getDescription().getName(), new HotelsCOMMAND(this, this.getMainCommand("hotels")));
 			
 			if(!this.manageFile().getBoolean("Options.commands.freeshops.disabled"))
-				commandMap.register(this.getDescription().getName(), new FreeShopsCOMMAND(this));
+				commandMap.register(this.getDescription().getName(), new FreeShopsCOMMAND(this, this.getMainCommand("freeshops")));
 			
 			if(!this.manageFile().getBoolean("Options.commands.freehotels.disabled"))
-				commandMap.register(this.getDescription().getName(), new FreeHotelsCOMMAND(this));
+				commandMap.register(this.getDescription().getName(), new FreeHotelsCOMMAND(this, this.getMainCommand("freehotels")));
 			
 			if(!this.manageFile().getBoolean("Options.commands.rentit.disabled"))
 				commandMap.register(this.getDescription().getName(), new RentItCOMMAND(this));
@@ -269,6 +269,11 @@ public class Main extends JavaPlugin {
 		//PAYMENT SCHEDULER
 		this.runnId = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new PaymentRunnable(this), 20 * 10, 20 * 60).getTaskId(); //EVERY MINUTE
 		
+	}
+	
+	private String getMainCommand(String cmd) {
+		String mainCmd = this.manageFile().getString("Options.commands." + cmd + ".main");
+		return (mainCmd != null ? mainCmd : cmd).toLowerCase();
 	}
 	
 	@Override

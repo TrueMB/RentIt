@@ -12,8 +12,8 @@ public class FreeShopsCOMMAND extends BukkitCommand{
 
 	private Main instance;
 	
-	public FreeShopsCOMMAND(Main plugin) {
-		super("freeshops", "Lists all free Shops", null, plugin.manageFile().getStringList("Options.commands.freeshops.aliases"));
+	public FreeShopsCOMMAND(Main plugin, String cmd) {
+		super(cmd, "Lists all free Shops", null, plugin.manageFile().getStringList("Options.commands.freeshops.aliases"));
 		this.instance = plugin;
 	}
 

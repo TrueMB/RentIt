@@ -16,8 +16,8 @@ public class HotelsCOMMAND extends BukkitCommand {
 
 	private Main instance;
 	
-	public HotelsCOMMAND(Main plugin) {
-		super("hotels", "Lists all Hotelrooms", null, plugin.manageFile().getStringList("Options.commands.hotels.aliases"));
+	public HotelsCOMMAND(Main plugin, String cmd) {
+		super(cmd, "Lists all Hotelrooms", null, plugin.manageFile().getStringList("Options.commands.hotels.aliases"));
 		this.instance = plugin;
 	}
 

@@ -45,8 +45,8 @@ public class HotelCOMMAND extends BukkitCommand {
 	
 	private RentTypes type = RentTypes.HOTEL;
 
-	public HotelCOMMAND(Main plugin) {
-		super("hotel", "Hotel Main Command", null, plugin.manageFile().getStringList("Options.commands.hotel.aliases"));
+	public HotelCOMMAND(Main plugin, String cmd) {
+		super(cmd, "Hotel Main Command", null, plugin.manageFile().getStringList("Options.commands.hotel.aliases"));
 		this.instance = plugin;
 
 		this.subCommands.add("users");
