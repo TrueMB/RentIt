@@ -69,6 +69,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		this.subCommands.add("resign");
 		this.subCommands.add("search");
 		this.subCommands.add("help");
+		this.subCommands.add("door");
 
 		this.adminSubCommands.add("createCat");
 		this.adminSubCommands.add("deleteCat");
@@ -83,7 +84,6 @@ public class ShopCOMMAND extends BukkitCommand {
 		this.adminSubCommands.add("updateBackup");
 		this.adminSubCommands.add("info");
 		this.adminSubCommands.add("catInfo");
-		this.adminSubCommands.add("door");
 		this.adminSubCommands.add("rollback");
 		this.adminSubCommands.add("setTime");
 		this.adminSubCommands.add("setSize");
@@ -296,6 +296,11 @@ public class ShopCOMMAND extends BukkitCommand {
 
 				if (rentHandler == null) {
 					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
+					return true;
+				}
+
+				if(rentHandler.isAdmin()) {
+					p.sendMessage(this.instance.getMessage("adminshopNotSupported"));
 					return true;
 				}
 				
@@ -1777,6 +1782,18 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 
+				RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+
+				if (rentHandler == null) {
+					p.sendMessage(this.instance.getMessage("shopDatabaseEntryMissing"));
+					return true;
+				}
+
+				if(rentHandler.isAdmin()) {
+					p.sendMessage(this.instance.getMessage("adminshopNotSupported"));
+					return true;
+				}
+
 				if (!this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
 					p.sendMessage(this.instance.getMessage("notShopOwner"));
 					return true;
@@ -1848,7 +1865,6 @@ public class ShopCOMMAND extends BukkitCommand {
 							}
 						}
 
-						RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
 						CategoryHandler catHandler = this.instance.getMethodes().getCategory(this.type, rentHandler.getCatID());
 
 					    String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(shopId);
@@ -2269,6 +2285,12 @@ public class ShopCOMMAND extends BukkitCommand {
 		
 		int shopId = rentHandler.getID();
 		UUID ownerUUID = rentHandler.getOwnerUUID();
+		
+		if(rentHandler.isAdmin()) {
+			rentHandler.reset();
+			this.instance.getShopsInvSQL().resetInventories(shopId);
+			return;
+		}
 
 		if(ownerUUID != null)
 			this.instance.getShopCacheFileManager().createShopBackup(ownerUUID, shopId);

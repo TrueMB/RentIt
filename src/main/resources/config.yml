@@ -643,6 +643,7 @@ Messages:
   maxExtendedReached: '&cSorry, you cant extend the rent any farther.'
   #Shop Messages
   adminshopPerm: '&cYou got no Permissions for this Admin Shop.'
+  adminshopNotSupported: '&cThis doesn''t work for Admin Shops'.'
   adminshopNoSupport: '&cThis command doesn''t work for Admin Shops.'
   shopDatabaseEntryMissing: '&cCouldn''t find Shop in the Database. Maybe DB Reset but not the Plugin folder?'
   shopAreaError: '&4ERROR. &cNo WorldEdit Selection.'
