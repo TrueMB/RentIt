@@ -100,8 +100,8 @@ public class AsyncSQL {
 		this.executor.execute(() -> this.sql.queryUpdate(statement));
 	}
 
-	public void queryUpdate(String statement) {
-		this.executor.execute(() -> this.sql.queryUpdate(statement));
+	public void queryUpdate(String statement, String... args) {
+		this.executor.execute(() -> this.sql.queryUpdate(statement, args));
 	}
 	
 	public void prepareStatement(PreparedStatement statement, Consumer<ResultSet> consumer) {
@@ -114,6 +114,13 @@ public class AsyncSQL {
 	public void prepareStatement(String statement, Consumer<ResultSet> consumer) {
 		this.executor.execute(() -> {
 			ResultSet result = this.sql.query(statement);
+			new Thread(() -> consumer.accept(result)).start();
+		});
+	}
+	
+	public void prepareStatement(String statement, Consumer<ResultSet> consumer, String... args) {
+		this.executor.execute(() -> {
+			ResultSet result = this.sql.query(statement, args);
 			new Thread(() -> consumer.accept(result)).start();
 		});
 	}

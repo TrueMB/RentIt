@@ -67,12 +67,14 @@ public class ShopInventorySQL {
 	
 	public void resetInventories(int shopId){
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_shop_inv_new + " SET sellInv = null, buyInv = null WHERE ID='" + shopId + "';");
+		sql.queryUpdate("UPDATE " + sql.t_shop_inv_new + " SET sellInv=?, buyInv=? WHERE ID=?;", 
+				null, null, String.valueOf(shopId));
 	}
 	
 	public void resetInventories(int shopId, ShopInventoryType type){
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_shop_inv_new + " SET " + type.toString().toLowerCase() + "Inv = null WHERE ID='" + shopId + "';");
+		sql.queryUpdate("UPDATE " + sql.t_shop_inv_new + " SET " + type.toString().toLowerCase() + "Inv = null WHERE ID=?;",
+				String.valueOf(shopId));
 	}
 	
 	public void updateInventories(int shopId, ShopInventoryType type){
@@ -104,11 +106,13 @@ public class ShopInventorySQL {
 			String contentsS = contents != null ? InventoryUtils.itemStackArrayToBase64(contents) : null;
 	
 			if(sql.isSqlLite()) //SQLLITE
-				sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + (type == ShopInventoryType.SELL ? contentsS : null) + "', '" + (type == ShopInventoryType.BUY ? contentsS : null) + "') "
-						+ "ON CONFLICT(ID, site) DO UPDATE SET " + type.toString().toLowerCase() + "Inv='" + contentsS + "';");
+				sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES (?,?,?,?) "
+						+ "ON CONFLICT(ID, site) DO UPDATE SET " + type.toString().toLowerCase() + "Inv=?;",
+					String.valueOf(shopId), String.valueOf(site), type == ShopInventoryType.SELL ? contentsS : null, type == ShopInventoryType.BUY ? contentsS : null, contentsS);
 			else //MYSQL
-				sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES ('" + shopId + "', '" + site + "', '" + (type == ShopInventoryType.SELL ? contentsS : null) + "', '" + (type == ShopInventoryType.BUY ? contentsS : null) + "') "
-						+ "ON DUPLICATE KEY UPDATE " + type.toString().toLowerCase() + "Inv='" + contentsS + "';");
+				sql.queryUpdate("INSERT INTO " + sql.t_shop_inv_new + " (ID, site, sellInv, buyInv) VALUES (?,?,?,?) "
+						+ "ON DUPLICATE KEY UPDATE " + type.toString().toLowerCase() + "Inv=?;",
+						String.valueOf(shopId), String.valueOf(site), type == ShopInventoryType.SELL ? contentsS : null, type == ShopInventoryType.BUY ? contentsS : null, contentsS);
 		}
 	}
 	
@@ -117,7 +121,7 @@ public class ShopInventorySQL {
 		
 		int id = handler.getID();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_shop_inv_new + " WHERE ID='" + id + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_shop_inv_new + " WHERE ID=?;", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -374,7 +378,7 @@ public class ShopInventorySQL {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, String.valueOf(id));
 	}
 	
 }

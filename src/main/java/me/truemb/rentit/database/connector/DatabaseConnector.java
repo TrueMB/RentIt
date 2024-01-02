@@ -46,9 +46,13 @@ public class DatabaseConnector {
 		this.openConnection();
 	}
 
-	public void queryUpdate(String query) {
+	public void queryUpdate(String query, String... args) {
 		checkConnection();
-		try (PreparedStatement statement = this.conn.prepareStatement(query)) {
+		try {
+			PreparedStatement statement = this.getConnection().prepareStatement(query);
+			for (int i = 0; i < args.length; i++) {
+				statement.setString(i + 1, args[i]);
+			}
 			queryUpdate(statement);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -70,10 +74,14 @@ public class DatabaseConnector {
 		}
 	}
 
-	public ResultSet query(String query) {
+	public ResultSet query(String query, String... args) {
 		checkConnection();
 		try {
-			return query(this.conn.prepareStatement(query));
+			PreparedStatement statement = this.getConnection().prepareStatement(query);
+			for (int i = 0; i < args.length; i++) {
+				statement.setString(i + 1, args[i]);
+			}
+			return query(statement);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -26,17 +26,19 @@ public class PlayerSettingsSQL {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
 		if(sql.isSqlLite()) //SQLLITE
-			sql.queryUpdate("INSERT INTO " + sql.t_settings + " (uuid, type, id, setting, value) VALUES ('" + uuid.toString() + "', '" + type.toString() + "', '" + id + "', '" + setting.toString() + "', '" + (value ? 1 : 0) + "') "
-					+ "ON CONFLICT(uuid, type, id, setting) DO UPDATE SET value='" + (value ? 1 : 0) + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_settings + " (uuid, type, id, setting, value) VALUES (?,?,?,?,?) "
+					+ "ON CONFLICT(uuid, type, id, setting) DO UPDATE SET value=?;",
+					uuid.toString(), type.toString(), String.valueOf(id), setting.toString(), String.valueOf(value ? 1 : 0), String.valueOf(value ? 1 : 0));
 		else //MYSQL
-			sql.queryUpdate("INSERT INTO " + sql.t_settings + " (uuid, type, id, setting, value) VALUES ('" + uuid.toString() + "', '" + type.toString() + "', '" + id + "', '" + setting.toString() + "', '" + (value ? 1 : 0) + "') "
-					+ "ON DUPLICATE KEY UPDATE value='" + (value ? 1 : 0) + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_settings + " (uuid, type, id, setting, value) VALUES (?,?,?,?,?) "
+					+ "ON DUPLICATE KEY UPDATE value=?;",
+					uuid.toString(), type.toString(), String.valueOf(id), setting.toString(), String.valueOf(value ? 1 : 0), String.valueOf(value ? 1 : 0));
 	}
 	
 	public void setupSettings(UUID uuid, RentTypes type, SettingsHandler settingsHandler) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_settings + " WHERE uuid='" + uuid.toString() + "' AND type='" + type.toString() + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_settings + " WHERE uuid=? AND type=?;", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -49,6 +51,6 @@ public class PlayerSettingsSQL {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, uuid.toString(), type.toString());
 	}
 }

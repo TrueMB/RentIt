@@ -42,52 +42,60 @@ public class ShopsSQL {
 		sql.addColumn(sql.t_shops, "admin", "TINYINT"); //Version 2.8.2
 	}
 	
-	public void createShop(int id, int catID, boolean admin){
+	public void createShop(int id, int catId, boolean admin){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("INSERT INTO " + sql.t_shops + " (ID, ownerUUID, ownerName, catID, autoPayment, admin) VALUES ('" + String.valueOf(id) + "','" + null + "', '" + null + "', '" + catID + "', '" + 1 + "', '" + (admin ? 1 : 0) + "')");
+		sql.queryUpdate("INSERT INTO " + sql.t_shops + " (ID, ownerUUID, ownerName, catID, autoPayment, admin) VALUES (?,?,?,?,?,?)",
+				String.valueOf(id), null, null, String.valueOf(catId), String.valueOf(1), String.valueOf(admin ? 1 : 0));
 	}
 
 	public void setOwner(int shopId, UUID ownerUUID, String ownerName, boolean autoPayment){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_shops + " SET ownerUUID='" + ownerUUID.toString() + "', ownerName='" + ownerName + "', autoPayment='" + (autoPayment ? 1 : 0) + "' WHERE ID='" + shopId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_shops + " SET ownerUUID=?, ownerName=?, autoPayment=? WHERE ID=?;",
+				ownerUUID.toString(), ownerName, String.valueOf(autoPayment ? 1 : 0), String.valueOf(shopId));
 	}
 	
 	public void setAlias(int shopId, String alias){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_shops + " SET alias='" + alias + "' WHERE ID='" + shopId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_shops + " SET alias=? WHERE ID=?;",
+				alias, String.valueOf(shopId));
 	}
 
-	public void setCatID(int shopId, int catID){
+	public void setCatID(int shopId, int catId){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_shops + " SET catID='" + catID + "' WHERE ID='" + shopId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_shops + " SET catID=? WHERE ID=?;",
+				String.valueOf(catId), String.valueOf(shopId));
 	}
 	
 	public void setNextPayment(int shopId, Timestamp ts){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_shops + " SET nextPayment='" + ts + "' WHERE ID='" + shopId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_shops + " SET nextPayment=? WHERE ID=?;",
+				ts.toString(), String.valueOf(shopId));
 	}
 
 	public void setAutoPayment(int shopId, boolean active){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_shops + " SET autoPayment='" + String.valueOf(active ? 1 : 0) + "' WHERE ID='" + shopId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_shops + " SET autoPayment=? WHERE ID=?;",
+				String.valueOf(active ? 1 : 0), String.valueOf(shopId));
 	}
 	
 	public void reset(int shopId, boolean active){
 
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_shops + " SET ownerUUID='" + null + "', ownerName='" + null + "', autoPayment='" + String.valueOf(active ? 1 : 0) + "' WHERE ID='" + shopId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_shops + " SET ownerUUID=?, ownerName=?, autoPayment=? WHERE ID=?;",
+				null, null, String.valueOf(active ? 1 : 0), String.valueOf(shopId));
 	}
 
 	public void delete(int shopId){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("DELETE FROM " + sql.t_shops + " WHERE ID='" + shopId + "'");
+		sql.queryUpdate("DELETE FROM " + sql.t_shops + " WHERE ID=?;",
+				String.valueOf(shopId));
 	}
 	
 	public void getNextShopId(Consumer<Integer> consumer){
@@ -118,7 +126,7 @@ public class ShopsSQL {
 		Player p = playerHandler.getPlayer();
 		UUID uuid = p.getUniqueId();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_shops + " WHERE ownerUUID='" + uuid.toString() + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_shops + " WHERE ownerUUID=?;", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -166,7 +174,7 @@ public class ShopsSQL {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, uuid.toString());
 	}
 	
 	public void setupShops() {
@@ -185,8 +193,8 @@ public class ShopsSQL {
 						String alias = rs.getString("alias") != null && !rs.getString("alias").equalsIgnoreCase("null") ? rs.getString("alias") : null;
 						int catID = rs.getInt("catID");
 						
-						UUID ownerUUID = !rs.getString("ownerUUID").equalsIgnoreCase("null") ? UUID.fromString(rs.getString("ownerUUID")) : null;
-						String ownerName = !rs.getString("ownerName").equalsIgnoreCase("null") ? rs.getString("ownerName") : null;
+						UUID ownerUUID = rs.getString("ownerUUID") != null && !rs.getString("ownerUUID").equalsIgnoreCase("null") ? UUID.fromString(rs.getString("ownerUUID")) : null;
+						String ownerName = rs.getString("ownerName") != null && !rs.getString("ownerName").equalsIgnoreCase("null") ? rs.getString("ownerName") : null;
 						
 						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						Date nextPaymentDay = formatter.parse(rs.getString("nextPayment"));

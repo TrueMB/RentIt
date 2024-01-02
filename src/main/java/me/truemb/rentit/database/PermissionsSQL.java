@@ -28,25 +28,28 @@ public class PermissionsSQL {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
 		if(sql.isSqlLite()) //SQLLITE
-			sql.queryUpdate("INSERT INTO " + sql.t_perms + " (ID, type, userUUID, permission, value) VALUES ('" + id + "', '" + type.toString() + "', '" + uuid.toString() + "', '" + permission + "', '" + (value ? 1 : 0) + "') "
-					+ "ON CONFLICT(ID, type, userUUID, permission) DO UPDATE SET value='" + (value ? 1 : 0) + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_perms + " (ID, type, userUUID, permission, value) VALUES (?,?,?,?,?) "
+					+ "ON CONFLICT(ID, type, userUUID, permission) DO UPDATE SET value=?;",
+					String.valueOf(id), type.toString(), uuid.toString(), permission, String.valueOf(value ? 1 : 0), String.valueOf(value ? 1 : 0));
 		else //MYSQL
-			sql.queryUpdate("INSERT INTO " + sql.t_perms + " (ID, type, userUUID, permission, value) VALUES ('" + id + "', '" + type.toString() + "', '" + uuid.toString() + "', '" + permission + "', '" + (value ? 1 : 0) + "') "
-					+ "ON DUPLICATE KEY UPDATE value='" + (value ? 1 : 0) + "';");
+			sql.queryUpdate("INSERT INTO " + sql.t_perms + " (ID, type, userUUID, permission, value) VALUES (?,?,?,?,?) "
+					+ "ON DUPLICATE KEY UPDATE value=?;",
+					String.valueOf(id), type.toString(), uuid.toString(), permission, String.valueOf(value ? 1 : 0), String.valueOf(value ? 1 : 0));
 		
 	}
 	
 	public void reset(RentTypes type, int Id){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("DELETE FROM " + sql.t_perms + " WHERE type='" + type.toString() + "' AND ID='" + Id + "'");
+		sql.queryUpdate("DELETE FROM " + sql.t_perms + " WHERE type=? AND ID=?;",
+				type.toString(), String.valueOf(Id));
 	}
 	
 	
 	public void setupPermissions(UUID uuid, RentTypes type, PermissionsHandler permsHandler) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE userUUID='" + uuid.toString() + "' AND type='" + type.toString() + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE userUUID=? AND type=?;", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -59,7 +62,7 @@ public class PermissionsSQL {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, uuid.toString(), type.toString());
 	}
 	
 	public void hasBuildPermissions(UUID uuid, RentTypes type, int id, Consumer<Boolean> callback) {
@@ -68,7 +71,7 @@ public class PermissionsSQL {
 		String adminPerm = this.instance.manageFile().getString("UserPermissions." + type.toString().toLowerCase() + ".Admin");
 		String buildPerm = this.instance.manageFile().getString("UserPermissions." + type.toString().toLowerCase() + ".Build");
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE userUUID='" + uuid.toString() + "' AND type='" + type.toString() + "' AND ID='" + String.valueOf(id) + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE userUUID=? AND type=? AND ID=?;", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -87,13 +90,13 @@ public class PermissionsSQL {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, uuid.toString(), type.toString(), String.valueOf(id));
 	}
 	
 	public void setupWorldGuardMembers(World world, RentTypes type, int id) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE type='" + type.toString() + "' AND ID='" + String.valueOf(id) + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_perms + " WHERE type=? AND ID=?;", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -107,7 +110,7 @@ public class PermissionsSQL {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, type.toString(), String.valueOf(id));
 	}
 	
 }

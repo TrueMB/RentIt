@@ -34,57 +34,65 @@ public class HotelsSQL {
 		this.instance = plugin;
 		AsyncSQL sql = this.instance.getAsyncSQL();
 
-		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_hotels + " (ID INT PRIMARY KEY, alias VARCHAR(100), ownerUUID VARCHAR(50), ownerName VARCHAR(16), catID INT, nextPayment TIMESTAMP DEFAULT CURRENT_TIMESTAMP, autoPayment TINYINT)");
+		sql.queryUpdate("CREATE TABLE IF NOT EXISTS " + sql.t_hotels + " (ID INT PRIMARY KEY, alias VARCHAR(100), ownerUUID VARCHAR(50), ownerName VARCHAR(16), catID INT, nextPayment TIMESTAMP DEFAULT CURRENT_TIMESTAMP, autoPayment TINYINT);");
 
 		//UPDATES
 		sql.addColumn(sql.t_hotels, "alias", "VARCHAR(100)");
 	}
 	
-	public void createHotel(int id, int catID){
+	public void createHotel(int id, int catId){
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("INSERT INTO " + sql.t_hotels + " (ID, ownerUUID, ownerName, catID, autoPayment) VALUES ('" + String.valueOf(id) + "','" + null + "', '" + null + "', '" + catID + "', '" + 1 + "')");
+		sql.queryUpdate("INSERT INTO " + sql.t_hotels + " (ID, ownerUUID, ownerName, catID, autoPayment) VALUES (?,?,?,?,?);",
+				String.valueOf(id), null, null, String.valueOf(catId), String.valueOf(1));
 	}
 
 	public void setOwner(int hotelId, UUID ownerUUID, String ownerName, boolean autoPayment){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET ownerUUID='" + ownerUUID.toString() + "', ownerName='" + ownerName + "', autoPayment='" + (autoPayment ? 1 : 0) + "' WHERE ID='" + hotelId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET ownerUUID=?, ownerName=?, autoPayment=? WHERE ID=?;",
+				ownerUUID.toString(), ownerName, String.valueOf(autoPayment ? 1 : 0), String.valueOf(hotelId));
 	}
 	
 	public void setAlias(int hotelId, String alias){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET alias='" + alias + "' WHERE ID='" + hotelId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET alias=? WHERE ID=?;",
+				alias, String.valueOf(hotelId));
 	}
 
-	public void setCatID(int hotelId, int catID){
+	public void setCatID(int hotelId, int catId){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET catID='" + catID + "' WHERE ID='" + hotelId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET catID=? WHERE ID=?;",
+				String.valueOf(catId), String.valueOf(hotelId));
 	}
 
 	public void setNextPayment(int hotelId, Timestamp ts){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET nextPayment='" + ts + "' WHERE ID='" + hotelId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET nextPayment=? WHERE ID=?;",
+				ts.toString(), String.valueOf(hotelId));
 	}
 
 	public void setAutoPayment(int hotelId, boolean active){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET autoPayment='" + String.valueOf(active ? 1 : 0) + "' WHERE ID='" + hotelId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET autoPayment=? WHERE ID=?;",
+				String.valueOf(active ? 1 : 0), String.valueOf(hotelId));
 	}
 	
 	public void reset(int hotelId, boolean active){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET ownerUUID='" + null + "', ownerName='" + null + "', autoPayment='" + String.valueOf(active ? 1 : 0) + "' WHERE ID='" + hotelId + "'");
+		sql.queryUpdate("UPDATE " + sql.t_hotels + " SET ownerUUID=?, ownerName=?, autoPayment=? WHERE ID=?;",
+				null, null, String.valueOf(active ? 1 : 0), String.valueOf(hotelId));
 	}
 
 	public void delete(int hotelId){
 		
 		AsyncSQL sql = this.instance.getAsyncSQL();
-		sql.queryUpdate("DELETE FROM " + sql.t_hotels + " WHERE ID='" + hotelId + "'");
+		sql.queryUpdate("DELETE FROM " + sql.t_hotels + " WHERE ID=?;", 
+				String.valueOf(hotelId));
 	}
 	
 	public void getNextHotelId(Consumer<Integer> consumer){
@@ -115,7 +123,7 @@ public class HotelsSQL {
 		Player p = playerHandler.getPlayer();
 		UUID uuid = p.getUniqueId();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_hotels + " WHERE ownerUUID='" + uuid.toString() + "';", new Consumer<ResultSet>() {
+		sql.prepareStatement("SELECT * FROM " + sql.t_hotels + " WHERE ownerUUID=?;", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -163,7 +171,7 @@ public class HotelsSQL {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, uuid.toString());
 	}
 	
 	public void setupHotels() {
@@ -184,8 +192,8 @@ public class HotelsSQL {
 						String alias = rs.getString("alias") != null && !rs.getString("alias").equalsIgnoreCase("null") ? rs.getString("alias") : null;
 						int catID = rs.getInt("catID");
 
-						UUID ownerUUID = !rs.getString("ownerUUID").equalsIgnoreCase("null") ? UUID.fromString(rs.getString("ownerUUID")) : null;
-						String ownerName = !rs.getString("ownerName").equalsIgnoreCase("null") ? rs.getString("ownerName") : null;
+						UUID ownerUUID = rs.getString("ownerUUID") != null && !rs.getString("ownerUUID").equalsIgnoreCase("null") ? UUID.fromString(rs.getString("ownerUUID")) : null;
+						String ownerName = rs.getString("ownerName") != null && !rs.getString("ownerName").equalsIgnoreCase("null") ? rs.getString("ownerName") : null;
 						
 						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						Date nextPaymentDay = formatter.parse(rs.getString("nextPayment"));
