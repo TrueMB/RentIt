@@ -2174,12 +2174,12 @@ public class ShopCOMMAND extends BukkitCommand {
 		}
 	}
 
-	private void addShopItem(Player p, RentTypeHandler rentHandler, CategoryHandler catHandler, ShopInventoryType shopInvType, ItemStack item, double price) {
+	private void addShopItem(Player p, RentTypeHandler rentHandler, CategoryHandler catHandler, ShopInventoryType shopInvType, ItemStack itemstack, double price) {
 		
 		//Check if Item Blacklisted
 		List<String> blacklistedItems = this.instance.manageFile().getStringList("Options.categorySettings.ShopCategory." + String.valueOf(catHandler.getCatID()) + ".blacklistedItems");
 		for(String blacklistedMaterial : blacklistedItems) {
-			if(item.getType().toString().equalsIgnoreCase(blacklistedMaterial)) {
+			if(itemstack.getType().toString().equalsIgnoreCase(blacklistedMaterial)) {
 				p.sendMessage(this.instance.getMessage("shopItemBlacklisted"));
 				return;
 			}
@@ -2190,7 +2190,7 @@ public class ShopCOMMAND extends BukkitCommand {
 			return;
 		}
 		
-		item = ShopItemManager.createShopItem(this.instance, item, rentHandler.getID(), price); // UPDATED ITEM WITH PRICE IN IT
+		ItemStack shopItem = ShopItemManager.createShopItem(this.instance, itemstack.clone(), rentHandler.getID(), price); // UPDATED ITEM WITH PRICE IN IT
 
 		boolean multiSite = catHandler.getMaxSite() > 1;
 
@@ -2200,8 +2200,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				for (int i = 0; i < inventories.getSize() - (multiSite ? 9 : 0); i++) {
 					ItemStack items = inventories.getItem(i);
 					if (items != null && items.getType() != Material.AIR) {
-		
-						if (items.isSimilar(item)) {
+						if (ShopItemManager.removeShopItem(this.instance, items.clone()).isSimilar(itemstack)) {
 							p.sendMessage(this.instance.getMessage("shopContainsItem"));
 							return;
 						}
@@ -2255,7 +2254,7 @@ public class ShopCOMMAND extends BukkitCommand {
 		}
 		
 		//Add the Item to the Shop
-		inventoryForItem.addItem(item);
+		inventoryForItem.addItem(shopItem);
 		
 
 		//Remove item if the player wants to sell it in the Shop
@@ -2268,8 +2267,8 @@ public class ShopCOMMAND extends BukkitCommand {
 		String alias = rentHandler.getAlias() != null ? rentHandler.getAlias() : String.valueOf(rentHandler.getID());
 		String catAlias = catHandler != null && catHandler.getAlias() != null ? catHandler.getAlias() : String.valueOf(catHandler.getCatID());
 			
-		String type = StringUtils.capitalize(item.getType().toString());
-		String itemName = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : type;
+		String type = StringUtils.capitalize(shopItem.getType().toString());
+		String itemName = shopItem.hasItemMeta() && shopItem.getItemMeta().hasDisplayName() ? shopItem.getItemMeta().getDisplayName() : type;
 		    
 		p.sendMessage(this.instance.getMessage("shopItemAdded")
 				.replaceAll("(?i)%" + "shopId" + "%", String.valueOf(rentHandler.getID()))
@@ -2278,7 +2277,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				.replaceAll("(?i)%" + "price" + "%", String.valueOf(price))
 				.replaceAll("(?i)%" + "itemname" + "%", itemName)
 				.replaceAll("(?i)%" + "type" + "%", type)
-				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(item.getAmount())));
+				.replaceAll("(?i)%" + "amount" + "%", String.valueOf(shopItem.getAmount())));
 	}
 	
 	private void resetArea(Player p, RentTypeHandler rentHandler) {
