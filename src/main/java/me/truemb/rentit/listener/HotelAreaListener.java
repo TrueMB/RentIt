@@ -187,6 +187,7 @@ public class HotelAreaListener implements Listener {
 					return;
 				}
 			}
+			
 			if(this.instance.getAreaFileManager().isDoorClosed(this.type, shopId)) {
 				if(p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) 
 						|| ((!this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.ownerBypassLock.toString()) 
@@ -206,6 +207,10 @@ public class HotelAreaListener implements Listener {
 					
 					return;
 				}
+			}else {
+				e.setCancelled(false);
+				e.setUseInteractedBlock(Result.ALLOW);
+				return;
 			}
 		}else if(b.getType() == Material.ENDER_CHEST) {
 

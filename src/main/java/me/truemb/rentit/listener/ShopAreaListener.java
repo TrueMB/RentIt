@@ -168,10 +168,10 @@ public class ShopAreaListener implements Listener {
 			int shopId = this.instance.getDoorFileManager().getIdFromDoor(loc);
 	
 		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
-	
+			
 			if (rentHandler == null)
 				return;
-			
+
 			if(!this.instance.getAreaFileManager().isDoorStatusSet(this.type, shopId)) {
 				
 				//SHOP DOORS CLOSED THROUGH CONFIG SETTINGS
@@ -193,6 +193,7 @@ public class ShopAreaListener implements Listener {
 					return;
 				}
 			}
+			
 			if(this.instance.getAreaFileManager().isDoorClosed(this.type, shopId)) {
 				if(p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) || (
 						(!this.instance.manageFile().isSet("Options.categorySettings.ShopCategory." + rentHandler.getCatID() + "." + CategorySettings.ownerBypassLock.toString()) 
@@ -211,6 +212,10 @@ public class ShopAreaListener implements Listener {
 						p.sendMessage(this.instance.getMessage("shopDoorStillClosed"));
 					return;
 				}
+			}else {
+				e.setCancelled(false);
+				e.setUseInteractedBlock(Result.ALLOW);
+				return;
 			}
 		}else if(b.getType() == Material.ENDER_CHEST) {
 
