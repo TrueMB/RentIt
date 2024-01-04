@@ -202,9 +202,6 @@ public class Main extends JavaPlugin {
 				new VillagerShopListener(this);
 			}
 		}
-		
-		//TODO REMOVE/SET IF DisableNPC was changed
-		//Maybe not needed, because Villager/NPC are getting destroyed on server stop.
 				
 		this.setupPlaceholderAPI();
 		
@@ -487,12 +484,12 @@ public class Main extends JavaPlugin {
 		
 		new UpdateChecker(this, UpdateCheckSource.SPIGET, SPIGOT_RESOURCE_ID)
                 .setDownloadLink(SPIGOT_RESOURCE_ID) // You can either use a custom URL or the Spigot Resource ID
-                .setDonationLink("https://www.paypal.me/truemb")
+                .setDonationLink("https://www.paypal.me/JacksonUndercover")
                 .setChangelogLink(SPIGOT_RESOURCE_ID) // Same as for the Download link: URL or Spigot Resource ID
                 .setNotifyOpsOnJoin(true) // Notify OPs on Join when a new version is found (default)
                 .setNotifyByPermissionOnJoin(this.getDescription().getName() + ".updatechecker") // Also notify people on join with this permission
                 .setUserAgent(new UserAgentBuilder().addPluginNameAndVersion())
-                .checkEveryXHours(12) // Check every hours
+                .checkEveryXHours(24) // Check every hours
                 .checkNow(); // And check right now
         
 	}
