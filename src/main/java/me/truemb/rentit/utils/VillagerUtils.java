@@ -7,6 +7,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import com.mysql.cj.callback.UsernameCallback;
+
 import me.truemb.rentit.main.Main;
 
 public class VillagerUtils {
@@ -63,7 +65,11 @@ public class VillagerUtils {
 		v.setGravity(false); //CANT FALL
 		v.setSilent(true); // NO SOUNDS
 		
-		String customName = this.instance.translateHexColorCodes(this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName : this.instance.manageFile().getString("Options.displayNameColor") + playerName);
+		String displayname = prefix + playerName;
+		String customName = this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.userShopName")
+				.replaceAll("(?i)%" + "displayname" + "%", displayname != null ? displayname : "")
+				.replaceAll("(?i)%" + "username" + "%", playerName != null ? playerName : "")
+			);
 		
 		v.setCustomName(customName);
 		v.setCustomNameVisible(true);

@@ -66,9 +66,8 @@ Options:
   useAdvancedChests: false
   #Shows above the Shop NPC the Prefix and DisplayName of a Player, if false: Only the Name
   useDisplayName: false
-  #The Colorcode Prefix
-  displayNameColor: '&6'
-  #The Admin Shop name
+  #The Shop names; %username% and %displayname%
+  userShopName: '&6%username%'
   adminShopName: '&4&lAdmin Shop'
   #If enabled, every command gets a Permission -> Default: rentit.shop.<subcommand> and rentit.shops / rentit.freeshops -> the same for hotelrooms
   advancedPermissions: false
@@ -919,4 +918,4 @@ Messages:
     notOwned: 'Not owned'
 
   #Do NOT touch
-ConfigVersion: 23
+ConfigVersion: 24

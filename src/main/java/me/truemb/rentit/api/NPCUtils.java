@@ -3,7 +3,6 @@ package me.truemb.rentit.api;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -106,8 +105,13 @@ public class NPCUtils {
 	        npc.getOrAddTrait(SkinTrait.class).setSkinName(playerName);
 		
 		npc.setProtected(true);
+
+		String displayname = prefix + playerName;
+		String customName = this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.userShopName")
+				.replaceAll("(?i)%" + "displayname" + "%", displayname != null ? displayname : "")
+				.replaceAll("(?i)%" + "username" + "%", playerName != null ? playerName : "")
+			);
 		
-		String customName = this.instance.manageFile().getBoolean("Options.useDisplayName") ? prefix + playerName: ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("Options.displayNameColor") + playerName);
 		npc.setName(customName);
 		
 		npc.spawn(loc);
