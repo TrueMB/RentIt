@@ -56,6 +56,40 @@ public class HotelAreaListener implements Listener {
     }
 	
 	@EventHandler
+	public void onDoorBreak(BlockBreakEvent e) {
+		Player p = e.getPlayer();
+		Block b = e.getBlock();
+		Location loc = b.getLocation();
+		
+		if((b.getBlockData() instanceof Door || b.getBlockData() instanceof TrapDoor || b.getBlockData() instanceof Gate) && this.instance.getDoorFileManager().isProtectedDoor(loc) && this.instance.getDoorFileManager().getTypeFromDoor(loc).equals(this.type)){
+			//DOOR LOCKED?
+			
+			int hotelId = this.instance.getDoorFileManager().getIdFromDoor(loc);
+	
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
+	
+			if (rentHandler == null)
+				return;
+			
+			if (this.instance.getMethodes().hasPermissionForCommand(p, true, "hotel", "door.remove")) {
+
+				if(b.getState().getBlockData() instanceof Door) {
+					Door door = (Door) b.getState().getBlockData();
+					this.instance.getDoorFileManager().removeDoor(door, b.getLocation());
+				}else if(b.getState().getBlockData() instanceof TrapDoor || b.getState().getBlockData() instanceof Gate) {
+					this.instance.getDoorFileManager().removeDoor(b.getLocation());
+				}
+				
+				p.sendMessage(this.instance.getMessage("hotelDoorRemoved"));
+				return;
+			}
+			
+			e.setCancelled(true);
+			p.sendMessage(this.instance.getMessage("doorRemovePerm"));
+		}
+	}
+	
+	@EventHandler
     public void onPermissionForPlace(BlockPlaceEvent e) {
 		
 		Player p = e.getPlayer();
@@ -161,14 +195,14 @@ public class HotelAreaListener implements Listener {
 		if((b.getBlockData() instanceof Door || b.getBlockData() instanceof TrapDoor || b.getBlockData() instanceof Gate) && this.instance.getDoorFileManager().isProtectedDoor(loc) && this.instance.getDoorFileManager().getTypeFromDoor(loc).equals(this.type)){
 			//DOOR LOCKED?
 			
-			int shopId = this.instance.getDoorFileManager().getIdFromDoor(loc);
+			int hotelId = this.instance.getDoorFileManager().getIdFromDoor(loc);
 	
-		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
 	
 			if (rentHandler == null)
 				return;
 			
-			if(!this.instance.getAreaFileManager().isDoorStatusSet(this.type, shopId)) {
+			if(!this.instance.getAreaFileManager().isDoorStatusSet(this.type, hotelId)) {
 
 				if(!p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) 
 						&& this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.doorsClosedUntilBuy.toString()) 
@@ -188,12 +222,12 @@ public class HotelAreaListener implements Listener {
 				}
 			}
 			
-			if(this.instance.getAreaFileManager().isDoorClosed(this.type, shopId)) {
+			if(this.instance.getAreaFileManager().isDoorClosed(this.type, hotelId)) {
 				if(p.hasPermission(this.instance.manageFile().getString("Permissions.bypass.doors")) 
 						|| ((!this.instance.manageFile().isSet("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.ownerBypassLock.toString()) 
 						|| this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.ownerBypassLock.toString())) 
-						&& (this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Door")) 
-						|| this.instance.getMethodes().hasPermission(this.type, shopId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))))) {
+						&& (this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Door")) 
+						|| this.instance.getMethodes().hasPermission(this.type, hotelId, uuid, this.instance.manageFile().getString("UserPermissions.hotel.Admin"))))) {
 					
 					e.setCancelled(false);
 					e.setUseInteractedBlock(Result.ALLOW);
@@ -214,9 +248,9 @@ public class HotelAreaListener implements Listener {
 			}
 		}else if(b.getType() == Material.ENDER_CHEST) {
 
-			int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
+			int hotelId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
 
-		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
 
 			if (rentHandler == null)
 				return; //DOES SHOP EXISTS?
@@ -226,7 +260,7 @@ public class HotelAreaListener implements Listener {
 					&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.useEnderchest.toString())) {
 				
 				if(this.instance.getWorldGuard() != null) {
-					if(!this.instance.getMethodes().isMemberFromRegion(this.type, shopId, p.getWorld(), uuid)) {
+					if(!this.instance.getMethodes().isMemberFromRegion(this.type, hotelId, p.getWorld(), uuid)) {
 						e.setCancelled(true);
 						p.sendMessage(this.instance.getMessage("notShopOwner"));
 						return;
@@ -234,7 +268,7 @@ public class HotelAreaListener implements Listener {
 					return;
 				}
 
-				if(rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) && !this.instance.getAreaFileManager().isMember(this.type, shopId, uuid)) {
+				if(rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) && !this.instance.getAreaFileManager().isMember(this.type, hotelId, uuid)) {
 					e.setCancelled(true);
 					p.sendMessage(this.instance.getMessage("notShopOwner"));
 					return;
@@ -244,9 +278,9 @@ public class HotelAreaListener implements Listener {
 			
 		}else if(b.getType().toString().contains("_BED")) {
 
-			int shopId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
+			int hotelId = this.instance.getAreaFileManager().getIdFromArea(this.type, loc);
 
-		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, hotelId);
 
 			if (rentHandler == null)
 				return; //DOES SHOP EXISTS?
@@ -256,7 +290,7 @@ public class HotelAreaListener implements Listener {
 					&& this.instance.manageFile().getBoolean("Options.categorySettings.HotelCategory." + rentHandler.getCatID() + "." + CategorySettings.useBed.toString())) {
 				
 				if(this.instance.getWorldGuard() != null) {
-					if(!this.instance.getMethodes().isMemberFromRegion(this.type, shopId, p.getWorld(), uuid)) {
+					if(!this.instance.getMethodes().isMemberFromRegion(this.type, hotelId, p.getWorld(), uuid)) {
 						e.setCancelled(true);
 						p.sendMessage(this.instance.getMessage("notShopOwner"));
 						return;
@@ -264,7 +298,7 @@ public class HotelAreaListener implements Listener {
 					return;
 				}
 
-				if(rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) && !this.instance.getAreaFileManager().isMember(this.type, shopId, uuid)) {
+				if(rentHandler.getOwnerUUID() == null || !rentHandler.getOwnerUUID().equals(uuid) && !this.instance.getAreaFileManager().isMember(this.type, hotelId, uuid)) {
 					e.setCancelled(true);
 					p.sendMessage(this.instance.getMessage("notShopOwner"));
 					return;

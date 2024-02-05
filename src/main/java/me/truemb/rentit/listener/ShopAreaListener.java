@@ -56,6 +56,40 @@ public class ShopAreaListener implements Listener {
     }
 	
 	@EventHandler
+	public void onDoorBreak(BlockBreakEvent e) {
+		Player p = e.getPlayer();
+		Block b = e.getBlock();
+		Location loc = b.getLocation();
+		
+		if((b.getBlockData() instanceof Door || b.getBlockData() instanceof TrapDoor || b.getBlockData() instanceof Gate) && this.instance.getDoorFileManager().isProtectedDoor(loc) && this.instance.getDoorFileManager().getTypeFromDoor(loc).equals(this.type)){
+			//DOOR LOCKED?
+			
+			int shopId = this.instance.getDoorFileManager().getIdFromDoor(loc);
+	
+		    RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(this.type, shopId);
+	
+			if (rentHandler == null)
+				return;
+			
+			if (this.instance.getMethodes().hasPermissionForCommand(p, true, "shop", "door.remove")) {
+				
+				if(b.getState().getBlockData() instanceof Door) {
+					Door door = (Door) b.getState().getBlockData();
+					this.instance.getDoorFileManager().removeDoor(door, b.getLocation());
+				}else if(b.getState().getBlockData() instanceof TrapDoor || b.getState().getBlockData() instanceof Gate) {
+					this.instance.getDoorFileManager().removeDoor(b.getLocation());
+				}
+				
+				p.sendMessage(this.instance.getMessage("shopDoorRemoved"));
+				return;
+			}
+			
+			e.setCancelled(true);
+			p.sendMessage(this.instance.getMessage("doorRemovePerm"));
+		}
+	}
+	
+	@EventHandler
     public void onPermissionForPlace(BlockPlaceEvent e) {
 		
 		Player p = e.getPlayer();
