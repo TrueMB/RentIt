@@ -1,6 +1,7 @@
 package me.truemb.rentit.utils;
 
 import java.sql.Timestamp;
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import java.time.Period;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAmount;
+import java.util.Locale;
 
 public class UtilitiesAPI {
 
@@ -80,19 +82,10 @@ public class UtilitiesAPI {
 	}
 	
 	public static String getHumanReadablePriceFromNumber(double number){
-
-	    if(number >= 1000000000){
-	        return String.format("%.2fB", number/ 1000000000.0);
-	    }
-
-	    if(number >= 1000000){
-	        return String.format("%.2fM", number/ 1000000.0);
-	    }
+	    NumberFormat fmtShort = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
+	    fmtShort.setMinimumFractionDigits(3);
 	    
-	    if(number >=1000){
-	        return String.format("%.2fK", number/ 1000.0);
-	    }
-	    return String.valueOf(number);
+	    return fmtShort.format(number);
 
 	}
 }
