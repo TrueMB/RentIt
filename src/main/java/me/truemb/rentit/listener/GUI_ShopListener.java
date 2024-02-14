@@ -6,24 +6,22 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
-
+import me.truemb.rentit.enums.GuiType;
 import me.truemb.rentit.enums.RentTypes;
 import me.truemb.rentit.enums.ShopInventoryType;
 import me.truemb.rentit.events.ItemBuyEvent;
 import me.truemb.rentit.events.ItemSellEvent;
 import me.truemb.rentit.gui.ShopBuyOrSell;
+import me.truemb.rentit.guiholder.GuiHolder;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.inventory.ShopInventoryBuilder;
@@ -31,11 +29,11 @@ import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.ShopItemManager;
 import me.truemb.rentit.utils.UtilitiesAPI;
 
-public class ShopListener implements Listener {
+public class GUI_ShopListener implements Listener {
 
 	private Main instance;
 
-	public ShopListener(Main plugin) {
+	public GUI_ShopListener(Main plugin) {
 		this.instance = plugin;
 		this.instance.getServer().getPluginManager().registerEvents(this, this.instance);
 	}
@@ -46,44 +44,50 @@ public class ShopListener implements Listener {
 		Player p = (Player) e.getWhoClicked();
 		UUID uuid = p.getUniqueId();
 
-		// ANKAUF
-		if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&',
-				this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameSell")))) {
+        Inventory inv = e.getClickedInventory();
+        ItemStack item = e.getCurrentItem();
 
-			e.setCancelled(true);
+        InventoryHolder holder = e.getInventory().getHolder();
+		NumberFormat formatter = new DecimalFormat("#0.00");
+        
+        if(holder == null)
+        	return;
+        
+        if(!(holder instanceof GuiHolder))
+        	return;
+        
+        GuiHolder guiHolder = (GuiHolder) holder;
+        RentTypes rentType = guiHolder.getRentType();
+        
+        if(guiHolder.getGuiType() != GuiType.SHOP)
+        	return;
+        
+        int id = guiHolder.getID();
+        ShopInventoryType shopInvType = guiHolder.getShopInvType();
 
-			if (e.getClickedInventory() == null)
-				return;
+        //Cancel everything, if player is in a RentIt GUI Inventory.
+		e.setCancelled(true);
+	    
+	    if(inv == null || !inv.equals(e.getView().getTopInventory()))
+	    	return;
 
-			if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
-				return;
+	    if(item == null || item.getType() == Material.AIR)
+	    	return;
+	    
+		RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(rentType, id);
+		
+		if (rentHandler == null)
+			return;
 
-			if (!e.getClickedInventory().equals(e.getView().getTopInventory()))
-				return;
+		UUID ownerUUID = rentHandler.getOwnerUUID();
+		OfflinePlayer owner = ownerUUID != null ? Bukkit.getOfflinePlayer(ownerUUID) : null;
 
-			ItemStack item = e.getCurrentItem();
-			ItemMeta meta = item.getItemMeta();
+		//checks if item is from Inventory GUI. F.e. next site item
+		if (this.checkSpecialItem(p, item))
+			return;
 
-			NamespacedKey key = new NamespacedKey(this.instance, "ID");
-
-			if (!meta.getPersistentDataContainer().has(key, PersistentDataType.INTEGER))
-				return;
-
-			int shopId = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
-
-			RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
-
-			if (rentHandler == null)
-				return;
-
-			UUID ownerUUID = rentHandler.getOwnerUUID();
-			OfflinePlayer owner = ownerUUID != null ? Bukkit.getOfflinePlayer(ownerUUID) : null;
-
-			NumberFormat formatter = new DecimalFormat("#0.00");
-
-			if (this.checkSpecialItem(p, item))
-				return;
-
+	    if(shopInvType == ShopInventoryType.SELL) {
+	    	
 			// Owner sells Items
 			if (e.isLeftClick() && (rentHandler.isAdmin() || !ownerUUID.equals(uuid))) {
 
@@ -113,21 +117,19 @@ public class ShopListener implements Listener {
 					if (items == null || items.getType() == Material.AIR) {
 						freeSpace += copyItem.getMaxStackSize();
 					} else if (items.isSimilar(copyItem)) {
-						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0
-								: copyItem.getMaxStackSize() - items.getAmount();
+						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0 : copyItem.getMaxStackSize() - items.getAmount();
 					}
 				}
 
 				if (freeSpace < copyItem.getAmount()) {
-					p.sendMessage(this.instance.getMessage("notEnoughInvSpace").replaceAll("(?i)%" + "amount" + "%",
-							String.valueOf(copyItem.getAmount() - freeSpace)));
+					p.sendMessage(this.instance.getMessage("notEnoughInvSpace")
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount() - freeSpace)));
 					return;
 				}
 
 				if (!this.instance.getEconomySystem().has(p, price)) {
-					p.sendMessage(this.instance.getMessage("notEnoughMoney").replaceAll("(?i)%" + "amount" + "%",
-							UtilitiesAPI.getHumanReadablePriceFromNumber(
-									price - this.instance.getEconomySystem().getBalance(p))));
+					p.sendMessage(this.instance.getMessage("notEnoughMoney")
+							.replaceAll("(?i)%" + "amount" + "%", UtilitiesAPI.getHumanReadablePriceFromNumber(price - this.instance.getEconomySystem().getBalance(p))));
 					return;
 				}
 
@@ -145,21 +147,21 @@ public class ShopListener implements Listener {
 				if(!rentHandler.isAdmin()) {
 					this.instance.getEconomySystem().deposit(owner, price); // GIVE SHOPOWNER THE MONEY
 
-					if (this.instance.getChestsUtils().checkChestsInArea(shopId, copyItem)) {
+					if (this.instance.getChestsUtils().checkChestsInArea(id, copyItem)) {
 						// LOOKS IN NEARBY CHESTS
-						this.instance.getChestsUtils().removeItemFromChestsInArea(shopId, copyItem);
+						this.instance.getChestsUtils().removeItemFromChestsInArea(id, copyItem);
 	
 					}else {
 				        item.setAmount(item.getAmount() - amount);
 				        if (item != null && item.getAmount() > 0) {
 				            item = ShopItemManager.editShopItemPrice(this.instance, item, itemPrice - price);
 				        } else {
-				        	this.moveItems(e, rentHandler, ShopInventoryType.SELL);
+				        	this.moveItems(e, rentHandler, shopInvType);
 				    	} 
 				    } 
 	
 					// UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
-					this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.SELL);
+					this.instance.getShopsInvSQL().updateInventories(id, shopInvType);
 				}
 
 				String type = StringUtils.capitalize(copyItem.getType().toString());
@@ -182,8 +184,8 @@ public class ShopListener implements Listener {
 						return;
 					}
 				}else {
-					if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Sell"))
-							&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+					if (!this.instance.getMethodes().hasPermission(rentType, id, uuid, this.instance.manageFile().getString("UserPermissions." + rentType.toString().toLowerCase() + ".Sell"))
+							&& !this.instance.getMethodes().hasPermission(rentType, id, uuid, this.instance.manageFile().getString("UserPermissions." + rentType.toString().toLowerCase() + ".Admin"))) {
 						return;
 					}
 				}
@@ -195,26 +197,23 @@ public class ShopListener implements Listener {
 					if (items == null || items.getType() == Material.AIR) {
 						freeSpace += copyItem.getMaxStackSize();
 					} else if (items.isSimilar(copyItem)) {
-						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0
-								: copyItem.getMaxStackSize() - items.getAmount();
+						freeSpace += copyItem.getMaxStackSize() - items.getAmount() <= 0 ? 0 : copyItem.getMaxStackSize() - items.getAmount();
 					}
 				}
 
 				if (freeSpace < copyItem.getAmount()) {
-					p.sendMessage(this.instance.getMessage("notEnoughInvSpace").replaceAll("(?i)%" + "amount" + "%",
-							String.valueOf(copyItem.getAmount() - freeSpace)));
+					p.sendMessage(this.instance.getMessage("notEnoughInvSpace")
+							.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount() - freeSpace)));
 					return;
 				}
 
-		        this.moveItems(e, rentHandler, ShopInventoryType.SELL);
+		        this.moveItems(e, rentHandler, shopInvType);
 				p.getInventory().addItem(copyItem);
 
-				this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.SELL); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
+				this.instance.getShopsInvSQL().updateInventories(id, shopInvType); // UPDATES THE ITEM IN THE DATABASE, CACHE GETS AUTOMATICLY UPDATED
 
 				String type = StringUtils.capitalize(copyItem.getType().toString());
-				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
-						? copyItem.getItemMeta().getDisplayName()
-						: type;
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
 
 				p.sendMessage(this.instance.getMessage("shopItemRemoved")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount()))
@@ -223,41 +222,7 @@ public class ShopListener implements Listener {
 			}
 
 			// Owner buys Item from Player
-		} else if (e.getView().getTitle().startsWith(ChatColor.translateAlternateColorCodes('&', this.instance.manageFile().getString("GUI.ShopBuyAndSell.displayNameBuy")))) {
-
-			e.setCancelled(true);
-
-			if (e.getClickedInventory() == null)
-				return;
-
-			if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
-				return;
-
-			if (!e.getClickedInventory().equals(e.getView().getTopInventory()))
-				return;
-
-			ItemStack item = e.getCurrentItem();
-			ItemMeta meta = item.getItemMeta();
-
-			NamespacedKey key = new NamespacedKey(this.instance, "ID");
-
-			if (!meta.getPersistentDataContainer().has(key, PersistentDataType.INTEGER))
-				return;
-
-			int shopId = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
-
-			RentTypeHandler rentHandler = this.instance.getMethodes().getTypeHandler(RentTypes.SHOP, shopId);
-
-			if (rentHandler == null)
-				return;
-
-			UUID ownerUUID = rentHandler.getOwnerUUID();
-			OfflinePlayer owner = ownerUUID != null ? Bukkit.getOfflinePlayer(ownerUUID) : null;
-
-			NumberFormat formatter = new DecimalFormat("#0.00");
-
-			if (this.checkSpecialItem(p, item))
-				return;
+		} else if (shopInvType == ShopInventoryType.BUY) {
 
 			// Player selling to owner
 			if (e.isLeftClick() && (rentHandler.isAdmin() || !ownerUUID.equals(uuid))) {
@@ -308,7 +273,7 @@ public class ShopListener implements Listener {
 						return;
 					}
 	
-					if (!this.instance.getChestsUtils().checkForSpaceInArea(shopId, copyItem)) {
+					if (!this.instance.getChestsUtils().checkForSpaceInArea(id, copyItem)) {
 						p.sendMessage(this.instance.getMessage("notEnoughSpace"));
 						return;
 					}
@@ -322,10 +287,10 @@ public class ShopListener implements Listener {
 
 				// LOOKS IN NEARBY CHESTS
 				if(!rentHandler.isAdmin()) {
-					this.instance.getChestsUtils().addItemToChestsInArea(shopId, copyItem);
+					this.instance.getChestsUtils().addItemToChestsInArea(id, copyItem);
 					this.instance.getEconomySystem().withdraw(owner, price); // GIVE SHOPOWNER THE MONEY
 
-					this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.BUY);
+					this.instance.getShopsInvSQL().updateInventories(id, shopInvType);
 				}
 
 				this.instance.getMethodes().removeItemFromPlayer(p, copyItem);
@@ -351,10 +316,8 @@ public class ShopListener implements Listener {
 						return;
 					}
 				}else {
-					if (!this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
-							this.instance.manageFile().getString("UserPermissions.shop.Buy"))
-							&& !this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid,
-									this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
+					if (!this.instance.getMethodes().hasPermission(rentType, id, uuid, this.instance.manageFile().getString("UserPermissions." + rentType.toString().toLowerCase() + ".Buy"))
+							&& !this.instance.getMethodes().hasPermission(rentType, id, uuid, this.instance.manageFile().getString("UserPermissions." + rentType.toString().toLowerCase() + ".Admin"))) {
 						return;
 					}
 				}
@@ -377,14 +340,12 @@ public class ShopListener implements Listener {
 					return;
 				}
 
-		        this.moveItems(e, rentHandler, ShopInventoryType.BUY);
+		        this.moveItems(e, rentHandler, shopInvType);
 
-				this.instance.getShopsInvSQL().updateInventories(shopId, ShopInventoryType.BUY);
+				this.instance.getShopsInvSQL().updateInventories(id, shopInvType);
 
 				String type = StringUtils.capitalize(copyItem.getType().toString());
-				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName()
-						? copyItem.getItemMeta().getDisplayName()
-						: type;
+				String itemName = copyItem.hasItemMeta() && copyItem.getItemMeta().hasDisplayName() ? copyItem.getItemMeta().getDisplayName() : type;
 
 				p.sendMessage(this.instance.getMessage("shopItemRemoved")
 						.replaceAll("(?i)%" + "amount" + "%", String.valueOf(copyItem.getAmount()))

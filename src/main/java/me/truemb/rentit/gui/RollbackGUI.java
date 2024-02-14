@@ -9,6 +9,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import me.truemb.rentit.enums.GuiType;
+import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.guiholder.GuiHolder;
 import me.truemb.rentit.main.Main;
 
 public class RollbackGUI {
@@ -38,7 +41,7 @@ public class RollbackGUI {
 							inv.setItem(53, instance.getMethodes().getGUIItem("rollback", "nextSiteItem", shopId, site));
 						
 						//CREATE A NEW ONE (Next Site/First Site)
-						inv = Bukkit.createInventory(null, 54, instance.translateHexColorCodes(instance.manageFile().getString("GUI.rollback.displayName")));
+						inv = Bukkit.createInventory(new GuiHolder(RentTypes.SHOP, GuiType.ROLLBACK), 54, instance.translateHexColorCodes(instance.manageFile().getString("GUI.rollback.displayName")));
 						//ADD INVENTORY TO LIST
 						inventories.add(inv);
 						
@@ -61,7 +64,7 @@ public class RollbackGUI {
 		
 		// Add at least one Inventory, even if it is empty
 		if(inventories.size() == 0)
-			inventories.add(Bukkit.createInventory(null, 54, instance.translateHexColorCodes(instance.manageFile().getString("GUI.rollback.displayName"))));
+			inventories.add(Bukkit.createInventory(new GuiHolder(RentTypes.SHOP, GuiType.ROLLBACK), 54, instance.translateHexColorCodes(instance.manageFile().getString("GUI.rollback.displayName"))));
 		
 		return inventories;
 		

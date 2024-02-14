@@ -12,7 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import me.truemb.rentit.enums.GuiType;
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.guiholder.GuiHolder;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
@@ -27,7 +29,7 @@ public class SearchResultGUI {
 		if (playerHandler == null)
 			return null;
 		
-		Inventory inv = Bukkit.createInventory(null, 18, instance.translateHexColorCodes(instance.manageFile().getString("GUI.searchInventory.displayName")));
+		Inventory inv = Bukkit.createInventory(new GuiHolder(RentTypes.SHOP, GuiType.SEARCH), 18, instance.translateHexColorCodes(instance.manageFile().getString("GUI.searchInventory.displayName")));
 		
 		int size = ids.size();
 				

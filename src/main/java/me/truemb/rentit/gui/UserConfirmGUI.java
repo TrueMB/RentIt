@@ -5,13 +5,12 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
-
+import me.truemb.rentit.enums.GuiType;
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.guiholder.GuiHolder;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
@@ -19,40 +18,23 @@ import me.truemb.rentit.utils.UtilitiesAPI;
 
 public class UserConfirmGUI {
 	
-	public static Inventory getShopConfirmationGUI(Main instance, int shopId) {
+	public static Inventory getConfirmationGUI(Main instance, RentTypes type, int id) {
 		
-		Inventory inv = Bukkit.createInventory(null, 9, instance.translateHexColorCodes(instance.manageFile().getString("GUI.shopConfirmation.displayName")));
+		String typeS = type.toString().toLowerCase();
 		
-		int confirmItemSlot = instance.manageFile().getInt("GUI.shopConfirmation.items.confirmItem.slot") - 1;
+		Inventory inv = Bukkit.createInventory(new GuiHolder(type, GuiType.CONFIRM).setID(id), 9, instance.translateHexColorCodes(instance.manageFile().getString("GUI." + typeS + "Confirmation.displayName")));
+		
+		int confirmItemSlot = instance.manageFile().getInt("GUI." + typeS + "Confirmation.items.confirmItem.slot") - 1;
 		if(confirmItemSlot >= 0)
-			inv.setItem(confirmItemSlot, instance.getMethodes().getGUIItem("shopConfirmation", "confirmItem", shopId));
+			inv.setItem(confirmItemSlot, instance.getMethodes().getGUIItem(typeS + "Confirmation", "confirmItem"));
 		
-		int infoItemSlot = instance.manageFile().getInt("GUI.shopConfirmation.items.infoItem.slot") - 1;
+		int infoItemSlot = instance.manageFile().getInt("GUI." + typeS + "Confirmation.items.infoItem.slot") - 1;
 		if(infoItemSlot >= 0)
-			inv.setItem(infoItemSlot, UserConfirmGUI.getInfoItem(instance, RentTypes.SHOP, shopId));
+			inv.setItem(infoItemSlot, UserConfirmGUI.getInfoItem(instance, type, id));
 		
-		int cancelItemSlot = instance.manageFile().getInt("GUI.shopConfirmation.items.cancelItem.slot") - 1;
+		int cancelItemSlot = instance.manageFile().getInt("GUI." + typeS + "Confirmation.items.cancelItem.slot") - 1;
 		if(cancelItemSlot >= 0)
-			inv.setItem(cancelItemSlot, instance.getMethodes().getGUIItem("shopConfirmation", "cancelItem", shopId));
-		
-		return inv;
-	}
-	
-	public static Inventory getHotelConfirmationGUI(Main instance, int hotelId) {
-		
-		Inventory inv = Bukkit.createInventory(null, 9, instance.translateHexColorCodes(instance.manageFile().getString("GUI.hotelConfirmation.displayName")));
-		
-		int confirmItemSlot = instance.manageFile().getInt("GUI.hotelConfirmation.items.confirmItem.slot") - 1;
-		if(confirmItemSlot >= 0)
-			inv.setItem(confirmItemSlot, instance.getMethodes().getGUIItem("hotelConfirmation", "confirmItem", hotelId));
-		
-		int infoItemSlot = instance.manageFile().getInt("GUI.hotelConfirmation.items.infoItem.slot") - 1;
-		if(infoItemSlot >= 0)
-			inv.setItem(infoItemSlot, UserConfirmGUI.getInfoItem(instance, RentTypes.HOTEL, hotelId));
-		
-		int cancelItemSlot = instance.manageFile().getInt("GUI.hotelConfirmation.items.cancelItem.slot") - 1;
-		if(cancelItemSlot >= 0)
-			inv.setItem(cancelItemSlot, instance.getMethodes().getGUIItem("hotelConfirmation", "cancelItem", hotelId));
+			inv.setItem(cancelItemSlot, instance.getMethodes().getGUIItem(typeS + "Confirmation", "cancelItem"));
 		
 		return inv;
 	}
@@ -88,14 +70,10 @@ public class UserConfirmGUI {
 					.replace("%time%", timeS));
 		}
 		
-		NamespacedKey key = new NamespacedKey(instance, "ID");
-		
 		ItemStack infoItem = new ItemStack(Material.valueOf(instance.manageFile().getString("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.type").toUpperCase()));
 	        
 	    ItemMeta infoItemMeta = infoItem.getItemMeta();
 	    infoItemMeta.setDisplayName(instance.translateHexColorCodes(instance.manageFile().getString("GUI." + type.toString().toLowerCase() + "Confirmation.items.infoItem.displayName")));
-	    
-	    infoItemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, id);
 		
 	    infoItemMeta.setLore(lore);
 		infoItem.setItemMeta(infoItemMeta);

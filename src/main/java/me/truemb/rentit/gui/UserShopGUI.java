@@ -6,7 +6,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import me.truemb.rentit.enums.GuiType;
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.guiholder.GuiHolder;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.inventory.ShopInventoryBuilder;
@@ -52,7 +54,7 @@ public class UserShopGUI {
 		
 		//Inventory not found
 		if(inv == null) {
-			inv = Bukkit.createInventory(null, size + (multiSite ? 9 : 0), instance.translateHexColorCodes(title));
+			inv = Bukkit.createInventory(new GuiHolder(RentTypes.SHOP, GuiType.SHOP).setShopInvType(builder.getType()).setID(shopId), size + (multiSite ? 9 : 0), instance.translateHexColorCodes(title));
 			rentHandler.setInventory(builder.getType(), site, inv); //Links the Inventory; No need to wait for items, since no player could have opened the Inventory
 		}
 		
@@ -76,15 +78,15 @@ public class UserShopGUI {
 		if(multiSite) {
 			int start = inv.getSize() - 9;
 			for(int i = start; i < inv.getSize(); i++)
-				inv.setItem(i, instance.getMethodes().getGUIItem("ShopBuyAndSell", "placeholderItem", shopId));
+				inv.setItem(i, instance.getMethodes().getGUIItem("ShopBuyAndSell", "placeholderItem"));
 			
 			if(site > 1)
-				inv.setItem(start, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem", shopId));
+				inv.setItem(start, instance.getMethodes().getGUIItem("ShopBuyAndSell", "beforeSiteItem"));
 				
 			if(hasNextSite)
-				inv.setItem(start + 8, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem", shopId));
+				inv.setItem(start + 8, instance.getMethodes().getGUIItem("ShopBuyAndSell", "nextSiteItem"));
 			
-			inv.setItem(start + 4, instance.getMethodes().getGUIItem("ShopBuyAndSell", "returnItem", shopId));
+			inv.setItem(start + 4, instance.getMethodes().getGUIItem("ShopBuyAndSell", "returnItem"));
 		}
 		
 		return inv;

@@ -13,7 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import me.truemb.rentit.enums.GuiType;
 import me.truemb.rentit.enums.RentTypes;
+import me.truemb.rentit.guiholder.GuiHolder;
 import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
@@ -23,7 +25,7 @@ public class CategoryGUI {
 	public static Inventory getCategoryGUI(Main instance, RentTypes type) {
 
 		String typeS = StringUtils.capitalize(type.toString().toLowerCase());
-		Inventory inv = Bukkit.createInventory(null, instance.manageFile().getInt("GUI.category" + typeS + ".invSize"), instance.translateHexColorCodes(instance.manageFile().getString("GUI.category" + typeS + ".displayName")));
+		Inventory inv = Bukkit.createInventory(new GuiHolder(type, GuiType.CATEGORY), instance.manageFile().getInt("GUI.category" + typeS + ".invSize"), instance.translateHexColorCodes(instance.manageFile().getString("GUI.category" + typeS + ".displayName")));
 
 		for (String itemPath : instance.manageFile().getConfigurationSection("GUI.category" + typeS + ".items").getKeys(false)) {
 			int slot = instance.manageFile().getInt("GUI.category" + typeS + ".items." + itemPath + ".slot") - 1;
@@ -38,7 +40,7 @@ public class CategoryGUI {
 
 		String typeS = StringUtils.capitalize(type.toString().toLowerCase());
 
-		Inventory inv = Bukkit.createInventory(null, 18, instance.translateHexColorCodes(instance.manageFile().getString("GUI.categorySub.displayName" + typeS)));
+		Inventory inv = Bukkit.createInventory(new GuiHolder(type, GuiType.CATEGORY_LIST), 18, instance.translateHexColorCodes(instance.manageFile().getString("GUI.categorySub.displayName" + typeS)));
 
 		HashMap<Integer, RentTypeHandler> hash = new HashMap<>();
 		if(instance.rentTypeHandlers.containsKey(type))

@@ -253,7 +253,7 @@ public class SignListener implements Listener{
 						}
 					}
 					
-					p.openInventory(UserConfirmGUI.getShopConfirmationGUI(this.instance, shopId));
+					p.openInventory(UserConfirmGUI.getConfirmationGUI(this.instance, RentTypes.SHOP, shopId));
 				}else if(uuid.equals(p.getUniqueId())) {
 					p.openInventory(UserRentGUI.getRentSettings(this.instance, RentTypes.SHOP, shopId, true));
 				}else {
@@ -289,7 +289,7 @@ public class SignListener implements Listener{
 							}
 						}
 						
-						p.openInventory(UserConfirmGUI.getHotelConfirmationGUI(this.instance, hotelId));
+						p.openInventory(UserConfirmGUI.getConfirmationGUI(this.instance, RentTypes.HOTEL, hotelId));
 					}else if(uuid.equals(p.getUniqueId())) {
 						p.openInventory(UserRentGUI.getRentSettings(this.instance, RentTypes.HOTEL, hotelId, true));
 					}else {

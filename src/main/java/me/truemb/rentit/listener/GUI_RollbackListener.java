@@ -13,17 +13,21 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+
+import me.truemb.rentit.enums.GuiType;
 import me.truemb.rentit.enums.ShopInventoryType;
+import me.truemb.rentit.guiholder.GuiHolder;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.inventory.ShopInventoryBuilder;
 import me.truemb.rentit.main.Main;
 
-public class ShopItemsBackupListener implements Listener {
+public class GUI_RollbackListener implements Listener {
 
 	private Main instance;
 	
-	public ShopItemsBackupListener(Main plugin) {
+	public GUI_RollbackListener(Main plugin) {
 		this.instance = plugin;
 		this.instance.getServer().getPluginManager().registerEvents(this, this.instance);
 	}
@@ -34,11 +38,21 @@ public class ShopItemsBackupListener implements Listener {
 		Player p = (Player) e.getWhoClicked();
 		UUID uuid = p.getUniqueId();
 		
-		if(e.getView().getTitle() == null || !e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.rollback.displayName"))))
-			return;
-		
-		ItemStack item = e.getCurrentItem();
+        ItemStack item = e.getCurrentItem();
 		ItemStack cursorItem = e.getCursor();
+
+        InventoryHolder holder = e.getInventory().getHolder();
+        
+        if(holder == null)
+        	return;
+        
+        if(!(holder instanceof GuiHolder))
+        	return;
+        
+        GuiHolder guiHolder = (GuiHolder) holder;
+        
+        if(guiHolder.getGuiType() != GuiType.ROLLBACK)
+        	return;
 
 		//NO ITEMS FROM BOTTOM INVENTORY
 		if((item != null && item.getType() != Material.AIR) && (e.getClickedInventory() == null || !e.getClickedInventory().equals(e.getView().getTopInventory()))) {
