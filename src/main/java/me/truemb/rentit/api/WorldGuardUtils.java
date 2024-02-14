@@ -48,6 +48,9 @@ public class WorldGuardUtils {
 		StateFlag useFlag = (StateFlag) WorldGuard.getInstance().getFlagRegistry().get("use");
 		pr.setFlag(useFlag, StateFlag.State.ALLOW);
 		
+		StateFlag chestAccessFlag = (StateFlag) WorldGuard.getInstance().getFlagRegistry().get("chest-access");
+		pr.setFlag(chestAccessFlag, StateFlag.State.ALLOW);
+		
         try {
     		regions.save();
     	} catch (StorageException e) {
