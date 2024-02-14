@@ -49,7 +49,7 @@ public class CategoryGUI {
 		List<Integer> ids = new ArrayList<>();
 		for(int id : hash.keySet()) {
 			RentTypeHandler rentHandler = hash.get(id);
-			if(rentHandler.getOwnerUUID() == null && rentHandler.getCatID() == catID)
+			if(rentHandler.getOwnerUUID() == null && rentHandler.getCatID() == catID && !rentHandler.isAdmin())
 				ids.add(id);
 		}
 		
