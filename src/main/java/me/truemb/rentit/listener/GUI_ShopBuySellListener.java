@@ -31,8 +31,6 @@ public class GUI_ShopBuySellListener implements Listener{
 		
 	}
 	
-	//TODO Test Old Items, if namespaces are getting removed for new items.
-	
 	@EventHandler
 	public void onClick(InventoryClickEvent e) {
 
@@ -65,13 +63,6 @@ public class GUI_ShopBuySellListener implements Listener{
 	        return;
 		
 	    int shopId = guiHolder.getID();
-		//ItemMeta meta = item.getItemMeta();
-		
-		//TODO do this in the holder? ID should only be needed on buy. Doesn't need to be on every Item
-		//if(!meta.getPersistentDataContainer().has(this.instance.idKey, PersistentDataType.INTEGER))
-		//	return;
-			
-		//int shopId = meta.getPersistentDataContainer().get(this.instance.idKey, PersistentDataType.INTEGER);
 			
 		if(this.instance.getMethodes().getGUIItem("shopBuyOrSell", "sellItem").isSimilar(this.instance.getMethodes().removeIDKeyFromItem(item))) {
 				
