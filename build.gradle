@@ -81,7 +81,7 @@ dependencies {
 }
 
 group = 'RentIt'
-version = '2.9.2'
+version = '2.9.3'
 description = 'RentIt'
 java.sourceCompatibility = JavaVersion.VERSION_17
 

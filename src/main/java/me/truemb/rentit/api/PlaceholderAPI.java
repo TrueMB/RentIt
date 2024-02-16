@@ -90,6 +90,15 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 
         for(RentTypes types : RentTypes.values()) {
         	
+            if(identifier.toLowerCase().startsWith(types.toString().toLowerCase() + "_") && identifier.toLowerCase().endsWith("_owner")) {
+            	int id = Integer.parseInt(identifier.toLowerCase().replace(types.toString().toLowerCase() + "_", "").replace("_owner", ""));
+            	RentTypeHandler handler = this.instance.getMethodes().getTypeHandler(types, id);
+        		if(handler == null)
+        			return "";
+        		
+        		return handler.getOwnerName() == null ? this.instance.manageFile().getString("PlaceholderAPI.default.currentOwner") : handler.getOwnerName();
+            }
+        	
         	//Does Player have a shop/hotel?
             if(identifier.equalsIgnoreCase("player_has" + types.toString()))
             	return pHandler != null && pHandler.getOwningList(types).size() > 0 ? this.instance.manageFile().getString("PlaceholderAPI.values.true") : this.instance.manageFile().getString("PlaceholderAPI.values.false");
