@@ -30,7 +30,12 @@ public class ItemSoldListener implements Listener {
 		Player seller = e.getSeller();
 		RentTypeHandler rentHandler = e.getRentTypeHandler();
 		
+		ItemStack item = e.getItem();
+		double price = e.getPrice();
+		
 		int shopId = rentHandler.getID();
+		
+		this.instance.getRILogger().getLogger().info("Player " + seller.getName() + " sold " + item.toString() + " to the Shop: " + String.valueOf(shopId) + " for " + String.valueOf(price) + "$.");
 
 		for (Player all : Bukkit.getOnlinePlayers()) {
 			UUID uuid = all.getUniqueId();
@@ -39,7 +44,6 @@ public class ItemSoldListener implements Listener {
 					|| this.instance.getMethodes().hasPermission(RentTypes.SHOP, shopId, uuid, this.instance.manageFile().getString("UserPermissions.shop.Admin"))) {
 				if(this.instance.getMethodes().isSettingActive(uuid, RentTypes.SHOP, shopId, Settings.shopMessaging)) {
 					
-					ItemStack item = e.getItem();
 					String type = StringUtils.capitalize(item.getType().toString());
 					String itemName = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : type;
 					
