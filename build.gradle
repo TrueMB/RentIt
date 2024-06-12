@@ -9,11 +9,17 @@ plugins {
     id 'maven-publish'
     
     id 'net.minecrell.plugin-yml.bukkit' version '0.6.0'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'net.minecrell.plugin-yml.paper' version '0.6.0'
+    id 'io.github.goooler.shadow' version '8.1.7'
 }
 
 repositories {
     mavenLocal()
+    
+    maven {
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
+    
     maven {
         url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/')
     }
@@ -60,12 +66,14 @@ dependencies {
     library 'mysql:mysql-connector-java:8.0.33'
     library 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
     
-    api 'net.wesjd:anvilgui:1.9.2-SNAPSHOT'
+    api 'net.wesjd:anvilgui:1.9.4-SNAPSHOT'
     api 'org.bstats:bstats-bukkit:3.0.2'
     api 'com.jeff_media:SpigotUpdateChecker:3.0.3'
     api 'com.google.code.gson:gson:2.10.1'
     
-    compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
+    compileOnly('io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT')
+    compileOnly 'dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT'
+    
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.19-SNAPSHOT'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.9-SNAPSHOT'
@@ -115,6 +123,51 @@ tasks.withType(Jar).all {
 	duplicatesStrategy 'exclude' 
 }
 
+paper {
+    main = 'me.truemb.rentit.main.Main'
+
+    // Generate paper-libraries.json from `library` and `paperLibrary` in `dependencies`
+    generateLibrariesJson = true
+
+    // Mark plugin for supporting Folia
+    foliaSupported = true
+
+    // API version (needs to be 1.19 or higher)
+    apiVersion = '1.19'
+
+    serverDependencies {
+    
+        'Worldguard' {
+            load = 'BEFORE'
+            required = false
+        }
+        'Citizens' {
+            load = 'BEFORE'
+            required = false
+        }
+        'Denizen' {
+            load = 'BEFORE'
+            required = false
+        }
+        'PlaceholderAPI' {
+            load = 'BEFORE'
+            required = false
+        }
+        'AdvancedChests' {
+            load = 'BEFORE'
+            required = false
+        }
+        'Playerpoints' {
+            load = 'BEFORE'
+            required = false
+        }
+        'Vault' {
+            load = 'BEFORE'
+            required = false
+        }
+    }
+}
+
 bukkit {
     name = "${project.name}"
     version = "${project.version}"
@@ -125,6 +178,7 @@ bukkit {
     main = 'me.truemb.rentit.main.Main'
     
     apiVersion = '1.16'
+    foliaSupported = true
     
     depend = ['WorldEdit']
     softDepend = ['WorldGuard', 'Citizens', 'Denizen', 'PlaceholderAPI', 'AdvancedChests', 'PlayerPoints', 'Vault']

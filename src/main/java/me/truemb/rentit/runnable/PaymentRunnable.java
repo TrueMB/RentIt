@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -19,7 +20,7 @@ import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.main.Main;
 import me.truemb.rentit.utils.UtilitiesAPI;
 
-public class PaymentRunnable implements Runnable {
+public class PaymentRunnable implements Consumer<Void> {
 
 	private Main instance;
 
@@ -28,7 +29,7 @@ public class PaymentRunnable implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public void accept(Void t) {
 		DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 		
 		Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -125,42 +126,37 @@ public class PaymentRunnable implements Runnable {
 			        	this.instance.getShopsSQL().reset(shopId, autoPaymentDefault);
 			        	this.instance.getPermissionsSQL().reset(RentTypes.SHOP, shopId);
 
-						Bukkit.getScheduler().runTask(this.instance, new Runnable() {
-
-							@Override
-							public void run() {
-					        	instance.getShopCacheFileManager().createShopBackup(uuid, shopId);
-								rentHandler.reset();
+			        	//TODO No Sync Scheduler needed? If needed, then should be done in method.
+					    this.instance.getShopCacheFileManager().createShopBackup(uuid, shopId);
+						rentHandler.reset();
 				
-								//REMOVE NPC
-								if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-									if(instance.getNpcUtils() != null) {
-										if (instance.getNpcUtils().isNPCSpawned(shopId))
-											instance.getNpcUtils().despawnNPC(shopId);
-									}else {
-										if(instance.getVillagerUtils().isVillagerSpawned(shopId))
-											instance.getVillagerUtils().destroyVillager(shopId);
-									}
-								}
-				
-								BlockVector3 min = instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
-								BlockVector3 max = instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
-								World world = instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
-										
-								instance.getBackupManager().paste(RentTypes.SHOP, shopId, min, max, world, false);
-								instance.getAdvancedChestsUtils().pasteChestsInArea(RentTypes.SHOP, shopId);
-								instance.getAreaFileManager().clearMember(RentTypes.SHOP, shopId);
-								instance.getAreaFileManager().setOwner(RentTypes.SHOP, shopId, null);
-								instance.getMethodes().clearPlayersFromRegion(RentTypes.SHOP, shopId, instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId));
-				
-								instance.getDoorFileManager().closeDoors(RentTypes.SHOP, shopId);
-								instance.getAreaFileManager().unsetDoorClosed(RentTypes.SHOP, shopId);
-										
-								instance.getMethodes().updateSign(RentTypes.SHOP, shopId, null, time, costs, shopId);
-								
-								instance.getShopsInvSQL().resetInventories(shopId);
+						//REMOVE NPC
+						if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
+							if(this.instance.getNpcUtils() != null) {
+								if(this.instance.getNpcUtils().isNPCSpawned(shopId))
+									this.instance.getNpcUtils().despawnNPC(shopId);
+							}else {
+								if(this.instance.getVillagerUtils().isVillagerSpawned(shopId))
+									this.instance.getVillagerUtils().destroyVillager(shopId);
 							}
-						});
+						}
+				
+						BlockVector3 min = instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
+						BlockVector3 max = instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
+						World world = instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
+										
+						this.instance.getBackupManager().paste(RentTypes.SHOP, shopId, min, max, world, false);
+						this.instance.getAdvancedChestsUtils().pasteChestsInArea(RentTypes.SHOP, shopId);
+						this.instance.getAreaFileManager().clearMember(RentTypes.SHOP, shopId);
+						this.instance.getAreaFileManager().setOwner(RentTypes.SHOP, shopId, null);
+						this.instance.getMethodes().clearPlayersFromRegion(RentTypes.SHOP, shopId, this.instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId));
+				
+						this.instance.getDoorFileManager().closeDoors(RentTypes.SHOP, shopId);
+						this.instance.getAreaFileManager().unsetDoorClosed(RentTypes.SHOP, shopId);
+										
+						this.instance.getMethodes().updateSign(RentTypes.SHOP, shopId, null, time, costs, shopId);
+								
+						this.instance.getShopsInvSQL().resetInventories(shopId);
 							
 						break; //NO PAYMENT WILL BE DONE, SHOP RESETED
 					}
@@ -201,26 +197,21 @@ public class PaymentRunnable implements Runnable {
 			        	this.instance.getHotelsSQL().reset(hotelId, autoPaymentDefault); // Resets the Owner and Payment
 			        	this.instance.getPermissionsSQL().reset(RentTypes.HOTEL, hotelId);
 
-						Bukkit.getScheduler().runTask(this.instance, new Runnable() {
-
-							@Override
-							public void run() {
-								rentHandler.reset();
-								BlockVector3 min = instance.getAreaFileManager().getMinBlockpoint(RentTypes.HOTEL, hotelId);
-								BlockVector3 max = instance.getAreaFileManager().getMaxBlockpoint(RentTypes.HOTEL, hotelId);
-								World world = instance.getAreaFileManager().getWorldFromArea(RentTypes.HOTEL, hotelId);
+			        	//TODO No Sync Scheduler needed? If needed, then should be done in method.
+						rentHandler.reset();
+						BlockVector3 min = instance.getAreaFileManager().getMinBlockpoint(RentTypes.HOTEL, hotelId);
+						BlockVector3 max = instance.getAreaFileManager().getMaxBlockpoint(RentTypes.HOTEL, hotelId);
+						World world = instance.getAreaFileManager().getWorldFromArea(RentTypes.HOTEL, hotelId);
 								
-								instance.getBackupManager().paste(RentTypes.HOTEL, hotelId, min, max, world, false);
-								instance.getAdvancedChestsUtils().pasteChestsInArea(RentTypes.HOTEL, hotelId);
-								instance.getAreaFileManager().clearMember(RentTypes.HOTEL, hotelId);
-								instance.getMethodes().clearPlayersFromRegion(RentTypes.HOTEL, hotelId, instance.getAreaFileManager().getWorldFromArea(RentTypes.HOTEL, hotelId));
+						this.instance.getBackupManager().paste(RentTypes.HOTEL, hotelId, min, max, world, false);
+						this.instance.getAdvancedChestsUtils().pasteChestsInArea(RentTypes.HOTEL, hotelId);
+						this.instance.getAreaFileManager().clearMember(RentTypes.HOTEL, hotelId);
+						this.instance.getMethodes().clearPlayersFromRegion(RentTypes.HOTEL, hotelId, this.instance.getAreaFileManager().getWorldFromArea(RentTypes.HOTEL, hotelId));
 
-								instance.getDoorFileManager().closeDoors(RentTypes.HOTEL, hotelId);
-								instance.getAreaFileManager().unsetDoorClosed(RentTypes.HOTEL, hotelId);
+						this.instance.getDoorFileManager().closeDoors(RentTypes.HOTEL, hotelId);
+						this.instance.getAreaFileManager().unsetDoorClosed(RentTypes.HOTEL, hotelId);
 								
-								instance.getMethodes().updateSign(RentTypes.HOTEL, hotelId, null, time, costs, hotelId);
-							}
-						});
+						this.instance.getMethodes().updateSign(RentTypes.HOTEL, hotelId, null, time, costs, hotelId);
 						
 						break; //NO PAYMENT WILL BE DONE, HOTEL RESETED
 					}

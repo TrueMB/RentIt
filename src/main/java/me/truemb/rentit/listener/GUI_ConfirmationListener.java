@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -148,19 +147,14 @@ public class GUI_ConfirmationListener implements Listener {
 	        
 			//NPC, only for Shops
 			if(type == RentTypes.SHOP) {
-		        Bukkit.getScheduler().runTaskLater(this.instance, new Runnable() {
-						
-					@Override
-					public void run() {
-						if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-							if(instance.getNpcUtils() != null) {
-								instance.getNpcUtils().spawnAndEditNPC(id, prefix, rentHandler.getOwnerName());
-							}else {
-								instance.getVillagerUtils().spawnVillager(id, prefix, rentHandler.getOwnerName());
-							}
-						}
+				//TODO is delay really needed?
+				if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
+					if(this.instance.getNpcUtils() != null) {
+						this.instance.getNpcUtils().spawnAndEditNPC(id, prefix, rentHandler.getOwnerName());
+					}else {
+						this.instance.getVillagerUtils().spawnVillager(id, prefix, rentHandler.getOwnerName());
 					}
-				}, 20);
+				}
 			}
 	        	
 	       	this.instance.getMethodes().updateSign(type, id);

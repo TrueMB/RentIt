@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -82,12 +81,8 @@ public class GUI_RollbackListener implements Listener {
 			if(item.isSimilar(this.instance.getMethodes().getGUIItem("rollback", "returnItem"))) {
 
 				//CLOSE INV - Delay so that the event gets canceled
-				Bukkit.getScheduler().runTaskLater(this.instance, new Runnable() {
-					
-					@Override
-					public void run() {
-						p.closeInventory();
-					}
+				this.instance.getThreadHandler().runTaskLaterSync(p, (t) -> {
+					p.closeInventory();
 				}, 2);
 				
 			}else if(isNextItem) {

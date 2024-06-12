@@ -7,8 +7,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.mysql.cj.callback.UsernameCallback;
-
 import me.truemb.rentit.main.Main;
 
 public class VillagerUtils {
@@ -23,9 +21,11 @@ public class VillagerUtils {
 	
 	public void disableVillagers() {
 		
-		//CREATE VILLAGERS 
+		//Remove VILLAGERS 
 		for(Villager vil : this.shop_villagers.values()) {
-			vil.remove();
+			this.instance.getThreadHandler().runTaskSync(vil, (t) -> {
+				vil.remove();
+			});
 		}
 	}
 
@@ -56,24 +56,27 @@ public class VillagerUtils {
 		if (loc == null)
 			return;
 		
-		Villager v = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER); //SHOP VILLAGER
-		this.shop_villagers.put(shopId, v);
+		this.instance.getThreadHandler().runTaskSync(loc, (t) -> {
 		
-		v.setAI(false); //CANT MOVE
-		v.setAware(false); //CANT GET PUSHED
-		v.setCollidable(false); // "
-		v.setGravity(false); //CANT FALL
-		v.setSilent(true); // NO SOUNDS
-		
-		String displayname = prefix + playerName;
-		String customName = this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.userShopName")
-				.replaceAll("(?i)%" + "displayname" + "%", displayname != null ? displayname : "")
-				.replaceAll("(?i)%" + "username" + "%", playerName != null ? playerName : "")
-			);
-		
-		v.setCustomName(customName);
-		v.setCustomNameVisible(true);
-
-		v.setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META
+			Villager v = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER); //SHOP VILLAGER
+			this.shop_villagers.put(shopId, v);
+			
+			v.setAI(false); //CANT MOVE
+			v.setAware(false); //CANT GET PUSHED
+			v.setCollidable(false); // "
+			v.setGravity(false); //CANT FALL
+			v.setSilent(true); // NO SOUNDS
+			
+			String displayname = prefix + playerName;
+			String customName = this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.userShopName")
+					.replaceAll("(?i)%" + "displayname" + "%", displayname != null ? displayname : "")
+					.replaceAll("(?i)%" + "username" + "%", playerName != null ? playerName : "")
+				);
+			
+			v.setCustomName(customName);
+			v.setCustomNameVisible(true);
+	
+			v.setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META
+		});
 	}
 }

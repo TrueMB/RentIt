@@ -265,7 +265,7 @@ public class RentTypeHandler {
 					if(entities instanceof Player) {
 						Player p = (Player) entities;
 						players.add(p);
-						Bukkit.getScheduler().runTask(this.instance, () -> p.closeInventory());
+						this.instance.getThreadHandler().runTaskSync(p, (t) -> p.closeInventory());
 					}
 				}
 			}
@@ -277,11 +277,9 @@ public class RentTypeHandler {
 
 		this.rollbackInv.put(uuid, RollbackGUI.getRollbackInventories(this.instance, uuid, this.id));
 
-		if(this.rollbackInv.get(uuid).size() > 0) {
-			for(Player all : players) {
-				Bukkit.getScheduler().runTask(this.instance, () -> all.openInventory(this.rollbackInv.get(uuid).get(0)));
-			}
-		}
+		if(this.rollbackInv.get(uuid).size() > 0)
+			for(Player all : players)
+				this.instance.getThreadHandler().runTaskSync(all, (t) -> all.openInventory(this.rollbackInv.get(uuid).get(0)));
 	}
 
 	/**

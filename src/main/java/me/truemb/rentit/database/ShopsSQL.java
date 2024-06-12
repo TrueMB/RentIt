@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -180,80 +179,71 @@ public class ShopsSQL {
 	public void setupShops() {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
-		sql.prepareStatement("SELECT * FROM " + sql.t_shops + ";", new Consumer<ResultSet>() {
-
-			@Override
-			public void accept(ResultSet rs) {
-				try {
-
-					int shopAmount = 0;
-					while (rs.next()) {
-						shopAmount++;
-						int id = rs.getInt("ID");
-						String alias = rs.getString("alias") != null && !rs.getString("alias").equalsIgnoreCase("null") ? rs.getString("alias") : null;
-						int catID = rs.getInt("catID");
+		sql.prepareStatement("SELECT * FROM " + sql.t_shops + ";", (rs) -> {
+			
+			try {
+				int shopAmount = 0;
+				while (rs.next()) {
+					shopAmount++;
+					int id = rs.getInt("ID");
+					String alias = rs.getString("alias") != null && !rs.getString("alias").equalsIgnoreCase("null") ? rs.getString("alias") : null;
+					int catID = rs.getInt("catID");
 						
-						UUID ownerUUID = rs.getString("ownerUUID") != null && !rs.getString("ownerUUID").equalsIgnoreCase("null") ? UUID.fromString(rs.getString("ownerUUID")) : null;
-						String ownerName = rs.getString("ownerName") != null && !rs.getString("ownerName").equalsIgnoreCase("null") ? rs.getString("ownerName") : null;
-						
-						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						Date nextPaymentDay = formatter.parse(rs.getString("nextPayment"));
-						Timestamp nextPayment = new Timestamp(nextPaymentDay.getTime());
+					UUID ownerUUID = rs.getString("ownerUUID") != null && !rs.getString("ownerUUID").equalsIgnoreCase("null") ? UUID.fromString(rs.getString("ownerUUID")) : null;
+					String ownerName = rs.getString("ownerName") != null && !rs.getString("ownerName").equalsIgnoreCase("null") ? rs.getString("ownerName") : null;
+					
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					Date nextPaymentDay = formatter.parse(rs.getString("nextPayment"));
+					Timestamp nextPayment = new Timestamp(nextPaymentDay.getTime());
 								
-						boolean autoPayment = rs.getInt("autoPayment") == 1 ? true : false;
-						boolean admin = rs.getInt("admin") == 1 ? true : false;
+					boolean autoPayment = rs.getInt("autoPayment") == 1 ? true : false;
+					boolean admin = rs.getInt("admin") == 1 ? true : false;
 						
-						RentTypeHandler handler = new RentTypeHandler(instance, type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment, admin);
-						handler.setAlias(alias);
+					RentTypeHandler handler = new RentTypeHandler(this.instance, this.type, id, catID, ownerUUID, ownerName, nextPayment, autoPayment, admin);
+					handler.setAlias(alias);
 						
-						String prefix = ownerUUID != null ? instance.getPermissionsAPI().getPrefix(ownerUUID) : "";
+					String prefix = ownerUUID != null ? instance.getPermissionsAPI().getPrefix(ownerUUID) : "";
 						
-						instance.getShopsInvSQL().setupShopInventories(handler); //GET SHOP INVENTORIES
+					this.instance.getShopsInvSQL().setupShopInventories(handler); //GET SHOP INVENTORIES
 
-						HashMap<Integer, RentTypeHandler> hash = new HashMap<>();
-						if(instance.rentTypeHandlers.containsKey(type))
-							hash = instance.rentTypeHandlers.get(type);
+					HashMap<Integer, RentTypeHandler> hash = new HashMap<>();
+					if(this.instance.rentTypeHandlers.containsKey(this.type))
+						hash = this.instance.rentTypeHandlers.get(type);
 						
-						hash.put(id, handler);
-						instance.rentTypeHandlers.put(type, hash);
+					hash.put(id, handler);
+					this.instance.rentTypeHandlers.put(type, hash);
 
-						if(handler.isAdmin() || ownerUUID != null) {
-							Bukkit.getScheduler().runTask(instance, new Runnable() {
-									
-								@Override
-								public void run() {
-									if(!instance.manageFile().getBoolean("Options.disableNPC")) {
-										if(instance.getVillagerUtils() != null) {
-											instance.getVillagerUtils().spawnVillager(id, prefix, handler.isAdmin() ? instance.translateHexColorCodes(instance.manageFile().getString("Options.adminShopName")) : ownerName);
-										}else {
-											instance.getNpcUtils().spawnAndEditNPC(id, prefix, handler.isAdmin() ? instance.translateHexColorCodes(instance.manageFile().getString("Options.adminShopName")) : ownerName);
-										}
-									}
-								}
-							});
-						}
-
-						if(instance.getWorldGuard() != null) {
-							World world = instance.getAreaFileManager().getWorldFromArea(type, id);
-							if(world != null) {
-								if(!instance.getMethodes().existsWorldGuardRegion(type, id, world)) {
-									BlockVector3 min = instance.getAreaFileManager().getMinBlockpoint(type, id);
-									BlockVector3 max = instance.getAreaFileManager().getMaxBlockpoint(type, id);
-									instance.getMethodes().createWorldGuardRegion(type, id, world, min, max);
-									
-									instance.getMethodes().addMemberToRegion(type, id, world, ownerUUID);
-									instance.getPermissionsSQL().setupWorldGuardMembers(world, type, id);
-								}
+					if(handler.isAdmin() || ownerUUID != null) {
+							
+						if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
+							if(this.instance.getVillagerUtils() != null) {
+								this.instance.getVillagerUtils().spawnVillager(id, prefix, handler.isAdmin() ? this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.adminShopName")) : ownerName);
 							}else {
-								instance.getLogger().warning("Couldn't find the World for Shop '" + id + "' in the Areas.yml! Please report the Issue.");
+								this.instance.getNpcUtils().spawnAndEditNPC(id, prefix, handler.isAdmin() ? this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.adminShopName")) : ownerName);
 							}
 						}
 					}
-					instance.getLogger().info(String.valueOf(shopAmount) + " Shops are loaded.");
-					return;
-				} catch (SQLException | ParseException e) {
-					e.printStackTrace();
+
+					if(this.instance.getWorldGuard() != null) {
+						World world = instance.getAreaFileManager().getWorldFromArea(this.type, id);
+						if(world != null) {
+							if(!this.instance.getMethodes().existsWorldGuardRegion(this.type, id, world)) {
+								BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(this.type, id);
+								BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(this.type, id);
+								this.instance.getMethodes().createWorldGuardRegion(this.type, id, world, min, max);
+									
+								this.instance.getMethodes().addMemberToRegion(this.type, id, world, ownerUUID);
+								this.instance.getPermissionsSQL().setupWorldGuardMembers(world, this.type, id);
+							}
+						}else {
+							this.instance.getLogger().warning("Couldn't find the World for Shop '" + id + "' in the Areas.yml! Please report the Issue.");
+						}
+					}
 				}
+				this.instance.getLogger().info(String.valueOf(shopAmount) + " Shops are loaded.");
+				return;
+			} catch (SQLException | ParseException e) {
+				e.printStackTrace();
 			}
 		});
 	}

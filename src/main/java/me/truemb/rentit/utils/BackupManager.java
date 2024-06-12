@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -50,83 +49,71 @@ public class BackupManager {
 	
 	public void save(RentTypes type, int id, BlockVector3 min, BlockVector3 max, World world) {
 		
-		Bukkit.getScheduler().runTask(this.instance, new Runnable() {
+		this.instance.getThreadHandler().runTaskSync(new Location(world, min.getBlockX(), min.getBlockY(), min.getBlockZ()), (t) -> {
 			
-			@Override
-			public void run() {
-				
-				File file = new File(dataDirectory, type.toString().toLowerCase() + "_" + String.valueOf(id) + ".schem"); // The schematic file
-		        
-				CuboidRegion region = new CuboidRegion(BukkitAdapter.adapt(world), min, max);
-				BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
+			File file = new File(this.dataDirectory, type.toString().toLowerCase() + "_" + String.valueOf(id) + ".schem"); // The schematic file
+	        
+			CuboidRegion region = new CuboidRegion(BukkitAdapter.adapt(world), min, max);
+			BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 
-				com.sk89q.worldedit.world.World weWorld = region.getWorld();
-				        
-				try (EditSession editSession = WorldEdit.getInstance().newEditSession(weWorld)) {
-					
-					ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
-					forwardExtentCopy.setCopyingEntities(true);
-					
-					Operations.complete(forwardExtentCopy);
-				} catch (WorldEditException ex) {
-					ex.printStackTrace();
-				}
+			com.sk89q.worldedit.world.World weWorld = region.getWorld();
+			        
+			try (EditSession editSession = WorldEdit.getInstance().newEditSession(weWorld)) {
 				
-				try (
-					ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
-					writer.write(clipboard);
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
+				ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
+				forwardExtentCopy.setCopyingEntities(true);
+				
+				Operations.complete(forwardExtentCopy);
+			} catch (WorldEditException ex) {
+				ex.printStackTrace();
 			}
 			
+			try (
+				ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
+				writer.write(clipboard);
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
 		});
     }
 	
 	public void paste(RentTypes type, int id, BlockVector3 min, BlockVector3 max, World world, boolean ignoreAir) {
-		
-		Bukkit.getScheduler().runTask(this.instance, new Runnable() {
-			
-			@Override
-			public void run() {
+
+		this.instance.getThreadHandler().runTaskSync(new Location(world, min.getBlockX(), min.getBlockY(), min.getBlockZ()), (t) -> {
 				
-		        File file = new File(dataDirectory, type.toString().toLowerCase() + "_" + String.valueOf(id) + ".schem"); // The schematic file
+			File file = new File(this.dataDirectory, type.toString().toLowerCase() + "_" + String.valueOf(id) + ".schem"); // The schematic file
+			ClipboardFormat format = ClipboardFormats.findByFile(file);
+			Clipboard clipboard = null;
+			try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
+				clipboard = reader.read();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
 		        
-		        ClipboardFormat format = ClipboardFormats.findByFile(file);
-		        Clipboard clipboard = null;
-		        try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
-		           clipboard = reader.read();
-		        } catch (IOException ex) {
-					ex.printStackTrace();
-				}
-		        
-		        for(int x = min.getBlockX(); x <= max.getBlockX(); x++)
-		            for(int y = min.getBlockY(); y <= max.getBlockY(); y++)
-		                for(int z = min.getBlockZ(); z <= max.getBlockZ(); z++)
-		                	for(Entity ent : world.getNearbyEntities(new Location(world, x, y, z), 1, 1, 1))
-		                		if(!(ent instanceof Player))
-		                			ent.remove();
+			for(int x = min.getBlockX(); x <= max.getBlockX(); x++)
+				for(int y = min.getBlockY(); y <= max.getBlockY(); y++)
+					for(int z = min.getBlockZ(); z <= max.getBlockZ(); z++)
+						for(Entity ent : world.getNearbyEntities(new Location(world, x, y, z), 1, 1, 1))
+							if(!(ent instanceof Player))
+								ent.remove();
 		
-		        com.sk89q.worldedit.world.World weWorld = BukkitAdapter.adapt(world);
+			com.sk89q.worldedit.world.World weWorld = BukkitAdapter.adapt(world);
 		        
-		        try (EditSession editSession = WorldEdit.getInstance().newEditSession(weWorld)) {
+			try (EditSession editSession = WorldEdit.getInstance().newEditSession(weWorld)) {
 		        	
-		        	SideEffectSet sideEffects = SideEffectSet.defaults()
-			        	.with(SideEffect.NEIGHBORS, State.OFF);
+				SideEffectSet sideEffects = SideEffectSet.defaults().with(SideEffect.NEIGHBORS, State.OFF);
+				editSession.setSideEffectApplier(sideEffects);
 		        	
-		        	editSession.setSideEffectApplier(sideEffects);
-		        	
-		            Operation operation = new ClipboardHolder(clipboard)
-		                    .createPaste(editSession)
-		                    .to(min)
-		                    .ignoreAirBlocks(ignoreAir)
-		                    .copyEntities(true)
-		                    .build();
-		            Operations.complete(operation);
-		        	editSession.close();
-		        }catch (WorldEditException ex) {
-		            ex.printStackTrace();
-			    }
+				Operation operation = new ClipboardHolder(clipboard)
+						.createPaste(editSession)
+						.to(min)
+						.ignoreAirBlocks(ignoreAir)
+						.copyEntities(true)
+						.build();
+				Operations.complete(operation);
+				editSession.close();
+			}catch (WorldEditException ex) {
+				ex.printStackTrace();
 			}
 			
 		});

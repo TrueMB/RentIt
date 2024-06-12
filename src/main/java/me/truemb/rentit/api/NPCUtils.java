@@ -2,7 +2,6 @@ package me.truemb.rentit.api;
 
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -120,13 +119,9 @@ public class NPCUtils {
 			npc.getEntity().setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META
 
 		if(shouldSit) {
-			Bukkit.getScheduler().runTaskLater(this.instance, new Runnable() {
-				
-				@Override
-				public void run() {
-					npc.teleport(loc, TeleportCause.PLUGIN);
-					PlayerAnimation.SIT.play((Player) npc.getEntity());
-				}
+			this.instance.getThreadHandler().runTaskLaterSync(loc, (t) -> {
+				npc.teleport(loc, TeleportCause.PLUGIN);
+				PlayerAnimation.SIT.play((Player) npc.getEntity());
 			}, 10);
 		}
 

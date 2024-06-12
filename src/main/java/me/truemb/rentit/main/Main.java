@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import me.truemb.rentit.api.AdvancedChestsUtils;
 import me.truemb.rentit.api.ChestShopAPI;
 import me.truemb.rentit.utils.chests.ChestsUtils;
+
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -90,7 +91,11 @@ import me.truemb.rentit.listener.GUI_RollbackListener;
 import me.truemb.rentit.listener.SignListener;
 import me.truemb.rentit.listener.GUI_ConfirmationListener;
 import me.truemb.rentit.listener.VillagerShopListener;
+import me.truemb.rentit.logger.RILogger;
 import me.truemb.rentit.runnable.PaymentRunnable;
+import me.truemb.rentit.threads.FoliaThreadHandler;
+import me.truemb.rentit.threads.SpigotThreadHandler;
+import me.truemb.rentit.threads.ThreadWrapper;
 import me.truemb.rentit.utils.BackupManager;
 import me.truemb.rentit.utils.ConfigUpdater;
 import me.truemb.rentit.utils.ShopItemManager;
@@ -154,15 +159,28 @@ public class Main extends JavaPlugin {
     private static final String SPIGOT_RESOURCE_ID = "90195";
     private static final int BSTATS_PLUGIN_ID = 12060;
     
-	private int runnId;
+    private ThreadWrapper threadWrapper;
+    private RILogger riLogger;
+
+	public boolean isPaperServer;
+	public boolean isFoliaServer;
 	
 	public boolean isSystemRunningOkay = true;
 	
 	@Override
 	public void onEnable() {
-		this.manageFile();
-		this.startMySql();
+		this.isPaperServer = this.checkIfPaperMC();
+		this.isFoliaServer = this.checkIfFolia();
 		
+		this.manageFile();
+		this.riLogger = new RILogger(this.getDataFolder().getPath());
+
+		if(this.isFoliaServer)
+			this.threadWrapper = new FoliaThreadHandler(this);
+		else
+			this.threadWrapper = new SpigotThreadHandler(this);
+		
+		this.startMySql();
 		this.shopMeth = new UtilMethodes(this);
 
 		if(!this.manageFile().getBoolean("Options.commands.rentit.disabled"))
@@ -170,14 +188,6 @@ public class Main extends JavaPlugin {
 		
 		if(!this.isSystemRunningOkay)
 			return; //DATABASE MISSING
-		
-		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
-			
-			@Override
-			public void run() {
-				initHandlers();
-			}
-		}, 20);
 
 		this.advancedChestsUtils = new AdvancedChestsUtils(this);
 		this.chestsUtils = new ChestsUtils(this);
@@ -266,7 +276,7 @@ public class Main extends JavaPlugin {
 		this.checkForUpdate();
 		
 		//PAYMENT SCHEDULER
-		this.runnId = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new PaymentRunnable(this), 20 * 10, 20 * 60).getTaskId(); //EVERY MINUTE
+		this.getThreadHandler().runTaskTimerAsync(new PaymentRunnable(this), 20 * 10, 20 * 60);
 		
 	}
 	
@@ -300,8 +310,6 @@ public class Main extends JavaPlugin {
 		
 		if(this.getVillagerUtils() != null)
 			this.getVillagerUtils().disableVillagers();
-
-		Bukkit.getScheduler().cancelTask(this.runnId);
 		
 		if(this.getAsyncSQL() != null && this.getAsyncSQL().getDatabaseConnector() != null && this.getAsyncSQL().getDatabaseConnector().getConnection() != null)
 			this.getAsyncSQL().getDatabaseConnector().closeConnection();
@@ -310,118 +318,103 @@ public class Main extends JavaPlugin {
 	public void initRestart(CommandSender sender) {
 
 		//------ CLOSE EVERTHING ------
-		Main plugin = this;
-		
-		new Thread(new Runnable() {
+		this.getThreadHandler().runTaskAsync((t) -> {
+
+			//DISABLING VILLAGERS
+			if(this.getVillagerUtils() != null)
+				this.getVillagerUtils().disableVillagers();
 			
-			@Override
-			public void run() {
-		
-				//DISABLING VILLAGERS
-				if(getVillagerUtils() != null) {
-					Bukkit.getScheduler().runTask(plugin, new Runnable() {
-						
-						@Override
-						public void run() {
-							getVillagerUtils().disableVillagers();
-						}
-					});
-				}
-				
-				//DISABLING PAYMENT RUNNABLE
-				Bukkit.getScheduler().cancelTask(runnId);
-				runnId = -1;
-				
-				//CLOSE SQL CONNECTION
-				if(getAsyncSQL() != null && getAsyncSQL().getDatabaseConnector() != null && getAsyncSQL().getDatabaseConnector().getConnection() != null)
-					getAsyncSQL().getDatabaseConnector().closeConnection();
-				
-				//RESET CONFIG CACHE
-				config = null;
-				reloadConfig();
-				
-				//RESET HASHES
-				playerHandlers = new HashMap<>();
-				catHandlers = new HashMap<>();
-				rentTypeHandlers = new HashMap<>();
-				
-				
-				//------ START EVERTHING AGAIN ------
-				
-				//CACHE CONFIG
-				manageFile();
-				
-				//START MYSQL
-				startMySql();
-		
-				if(!isSystemRunningOkay) {
-					sender.sendMessage(getMessage("reloadedError"));
-					return; //DATABASE MISSING
-				}
-				
-				Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-					
-					@Override
-					public void run() {
-						initHandlers();
-					}
-				}, 20);
-				
-
-				if(!manageFile().getBoolean("Options.disableNPC")) {
-					if(manageFile().getBoolean("Options.useNPCs")) {
-						setupCitizens(); //CITIZENS NPC
-					}else {
-						vilUtils = new VillagerUtils(plugin); //VILLAGER NPC
-						new VillagerShopListener(plugin);
-					}
-				}
-				
-				
-				//START MANAGERS
-				advancedChestsUtils = new AdvancedChestsUtils(plugin);
-				shopMeth = new UtilMethodes(plugin);
-				chestsUtils = new ChestsUtils(plugin);
-				backupMGR = new BackupManager(plugin);
-				shopItemMGR = new ShopItemManager();
-				npcFM = new NPCFileManager(plugin);
-				signFM = new SignFileManager(plugin);
-				shopCacheFM = new ShopCacheFileManager(plugin);
-				areaFM = new AreaFileManager(plugin);
-				doorFM = new DoorFileManager(plugin);
-				
-				//LOAD ONLINE PLAYERS
-				Bukkit.getOnlinePlayers().forEach(p -> {
-		
-					PlayerHandler playerHandler = new PlayerHandler(p);
-					playerHandler.init(plugin);
-					
-				});
-				
-				//START PAYMENT 5 SECONDS LATER, SO THAT EVERYTHING GETS LOADED FIRST
-				Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-					
-					@Override
-					public void run() {
-						//PAYMENT SCHEDULER
-						plugin.runnId = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new PaymentRunnable(plugin), 20 * 10, 20 * 60).getTaskId(); //EVERY MINUTE
-					}
-				}, 5 * 20);
-
-				sender.sendMessage(getMessage("reloaded"));
+			//CLOSE SQL CONNECTION
+			if(this.getAsyncSQL() != null && this.getAsyncSQL().getDatabaseConnector() != null && this.getAsyncSQL().getDatabaseConnector().getConnection() != null)
+				this.getAsyncSQL().getDatabaseConnector().closeConnection();
+			
+			//Cancel all Tasks
+			this.getThreadHandler().stopTasks();
+			
+			//RESET CONFIG CACHE
+			this.config = null;
+			reloadConfig();
+			
+			//RESET HASHES
+			this.playerHandlers = new HashMap<>();
+			this.catHandlers = new HashMap<>();
+			this.rentTypeHandlers = new HashMap<>();
+			
+			
+			//------ START EVERTHING AGAIN ------
+			
+			//CACHE CONFIG
+			this.manageFile();
+			
+			//START MYSQL
+			this.startMySql();
+	
+			if(!this.isSystemRunningOkay) {
+				sender.sendMessage(getMessage("reloadedError"));
+				return; //DATABASE MISSING
 			}
-		}).start();
+			
+
+			if(!this.manageFile().getBoolean("Options.disableNPC")) {
+				if(this.manageFile().getBoolean("Options.useNPCs")) {
+					this.setupCitizens(); //CITIZENS NPC
+				}else {
+					this.vilUtils = new VillagerUtils(this); //VILLAGER NPC
+					new VillagerShopListener(this);
+				}
+			}
+			
+			
+			//START MANAGERS
+			this.advancedChestsUtils = new AdvancedChestsUtils(this);
+			this.shopMeth = new UtilMethodes(this);
+			this.chestsUtils = new ChestsUtils(this);
+			this.backupMGR = new BackupManager(this);
+			this.shopItemMGR = new ShopItemManager();
+			this.npcFM = new NPCFileManager(this);
+			this.signFM = new SignFileManager(this);
+			this.shopCacheFM = new ShopCacheFileManager(this);
+			this.areaFM = new AreaFileManager(this);
+			this.doorFM = new DoorFileManager(this);
+			
+			//LOAD ONLINE PLAYERS
+			Bukkit.getOnlinePlayers().forEach(p -> {
+	
+				PlayerHandler playerHandler = new PlayerHandler(p);
+				playerHandler.init(this);
+				
+			});
+			
+			this.getThreadHandler().runTaskTimerAsync(new PaymentRunnable(this), 20 * 13, 20 * 60);
+			sender.sendMessage(getMessage("reloaded"));
+		});
 	}
 
 	private void initHandlers() {
-		Main plugin = this;
 		//First load the categories. They are needed for the Shops/Hotelrooms
 		this.getCategorySQL().setupCategories(b -> {
-			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-				this.getShopsSQL().setupShops();
-				this.getHotelsSQL().setupHotels();
-			}, 10);
+			this.getShopsSQL().setupShops();
+			this.getHotelsSQL().setupHotels();
 		});
+	}
+	
+	//Check server version
+	private boolean checkIfPaperMC() {
+		try {
+		    Class.forName("com.destroystokyo.paper.PaperConfig");
+		    return true;
+		} catch (ClassNotFoundException ignored) {
+			return false;
+		}
+	}
+	
+	private boolean checkIfFolia() {
+	    try {
+	        Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+	        return true;
+	    } catch (ClassNotFoundException e) {
+	        return false;
+	    }
 	}
 	
 	//CONFIG
@@ -588,7 +581,7 @@ public class Main extends JavaPlugin {
 	
 	//MySQL
 	private void startMySql() {
-		this.getLogger().info("{SQL} starting SQL . . .");
+		this.getLogger().info("{SQL} starting SQL...");
 		try {
 			this.sql = new AsyncSQL(this);
 			this.catSQL = new CategoriesSQL(this);
@@ -598,10 +591,11 @@ public class Main extends JavaPlugin {
 			this.psettingSQL = new PlayerSettingsSQL(this);
 			this.shopInvSQL = new ShopInventorySQL(this);
 
-			this.isSystemRunningOkay = true; //STOP PLUGIN HERE
+			this.isSystemRunningOkay = true;
+			this.initHandlers();
 			
 			// Reconnect Method
-			Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+			Consumer<Void> consumer = (t) -> {
 				if(this.sql == null)
 					return;
 							
@@ -622,7 +616,9 @@ public class Main extends JavaPlugin {
 				} catch (SQLException | ClassNotFoundException e) {
 					e.printStackTrace();
 				}
-			}, 20 * 60 * 20, 20 * 60 * 20);
+			};
+			
+			this.getThreadHandler().runTaskTimerAsync(consumer, 20 * 60 * 20, 20 * 60 * 20);
 						
 			this.getLogger().info("{SQL} successfully connected to Database.");
 		} catch (Exception e) {
@@ -752,5 +748,13 @@ public class Main extends JavaPlugin {
 
 	public ShopInventoryBuilder getShopInvBuilder(UUID uuid) {
 		return this.shopInvBuilder.get(uuid);
+	}
+
+	public RILogger getRILogger() {
+		return this.riLogger;
+	}
+
+	public ThreadWrapper getThreadHandler() {
+		return this.threadWrapper;
 	}
 }
