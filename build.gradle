@@ -21,10 +21,6 @@ repositories {
     }
     
     maven {
-        url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/')
-    }
-
-    maven {
         url = uri('https://repo.rosewooddev.io/repository/public/')
     }
 
@@ -66,7 +62,7 @@ dependencies {
     library 'mysql:mysql-connector-java:8.0.33'
     library 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
     
-    api 'net.wesjd:anvilgui:1.9.4-SNAPSHOT'
+    api 'net.wesjd:anvilgui:1.10.0-SNAPSHOT'
     api 'org.bstats:bstats-bukkit:3.0.2'
     api 'com.jeff_media:SpigotUpdateChecker:3.0.3'
     api 'com.google.code.gson:gson:2.10.1'
@@ -91,7 +87,7 @@ dependencies {
 group = 'RentIt'
 version = '2.9.3'
 description = 'RentIt'
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 sourceSets {
     main { 
@@ -123,21 +119,41 @@ tasks.withType(Jar).all {
 	duplicatesStrategy 'exclude' 
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+tasks.shadowJar {
+  archiveClassifier.set('') //Remove "-all" from the builded jar
+  
+  manifest {
+    attributes["paperweight-mappings-namespace"] = "spigot"
+  }
+}
+
 paper {
     main = 'me.truemb.rentit.main.Main'
 
     // Generate paper-libraries.json from `library` and `paperLibrary` in `dependencies`
+    loader = "me.truemb.rentit.loader.PaperPluginLoader"
     generateLibrariesJson = true
 
     // Mark plugin for supporting Folia
     foliaSupported = true
 
     // API version (needs to be 1.19 or higher)
-    apiVersion = '1.19'
+    apiVersion = '1.20'
 
     serverDependencies {
     
-        'Worldguard' {
+        'WorldEdit' {
+            load = 'BEFORE'
+            required = true
+        }
+        
+        'WorldGuard' {
             load = 'BEFORE'
             required = false
         }
@@ -157,7 +173,7 @@ paper {
             load = 'BEFORE'
             required = false
         }
-        'Playerpoints' {
+        'PlayerPoints' {
             load = 'BEFORE'
             required = false
         }
@@ -177,8 +193,7 @@ bukkit {
     author = 'TrueMB'
     main = 'me.truemb.rentit.main.Main'
     
-    apiVersion = '1.16'
-    foliaSupported = true
+    apiVersion = '1.20'
     
     depend = ['WorldEdit']
     softDepend = ['WorldGuard', 'Citizens', 'Denizen', 'PlaceholderAPI', 'AdvancedChests', 'PlayerPoints', 'Vault']
