@@ -18,7 +18,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: latest
+          gradle-version: 8.8
       - name: Build
         run: |
           ./gradlew build
