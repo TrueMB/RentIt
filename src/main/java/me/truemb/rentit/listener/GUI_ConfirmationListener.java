@@ -152,7 +152,7 @@ public class GUI_ConfirmationListener implements Listener {
 					if(this.instance.getNpcUtils() != null) {
 						this.instance.getNpcUtils().spawnAndEditNPC(id, prefix, rentHandler.getOwnerName());
 					}else {
-						this.instance.getVillagerUtils().spawnVillager(id, prefix, rentHandler.getOwnerName());
+						this.instance.getVillagerUtils().createVillager(id, prefix, rentHandler.getOwnerName());
 					}
 				}
 			}

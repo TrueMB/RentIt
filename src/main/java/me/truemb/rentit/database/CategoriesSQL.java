@@ -119,51 +119,49 @@ public class CategoriesSQL {
 		sql.queryUpdate("DELETE FROM " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + " WHERE catID=?;", String.valueOf(catId));
 	}
 
-	public void setupCategories(Consumer<Boolean> c) {
+	public void setupCategory(RentTypes type, Consumer<Boolean> c) {
 		AsyncSQL sql = this.instance.getAsyncSQL();
 		
-		for(RentTypes type : RentTypes.values()) {
-			sql.prepareStatement("SELECT * FROM " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + ";", (rs) -> {
-				try {
-					int catAmount = 0;
-						
-					while (rs.next()) {
-						catAmount++;
+		sql.prepareStatement("SELECT * FROM " + (type.equals(RentTypes.SHOP) ? sql.t_shop_categories : sql.t_hotel_categories) + ";", (rs) -> {
+			try {
+				int catAmount = 0;
+					
+				while (rs.next()) {
+					catAmount++;
 							
-						int catID = rs.getInt("catID");
-						String alias = rs.getString("alias") != null && !rs.getString("alias").equalsIgnoreCase("null") ? rs.getString("alias") : null;
-						double costs = rs.getDouble("costs");
-						String time = rs.getString("time");
+					int catID = rs.getInt("catID");
+					String alias = rs.getString("alias") != null && !rs.getString("alias").equalsIgnoreCase("null") ? rs.getString("alias") : null;
+					double costs = rs.getDouble("costs");
+					String time = rs.getString("time");
 
-						CategoryHandler handler = new CategoryHandler(catID, costs, time);
-						handler.setAlias(alias);
+					CategoryHandler handler = new CategoryHandler(catID, costs, time);
+					handler.setAlias(alias);
 							
-						if(type.equals(RentTypes.SHOP)) {
-							int size = rs.getInt("size");
-							handler.setSize(size);
+					if(type.equals(RentTypes.SHOP)) {
+						int size = rs.getInt("size");
+						handler.setSize(size);
 							
-							int maxSite = rs.getInt("maxSite");
-							if(maxSite <= 0)
-								maxSite = 1;
-							handler.setMaxSite(maxSite);
-						}
-							
-						HashMap<Integer, CategoryHandler> hash = new HashMap<>();
-						if(this.instance.catHandlers.containsKey(type))
-							hash = this.instance.catHandlers.get(type);
-							
-						hash.put(catID, handler);
-						this.instance.catHandlers.put(type, hash);
+						int maxSite = rs.getInt("maxSite");
+						if(maxSite <= 0)
+							maxSite = 1;
+						handler.setMaxSite(maxSite);
 					}
 						
-					this.instance.getLogger().info(String.valueOf(catAmount) + " " + type.toString() + "-Categories are loaded.");
-					c.accept(true);
-				} catch (SQLException e) {
-					e.printStackTrace();
-					c.accept(false);
-					return;
-				}
-			});
-		}
+					HashMap<Integer, CategoryHandler> hash = new HashMap<>();
+					if(this.instance.catHandlers.containsKey(type))
+						hash = this.instance.catHandlers.get(type);
+							
+					hash.put(catID, handler);
+					this.instance.catHandlers.put(type, hash);
+					}
+					
+				this.instance.getLogger().info(String.valueOf(catAmount) + " " + type.toString() + "-Categories are loaded.");
+				c.accept(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				c.accept(false);
+				return;
+			}
+		});
 	}
 }

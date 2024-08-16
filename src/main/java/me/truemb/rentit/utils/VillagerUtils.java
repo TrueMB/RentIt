@@ -3,6 +3,8 @@ package me.truemb.rentit.utils;
 import java.util.HashMap;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -19,13 +21,25 @@ public class VillagerUtils {
 		this.instance = plugin;
 	}
 	
-	public void disableVillagers() {
-		
-		//Remove VILLAGERS 
-		for(Villager vil : this.shop_villagers.values()) {
-			this.instance.getThreadHandler().runTaskSync(vil, (t) -> {
-				vil.remove();
-			});
+	public void loadVillagers() {
+		YamlConfiguration config = this.instance.getNPCFileManager().getConfig();
+		for(String shopIdS : config.getConfigurationSection("").getKeys(false)) {
+			int shopId = Integer.parseInt(shopIdS);
+			
+			Location loc = this.instance.getNPCFileManager().getNPCLocForShop(shopId);
+			this.instance.getThreadHandler().runTaskLaterSync(loc, (t) -> {
+				for(Entity entities : loc.getNearbyEntities(1, 1, 1)) {
+					if(entities instanceof Villager) {
+						Villager v = (Villager) entities;
+						//Replace Meta since it gets removed
+						v.setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META
+						
+						this.shop_villagers.put(shopId, v);
+						break;
+					}
+				}
+			}, 30);
+			
 		}
 	}
 
@@ -50,33 +64,30 @@ public class VillagerUtils {
 		vil.teleport(loc);
 	}
 
-	public void spawnVillager(int shopId, String prefix, String playerName) {
+	public void createVillager(int shopId, String prefix, String playerName) {
 
 		Location loc = this.instance.getNPCFileManager().getNPCLocForShop(shopId);
 		if (loc == null)
 			return;
-		
-		this.instance.getThreadHandler().runTaskSync(loc, (t) -> {
-		
-			Villager v = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER); //SHOP VILLAGER
-			this.shop_villagers.put(shopId, v);
+				
+		Villager v = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER); //SHOP VILLAGER
+		this.shop_villagers.put(shopId, v);
 			
-			v.setAI(false); //CANT MOVE
-			v.setAware(false); //CANT GET PUSHED
-			v.setCollidable(false); // "
-			v.setGravity(false); //CANT FALL
-			v.setSilent(true); // NO SOUNDS
+		v.setAI(false); //CANT MOVE
+		v.setAware(false); //CANT GET PUSHED
+		v.setCollidable(false); // "
+		v.setGravity(false); //CANT FALL
+		v.setSilent(true); // NO SOUNDS
 			
-			String displayname = prefix + playerName;
-			String customName = this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.userShopName")
-					.replaceAll("(?i)%" + "displayname" + "%", displayname != null ? displayname : "")
-					.replaceAll("(?i)%" + "username" + "%", playerName != null ? playerName : "")
-				);
+		String displayname = prefix + playerName;
+		String customName = this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.userShopName")
+				.replaceAll("(?i)%" + "displayname" + "%", displayname != null ? displayname : "")
+				.replaceAll("(?i)%" + "username" + "%", playerName != null ? playerName : "")
+			);
 			
-			v.setCustomName(customName);
-			v.setCustomNameVisible(true);
+		v.setCustomName(customName);
+		v.setCustomNameVisible(true);
 	
-			v.setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META
-		});
+		v.setMetadata("shopid", new FixedMetadataValue(this.instance, String.valueOf(shopId))); // PUTTING THE SHOP AS ENTITY META
 	}
 }

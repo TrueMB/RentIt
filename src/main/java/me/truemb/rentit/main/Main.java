@@ -211,6 +211,7 @@ public class Main extends JavaPlugin {
 				this.setupCitizens(); //CITIZENS NPC
 			}else {
 				this.vilUtils = new VillagerUtils(this); //VILLAGER NPC
+				this.getVillagerUtils().loadVillagers();
 				new VillagerShopListener(this);
 			}
 		}
@@ -274,7 +275,8 @@ public class Main extends JavaPlugin {
 			new Metrics(this, BSTATS_PLUGIN_ID);
 		
 		//UPDATE CHECKER
-		this.checkForUpdate();
+		if(!this.isFoliaServer)
+			this.checkForUpdate();
 		
 		//PAYMENT SCHEDULER
 		this.getThreadHandler().runTaskTimerAsync(new PaymentRunnable(this), 20 * 10, 20 * 60);
@@ -309,9 +311,6 @@ public class Main extends JavaPlugin {
 			}
 		}
 		
-		if(this.getVillagerUtils() != null)
-			this.getVillagerUtils().disableVillagers();
-		
 		if(this.getAsyncSQL() != null && this.getAsyncSQL().getDatabaseConnector() != null && this.getAsyncSQL().getDatabaseConnector().getConnection() != null)
 			this.getAsyncSQL().getDatabaseConnector().closeConnection();
 	}
@@ -320,10 +319,6 @@ public class Main extends JavaPlugin {
 
 		//------ CLOSE EVERTHING ------
 		this.getThreadHandler().runTaskAsync((t) -> {
-
-			//DISABLING VILLAGERS
-			if(this.getVillagerUtils() != null)
-				this.getVillagerUtils().disableVillagers();
 			
 			//CLOSE SQL CONNECTION
 			if(this.getAsyncSQL() != null && this.getAsyncSQL().getDatabaseConnector() != null && this.getAsyncSQL().getDatabaseConnector().getConnection() != null)
@@ -361,6 +356,7 @@ public class Main extends JavaPlugin {
 					this.setupCitizens(); //CITIZENS NPC
 				}else {
 					this.vilUtils = new VillagerUtils(this); //VILLAGER NPC
+					this.getVillagerUtils().loadVillagers();
 					new VillagerShopListener(this);
 				}
 			}
@@ -393,8 +389,11 @@ public class Main extends JavaPlugin {
 
 	private void initHandlers() {
 		//First load the categories. They are needed for the Shops/Hotelrooms
-		this.getCategorySQL().setupCategories(b -> {
+		this.getCategorySQL().setupCategory(RentTypes.SHOP, b -> {
 			this.getShopsSQL().setupShops();
+		});
+		
+		this.getCategorySQL().setupCategory(RentTypes.HOTEL, b -> {
 			this.getHotelsSQL().setupHotels();
 		});
 	}
@@ -562,9 +561,9 @@ public class Main extends JavaPlugin {
 		//PLUGIN WAS FOUND
 	    if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
 	          new PlaceholderAPI(this).register();
-			this.getLogger().info("PlacerHolderAPI was found and registered!");
+			this.getLogger().info("PlaceholderAPI was found and registered!");
 	    }else {
-			this.getLogger().info("PlacerHolderAPI was not found. (Is not needed, but supported)");
+			this.getLogger().info("PlaceholderAPI was not found. (Is not needed, but supported)");
 	    }
 		
 	}

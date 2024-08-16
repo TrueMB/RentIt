@@ -188,7 +188,7 @@ public class ShopCOMMAND extends BukkitCommand {
 								//SHOP IS OWNED
 								if(rentHandler.isAdmin() || ownerUUID != null) {
 									if(this.instance.getVillagerUtils() != null) {
-										this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerName);
+										this.instance.getVillagerUtils().createVillager(shopId, prefix, ownerName);
 									}else {
 										this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, ownerName);
 									}
@@ -203,7 +203,7 @@ public class ShopCOMMAND extends BukkitCommand {
 								
 								//SHOP IS OWNED
 								if(rentHandler.isAdmin() || ownerUUID != null) {
-									this.instance.getVillagerUtils().spawnVillager(shopId, prefix, ownerName);
+									this.instance.getVillagerUtils().createVillager(shopId, prefix, ownerName);
 								}
 							}
 						}
@@ -1207,7 +1207,7 @@ public class ShopCOMMAND extends BukkitCommand {
 					if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
 						this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, owner);
 					}else {
-						this.instance.getVillagerUtils().spawnVillager(shopId, prefix, owner);
+						this.instance.getVillagerUtils().createVillager(shopId, prefix, owner);
 					}
 				}
 

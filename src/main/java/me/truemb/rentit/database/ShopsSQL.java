@@ -217,7 +217,7 @@ public class ShopsSQL {
 							
 						if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
 							if(this.instance.getVillagerUtils() != null) {
-								this.instance.getVillagerUtils().spawnVillager(id, prefix, handler.isAdmin() ? this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.adminShopName")) : ownerName);
+								//this.instance.getVillagerUtils().spawnVillager(id, prefix, handler.isAdmin() ? this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.adminShopName")) : ownerName);
 							}else {
 								this.instance.getNpcUtils().spawnAndEditNPC(id, prefix, handler.isAdmin() ? this.instance.translateHexColorCodes(this.instance.manageFile().getString("Options.adminShopName")) : ownerName);
 							}

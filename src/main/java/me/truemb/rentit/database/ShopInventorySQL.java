@@ -148,35 +148,36 @@ public class ShopInventorySQL {
 						ItemStack[] buyContents = buyInvS != null && !buyInvS.equalsIgnoreCase("null") ? InventoryUtils.itemStackArrayFromBase64(buyInvS) : null;
 
 						//Add Items one site before, if still space
-						if(catHandler != null) {
-							//Sell Inventory
-							if(sellInv != null && sellContents != null) {
-								ItemStack[] sellContentsClone = sellContents.clone();
-								skipSellInv = true; //Items getting checked, if there is still space in the inventory before
+						if(catHandler == null)
+							continue;
+						
+						//Sell Inventory
+						if(sellInv != null && sellContents != null) {
+							ItemStack[] sellContentsClone = sellContents.clone();
+							skipSellInv = true; //Items getting checked, if there is still space in the inventory before
 								
-								outer: for(int i = 0; i < sellContentsClone.length; i++) {
-									ItemStack item = sellContentsClone[i];
-									if(item != null && item.getType() != Material.AIR && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
+							outer: for(int i = 0; i < sellContentsClone.length; i++) {
+								ItemStack item = sellContentsClone[i];
+								if(item != null && item.getType() != Material.AIR && !item.getItemMeta().getPersistentDataContainer().has(instance.guiItem, PersistentDataType.STRING)) {
 										
-										boolean foundFreeSlot = false;
-										for(int slot = 0; slot < (catHandler.getMaxSite() > 1 ? sellInv.getSize() - 9 : sellInv.getSize()); slot++) {
-											ItemStack temp = sellInv.getItem(slot);
+									boolean foundFreeSlot = false;
+									for(int slot = 0; slot < (catHandler.getMaxSite() > 1 ? sellInv.getSize() - 9 : sellInv.getSize()); slot++) {
+										ItemStack temp = sellInv.getItem(slot);
 											
-											if(temp == null || temp.getType() == Material.AIR) {
-												sellInv.setItem(slot, item);
-												sellContents[i] = null; //Removes the Items from the next Site
-												foundFreeSlot = true;
-												break; //Move to next Item
-											}
+										if(temp == null || temp.getType() == Material.AIR) {
+											sellInv.setItem(slot, item);
+											sellContents[i] = null; //Removes the Items from the next Site
+											foundFreeSlot = true;
+											break; //Move to next Item
 										}
+									}
 											
-										if(!foundFreeSlot) {
-											skipSellInv = false;
-											break outer;
-										}
-									}else
-										sellContents[i] = null; //Could be guiItem -> remove
-								}
+									if(!foundFreeSlot) {
+										skipSellInv = false;
+										break outer;
+									}
+								}else
+									sellContents[i] = null; //Could be guiItem -> remove
 							}
 							
 							//Buy Inventory

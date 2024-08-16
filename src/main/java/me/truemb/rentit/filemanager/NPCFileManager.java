@@ -36,7 +36,7 @@ public class NPCFileManager {
 		}
 	}
 	
-	private YamlConfiguration getConfig() {
+	public YamlConfiguration getConfig() {
 		return YamlConfiguration.loadConfiguration(this.file);
 	}
 	
