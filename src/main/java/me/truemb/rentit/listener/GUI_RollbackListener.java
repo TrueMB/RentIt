@@ -114,8 +114,18 @@ public class GUI_RollbackListener implements Listener {
 	@EventHandler
 	public void onRollbackGUIDrag(InventoryDragEvent e) {
 		
-		if(e.getView().getTitle() == null || !e.getView().getTitle().equalsIgnoreCase(this.instance.translateHexColorCodes(this.instance.manageFile().getString("GUI.rollback.displayName"))))
-			return;
+		InventoryHolder holder = e.getInventory().getHolder();
+	        
+	    if(holder == null)
+	    	return;
+	        
+	    if(!(holder instanceof GuiHolder))
+	    	return;
+	        
+	    GuiHolder guiHolder = (GuiHolder) holder;
+	        
+	    if(guiHolder.getGuiType() != GuiType.ROLLBACK)
+	    	return;
 		
 		e.setCancelled(true);
 	}

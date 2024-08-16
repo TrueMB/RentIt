@@ -70,8 +70,8 @@ import me.truemb.rentit.handler.CategoryHandler;
 import me.truemb.rentit.handler.PlayerHandler;
 import me.truemb.rentit.handler.RentTypeHandler;
 import me.truemb.rentit.inventory.ShopInventoryBuilder;
-import me.truemb.rentit.listener.AdminHotelListener;
-import me.truemb.rentit.listener.AdminShopListener;
+import me.truemb.rentit.listener.GUI_AdminHotelListener;
+import me.truemb.rentit.listener.GUI_AdminShopListener;
 import me.truemb.rentit.listener.GUI_CategoryListListener;
 import me.truemb.rentit.listener.GUI_CategoryListener;
 import me.truemb.rentit.listener.HotelAreaListener;
@@ -180,14 +180,10 @@ public class Main extends JavaPlugin {
 		else
 			this.threadWrapper = new SpigotThreadHandler(this);
 		
-		this.startMySql();
 		this.shopMeth = new UtilMethodes(this);
 
 		if(!this.manageFile().getBoolean("Options.commands.rentit.disabled"))
 			new RentItCOMMAND(this); //SHOULD ALWAYS RUN, EVENT WITHOUT DATABASE
-		
-		if(!this.isSystemRunningOkay)
-			return; //DATABASE MISSING
 
 		this.advancedChestsUtils = new AdvancedChestsUtils(this);
 		this.chestsUtils = new ChestsUtils(this);
@@ -198,12 +194,17 @@ public class Main extends JavaPlugin {
 		this.shopCacheFM = new ShopCacheFileManager(this);
 		this.areaFM = new AreaFileManager(this);
 		this.doorFM = new DoorFileManager(this);
-		
+
 		this.permsAPI = new PermissionsAPI(this);
 		this.economySystem = this.manageFile().getBoolean("Options.usePlayerPoints") ? new PlayerPointsEconomy(this) : new VaultEconomy(this);
 		this.setupWorldEdit();
 		this.setupWorldGuard();
 		this.setupChestShop();
+
+		this.startMySql();
+		
+		if(!this.isSystemRunningOkay)
+			return; //DATABASE MISSING
 
 		if(!this.manageFile().getBoolean("Options.disableNPC")) {
 			if(this.manageFile().getBoolean("Options.useNPCs")) {
@@ -217,8 +218,8 @@ public class Main extends JavaPlugin {
 		this.setupPlaceholderAPI();
 		
 		//LISTENER
-		new AdminShopListener(this);
-		new AdminHotelListener(this);
+		new GUI_AdminShopListener(this);
+		new GUI_AdminHotelListener(this);
 		new GUI_CategoryListener(this);
 		new GUI_CategoryListListener(this);
 		new GUI_ConfirmationListener(this);

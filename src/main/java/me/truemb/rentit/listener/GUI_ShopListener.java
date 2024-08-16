@@ -68,7 +68,7 @@ public class GUI_ShopListener implements Listener {
         //Cancel everything, if player is in a RentIt GUI Inventory.
 		e.setCancelled(true);
 	    
-	    if(inv == null || !inv.equals(e.getView().getTopInventory()))
+	    if(inv == null || !inv.equals(e.getInventory()))
 	    	return;
 
 	    if(item == null || item.getType() == Material.AIR)
