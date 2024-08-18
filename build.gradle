@@ -85,7 +85,7 @@ dependencies {
 }
 
 group = 'RentIt'
-version = '2.9.3'
+version = '2.9.4'
 description = 'RentIt'
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -134,6 +134,13 @@ tasks.shadowJar {
 }
 
 paper {
+    name = "${project.name}"
+    version = "${project.version}"
+    description = 'Player Shop and Hotel Rent System'
+    
+    website = 'https://github.com/TrueMB/RentIt/'
+    author = 'TrueMB'
+    
     main = 'me.truemb.rentit.main.Main'
 
     // Generate paper-libraries.json from `library` and `paperLibrary` in `dependencies`
