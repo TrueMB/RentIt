@@ -40,7 +40,9 @@ public class GUI_RollbackListener implements Listener {
         ItemStack item = e.getCurrentItem();
 		ItemStack cursorItem = e.getCursor();
 
-        InventoryHolder holder = e.getInventory().getHolder();
+		Inventory inv = e.getInventory();
+		Inventory clickInv = e.getClickedInventory();
+        InventoryHolder holder = inv.getHolder();
         
         if(holder == null)
         	return;
@@ -53,8 +55,8 @@ public class GUI_RollbackListener implements Listener {
         if(guiHolder.getGuiType() != GuiType.ROLLBACK)
         	return;
 
-		//NO ITEMS FROM BOTTOM INVENTORY
-		if((item != null && item.getType() != Material.AIR) && (e.getClickedInventory() == null || !e.getClickedInventory().equals(e.getView().getTopInventory()))) {
+		//NO ITEMS FROM BOTTOM INVENTORY        
+		if((item != null && item.getType() != Material.AIR) && (clickInv == null || !clickInv.equals(inv))) {
 			e.setCancelled(true);
 			return;
 		}
