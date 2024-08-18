@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
@@ -125,25 +126,30 @@ public class PaymentRunnable implements Consumer<Void> {
 			        	rentHandler.setAutoPayment(autoPaymentDefault);
 			        	this.instance.getShopsSQL().reset(shopId, autoPaymentDefault);
 			        	this.instance.getPermissionsSQL().reset(RentTypes.SHOP, shopId);
-
-			        	//TODO No Sync Scheduler needed? If needed, then should be done in method.
-					    this.instance.getShopCacheFileManager().createShopBackup(uuid, shopId);
+			        	
+			        	//NPC has to be in the shop, just use that location for folia
+			        	this.instance.getThreadHandler().runTaskSync(this.instance.getNPCFileManager().getNPCLocForShop(shopId), (tt) -> {
+						    this.instance.getShopCacheFileManager().createShopBackup(uuid, shopId);
+			        	});
 						rentHandler.reset();
 				
 						//REMOVE NPC
 						if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
-							if(this.instance.getNpcUtils() != null) {
-								if(this.instance.getNpcUtils().isNPCSpawned(shopId))
-									this.instance.getNpcUtils().despawnNPC(shopId);
-							}else {
-								if(this.instance.getVillagerUtils().isVillagerSpawned(shopId))
-									this.instance.getVillagerUtils().destroyVillager(shopId);
-							}
+							Location loc = this.instance.getNPCFileManager().getNPCLocForShop(shopId);
+							this.instance.getThreadHandler().runTaskSync(loc, (tt) -> {
+								if(this.instance.getNpcUtils() != null) {
+									if(this.instance.getNpcUtils().isNPCSpawned(shopId))
+										this.instance.getNpcUtils().despawnNPC(shopId);
+								}else {
+									if(this.instance.getVillagerUtils().isVillagerSpawned(shopId))
+										this.instance.getVillagerUtils().destroyVillager(shopId);
+								}
+							});
 						}
 				
-						BlockVector3 min = instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
-						BlockVector3 max = instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
-						World world = instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
+						BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(RentTypes.SHOP, shopId);
+						BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(RentTypes.SHOP, shopId);
+						World world = this.instance.getAreaFileManager().getWorldFromArea(RentTypes.SHOP, shopId);
 										
 						this.instance.getBackupManager().paste(RentTypes.SHOP, shopId, min, max, world, false);
 						this.instance.getAdvancedChestsUtils().pasteChestsInArea(RentTypes.SHOP, shopId);
@@ -199,9 +205,9 @@ public class PaymentRunnable implements Consumer<Void> {
 
 			        	//TODO No Sync Scheduler needed? If needed, then should be done in method.
 						rentHandler.reset();
-						BlockVector3 min = instance.getAreaFileManager().getMinBlockpoint(RentTypes.HOTEL, hotelId);
-						BlockVector3 max = instance.getAreaFileManager().getMaxBlockpoint(RentTypes.HOTEL, hotelId);
-						World world = instance.getAreaFileManager().getWorldFromArea(RentTypes.HOTEL, hotelId);
+						BlockVector3 min = this.instance.getAreaFileManager().getMinBlockpoint(RentTypes.HOTEL, hotelId);
+						BlockVector3 max = this.instance.getAreaFileManager().getMaxBlockpoint(RentTypes.HOTEL, hotelId);
+						World world = this.instance.getAreaFileManager().getWorldFromArea(RentTypes.HOTEL, hotelId);
 								
 						this.instance.getBackupManager().paste(RentTypes.HOTEL, hotelId, min, max, world, false);
 						this.instance.getAdvancedChestsUtils().pasteChestsInArea(RentTypes.HOTEL, hotelId);

@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -306,10 +308,10 @@ public class UtilMethodes {
 
 	public void deleteSigns(RentTypes type, int id) {
 
-		List<Sign> list = this.instance.getSignFileManager().getSigns(type, id);
+		List<Block> list = this.instance.getSignFileManager().getSigns(type, id);
 
-		list.forEach(signs -> {
-			signs.getBlock().breakNaturally();
+		list.forEach(blocks -> {
+			blocks.breakNaturally();
 		});
 		this.instance.getSignFileManager().clearSigns(type, id);
 	}
@@ -346,11 +348,17 @@ public class UtilMethodes {
 
 	public void updateSign(RentTypes type, int id, String owner, String time, double price, int size) {
 
-		List<Sign> list = this.instance.getSignFileManager().getSigns(type, id);
-
-		list.forEach(signs -> {
-			this.updateSign(type, id, signs, owner, time, price, size);
-		});
+		List<Block> list = this.instance.getSignFileManager().getSigns(type, id);
+		for(Block b : list) {
+			this.instance.getThreadHandler().runTaskSync(b.getLocation(), (t) -> {
+				BlockState state = b.getState();
+				
+				if(state instanceof Sign) {
+					Sign sign = (Sign) state;
+					this.updateSign(type, id, sign, owner, time, price, size);
+				}
+			});
+		}
 	}
 
 	public void updateAllSigns(RentTypes type, int catId) {

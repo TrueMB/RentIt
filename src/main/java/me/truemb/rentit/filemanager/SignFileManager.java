@@ -8,8 +8,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.truemb.rentit.enums.RentTypes;
@@ -97,11 +96,11 @@ public class SignFileManager {
 		return cfg.getInt(type.toString() + ".IDs." + locS);
 	}
 
-	public List<Sign> getSigns(RentTypes type, int id) {
+	public List<Block> getSigns(RentTypes type, int id) {
 		
 		YamlConfiguration cfg = this.getConfig();
 
-		List<Sign> finalSigns = new ArrayList<>();
+		List<Block> finalSigns = new ArrayList<>();
 		
 		List<String> signs = new ArrayList<>();
 		if(cfg.isSet(type.toString() + "." + String.valueOf(id)))
@@ -115,12 +114,8 @@ public class SignFileManager {
 			int z = Integer.parseInt(array[3]);
 			
 			World w = Bukkit.getWorld(worldName);
-			BlockState state = w.getBlockAt(x, y, z).getState();
-			
-			if(state instanceof Sign) {
-				Sign sign = (Sign) state;
-				finalSigns.add(sign);
-			}
+			Location loc = new Location(w, x, y, z);
+			finalSigns.add(w.getBlockAt(loc));
 		});
 		
 		return finalSigns;
