@@ -1158,7 +1158,6 @@ public class ShopCOMMAND extends BukkitCommand {
 					return true;
 				}
 				
-				String owner = rentHandler.getOwnerName();
 				UUID ownerUUID = rentHandler.getOwnerUUID();
 				if (ownerUUID != null) {
 					p.sendMessage(this.instance.getMessage("shopAlreadyBought"));
@@ -1200,18 +1199,19 @@ public class ShopCOMMAND extends BukkitCommand {
 	        	rentHandler.setAutoPayment(autoPaymentDefault);
 				this.instance.getShopsSQL().setOwner(shopId, uuid, p.getName(), autoPaymentDefault);
 				
-				rentHandler.setOwner(uuid, p.getName());
+				String name = p.getName();
+				rentHandler.setOwner(uuid, name);
 				
 				String prefix = this.instance.getPermissionsAPI().getPrefix(uuid);
 				if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
 					if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
-						this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, owner);
+						this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, name);
 					}else {
-						this.instance.getVillagerUtils().createVillager(shopId, prefix, owner);
+						this.instance.getVillagerUtils().createVillager(shopId, prefix, name);
 					}
 				}
 
-				this.instance.getMethodes().updateSign(this.type, shopId, owner, time, costs, size);
+				this.instance.getMethodes().updateSign(this.type, shopId, name, time, costs, size);
 
 				Timestamp ts = UtilitiesAPI.getNewTimestamp(time);
 				rentHandler.setNextPayment(ts);
