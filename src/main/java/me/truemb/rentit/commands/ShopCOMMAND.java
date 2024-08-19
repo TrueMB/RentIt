@@ -1202,7 +1202,7 @@ public class ShopCOMMAND extends BukkitCommand {
 				
 				rentHandler.setOwner(uuid, p.getName());
 				
-				String prefix = this.instance.getPermissionsAPI().getPrefix(ownerUUID);
+				String prefix = this.instance.getPermissionsAPI().getPrefix(uuid);
 				if(!this.instance.manageFile().getBoolean("Options.disableNPC")) {
 					if(this.instance.manageFile().getBoolean("Options.useNPCs")) {
 						this.instance.getNpcUtils().spawnAndEditNPC(shopId, prefix, owner);
