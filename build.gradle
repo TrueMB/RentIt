@@ -188,6 +188,10 @@ paper {
             load = 'BEFORE'
             required = false
         }
+        'ChestShop' {
+            load = 'BEFORE'
+            required = false
+        }
     }
 }
 
@@ -203,7 +207,7 @@ bukkit {
     apiVersion = '1.20'
     
     depend = ['WorldEdit']
-    softDepend = ['WorldGuard', 'Citizens', 'Denizen', 'PlaceholderAPI', 'AdvancedChests', 'PlayerPoints', 'Vault']
+    softDepend = ['WorldGuard', 'Citizens', 'Denizen', 'PlaceholderAPI', 'AdvancedChests', 'PlayerPoints', 'Vault', 'ChestShop']
 }
 
 shadowJar {
