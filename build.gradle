@@ -25,7 +25,7 @@ repositories {
     }
 
     maven {
-        url = uri('https://hub.jeff-media.com/nexus/repository/jeff-media-public/')
+        url = uri('https://repo.jeff-media.com/public/')
     }
 
     maven {
@@ -75,7 +75,7 @@ dependencies {
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.9-SNAPSHOT'
     compileOnly 'com.github.DeadSilenceIV:AdvancedChestsAPI:3.2-BETA'
     compileOnly 'org.black_ixx:playerpoints:3.2.6'
-    compileOnly 'me.clip:placeholderapi:2.11.4'
+    compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly 'net.luckperms:api:5.4'
     compileOnly 'com.acrobot.chestshop:chestshop:3.12.2' //ChestShopAPI
     
