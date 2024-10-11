@@ -83,9 +83,16 @@ public class UtilitiesAPI {
 	
 	public static String getHumanReadablePriceFromNumber(double number){
 	    NumberFormat fmtShort = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
-	    fmtShort.setMinimumFractionDigits(3);
+	    fmtShort.setMaximumFractionDigits(3);
 	    
-	    return fmtShort.format(number);
+	    // Format the number
+	    String formattedNumber = fmtShort.format(number);
+	    
+	    // Remove trailing zeros and the decimal point if it is the last character
+	    formattedNumber = formattedNumber.replaceAll("\\.0{1,3}$", ""); // remove .0, .00, .000
+	    formattedNumber = formattedNumber.replaceAll("\\.0+$", "");  // remove decimal if it's .0, .00, etc.
+	    
+	    return formattedNumber;
 
 	}
 }
